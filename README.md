@@ -20,7 +20,7 @@ the concept of a Person. The rows in the sheet describe either *classes* or *slo
 
 |record|field|key|multiplicity|range|desc|schema.org
 |---|---|---|---|---|---|---|
-|`>` class|slot|identifier|cardinality|range|description|exact_mappings: {curie_prefix: sdo}
+|`>` class|slot|identifier|cardinality|range|description|`exact_mappings: {curie_prefix: sdo}`
 |-|id|yes|1|string|any identifier|identifier
 |-|description|no|0..1|string|a textual description|description
 |Person||n/a|n/a|n/a|a person,living or dead|Person
@@ -205,7 +205,7 @@ For example:
 
 |type|item|applies to|key|multiplicity|range|parents|desc|schema.org|wikidata|belongs|status|notes|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-|`>` metatype|name|class|identifier|cardinality|range|is_a|description|exact_mappings: {curie_prefix: sdo}|exact_mappings: {curie_prefix: wikidata}|in_subset|status|ignore|
+|`>` metatype|name|class|identifier|cardinality|range|is_a|description|`exact_mappings: {curie_prefix: sdo}`|`exact_mappings: {curie_prefix: wikidata}`|in_subset|status|ignore|
 |`> vmap: {C: class, F: slot}`|||||||||||||
 |`>`|||||||||curie_prefix: wikidata||`vmap: {T: testing, R: release}`||
 |F|id||yes|1|string||any identifier|identifier|||||
