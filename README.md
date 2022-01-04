@@ -3,7 +3,7 @@
 Create a data dictionary / schema for your data using simple spreadsheets - no coding required.
 
 - Author your schema as a google sheet or excel spreadsheet
-- Generate schemas:
+- [Generate schemas](https://linkml.io/linkml/generators/index.html):
    - LinkML
    - SHACL and ShEx
    - JSON-Schema
@@ -11,7 +11,7 @@ Create a data dictionary / schema for your data using simple spreadsheets - no c
    - OWL
 - Validate data automatically
 
-TODO: link to example spreadsheet
+See the [test google sheets](https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=55566104) for examples
 
 ## How it works
 
@@ -30,6 +30,8 @@ the concept of a Person. The rows in the sheet describe either *classes* or *slo
 |Person|gender|no|0..1|decimal|age in years|-
 |Person|has medical history|no|0..*|MedicalEvent|medical history|-
 |MedicalEvent||n/a|n/a|n/a|-|-
+
+ * [personinfo google sheet](https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=55566104)
 
 The sheet is structured as follows:
 
@@ -145,8 +147,11 @@ The following example includes two enums:
 |FamilialRelationshipType|CHILD_OF|famrel:03|inverse of parent
 |GenderType|-|-|gender
 |GenderType|nonbinary man|GSSO:009254|-
-|GenderType|nonbinary woma|GSSO:009253|-
+|GenderType|nonbinary woman|GSSO:009253|-
+|...|...|...|-
 
+ * [enums google sheet](https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=823426713)
+ 
 All other descriptors are optional, but we recommend you provide descriptions of
 both the enumeration and the [meaning](https://w3id.org/linkml/meaning) descriptor which
 maps the value to a vocabulary or ontology term.
@@ -192,6 +197,8 @@ For example:
 |location|location|location on earth||||||
 |astronomical_body|astronomical body|planet or other astronomical object where sample was collected|||||M|
 
+ * [data dictionary google sheet](https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=1290069715)
+
 Here the `applies_to_class` descriptor indicates that the column value for the slot indicated in the row
 is interpreted as slot usage for that class. 
 
@@ -220,6 +227,37 @@ For example:
 |C|ForProfit|||||Organization|||||||
 |C|NonProfit|||||Organization|||Q163740|||foo|
 
+ * [personinfo with tyoes](https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=509198484)
+
+# Formal specification
+
+In progress. The following is a sketch. Please refer to the above examples for elucidation.
+
+- The first line is a HEADER line.
+   - Each column must be non-null and unique
+   - In future grouping columns may be possible
+- Subsequent lines starting with `>` are *column configurations*
+   - A column configuration can be split over multiple lines
+   - Each line must be a valid yaml string (note that a single token is valid yaml for that token)
+   - The first config line must include a *descriptor*
+   - Subsequent lines are *settings* for that descriptor
+   - A descriptor can be one of:
+      - Any LinkML metamodel slot (e.g. description, comments, required, recommended, multivalued)
+      - The keyword `cardinality`
+      - An element metatype (schema, prefix, class, enum, slot, type, subset, permissible_value)
+   - Setting can be taken from configschema.yaml
+      - vmap provides a mapping used to translate column values. E.g. a custom "yes" or "no" to "true" or "false"
+      - various keys provide ways to auto-prefix or manipulate strings
+- Remaining rows are elements of your schema
+   - Each element gets its own row
+   - A row can represent a class (record, table), field (column), enumeration, or other element types
+   - The type of the row is indicated by whether columns with metatype descriptors are filled
+      - E.g. if a column header "field" has a descriptor "slot" then any row with a non-null value is interpreted as a slot
+   - If a `metatype` descriptor is present then this is used
+   - A row must represent exactly one element type
+   - If both class and slot descriptors are present then the row is interpreted as a slot in the context of that class (see slot_usage)
+- All sheets/TSVs are combined together into a single LinkML schema as YAML
+- This LinkML schema can be translated to other formats as per the LinkML [generators](https://linkml.io/linkml/generators/index.html)
 
 # Working with files / google sheets
 
