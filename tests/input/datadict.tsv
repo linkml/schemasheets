@@ -1,0 +1,14 @@
+term	title	desc	mi_patient	mi_mod	mi_terrestrial	mi_marine	mi_extraterrestrial
+> slot	title	description	cardinality	cardinality	cardinality	cardinality	cardinality
+>			applies_to_class: MI patient	applies_to_class: MI model organism	applies_to_class: MI terrestrial sample	applies_to_class: MI marine sample	applies_to_class: MI extraterrestrial sample
+id	unique identifier	a unique id	M	M	M	M	M
+alt_ids	other identifiers	any other identifiers	O	O	O	O	O
+body_site	body site	location where sample is taken from	M	R	-	-	-
+disease	disease status	disease the patient had	M	O	-	-	-
+age	age	age	M	R	-	-	-
+depth	depth	depth in ground or water	-	-	R	R	R
+alt	altitude	height above sea level			R	R	R
+salinity	salinity	salinity			R	R	R
+porosity	porosity	porosity					
+location	location	location on earth					
+astronomical_body	astronomicalbody	planet or other astronomical object where sample was collected					M

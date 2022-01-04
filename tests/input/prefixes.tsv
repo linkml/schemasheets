@@ -1,0 +1,7 @@
+prefix	URI
+> prefix	prefix_reference
+sdo	http://schema.org/
+personinfo	https://w3id.org/linkml/examples/personinfo/
+famrel	https://example.org/FamilialRelations#
+GSSO	http://purl.obolibrary.org/obo/GSSO_
+wikidata	http://www.wikidata.org/entity/

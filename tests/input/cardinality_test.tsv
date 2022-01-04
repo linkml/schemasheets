@@ -1,0 +1,15 @@
+record	field	key	multiplicity	range	parents	desc	schema.org	wikidata	belongs	status
+> class	slot	identifier	cardinality	range	is_a	description	exact_mappings: {curie_prefix: sdo}	exact_mappings: {curie_prefix: wikidata}	in_subset	status
+>								curie_prefix: wikidata		vmap: {T: testing, R: release}
+	id	yes	M	string		any identifier	identifier
+	description	no	O	string		a textual description	description
+Person		n/a	n/a	n/a		a person,living or dead	Person	Q215627		R
+Person	id	yes	M	string		identifier for a person	identifier
+Person|Organization	name	no	M	string		full name	name
+Person	age	no	O	decimal		age in years	
+Person	gender	no	R	decimal		age in years	
+Person	has medical history	no	0..*	MedicalEvent		medical history				T
+Event						grouping class for events		Q1656682	a	R
+MedicalEvent		n/a	n/a	n/a	Event	a medical encounter			b	T
+ForProfit					Organization					
+NonProfit					Organization			Q163740		
