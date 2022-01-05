@@ -5,7 +5,7 @@ from linkml.generators.projectgen import ProjectGenerator, ProjectConfiguration
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.utils.schemaview import SchemaView
 
-from fairstructure.schemamaker import SchemaMaker, get_metamodel, SchemaSheetRowException
+from schemasheets.schemamaker import SchemaMaker, get_metamodel, SchemaSheetRowException
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 INPUT_DIR = os.path.join(ROOT, 'input')

@@ -8,7 +8,7 @@ from typing import List, Union, Any, Dict, Tuple, Generator
 from linkml.generators.projectgen import ProjectConfiguration, ProjectGenerator
 from linkml_runtime.dumpers import yaml_dumper
 
-from fairstructure.schemamaker import SchemaMaker
+from schemasheets.schemamaker import SchemaMaker
 
 
 @click.command()
@@ -38,7 +38,7 @@ def multigen(tsv_files, dir, verbose: int, repair: bool,
 
     Generate all downstream artefacts using default configuration:
 
-       fairstructure -d . my_schema/*tsv
+       schemasheets -d . my_schema/*tsv
 
 
     """

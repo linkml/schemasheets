@@ -16,8 +16,8 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, 
     SlotDefinition, EnumDefinition, PermissibleValue, SubsetDefinition, TypeDefinition, Element
 from linkml_runtime.utils.schemaview import SchemaView
 
-from fairstructure.utils.configschema import ColumnSettings, Shortcuts, Cardinality
-from fairstructure.utils.prefixtool import guess_prefix_expansion
+from schemasheets.utils.configschema import ColumnSettings, Shortcuts, Cardinality
+from schemasheets.utils.prefixtool import guess_prefix_expansion
 
 
 class SchemaSheetRowException(Exception):
@@ -177,7 +177,7 @@ def get_configmodel() -> SchemaView:
     is in major release
     :return:
     """
-    package = 'fairstructure.conf.configschema'
+    package = 'schemasheets.conf.configschema'
     data = pkgutil.get_data(package, f'configschema.yaml')
     return SchemaView(data.decode("utf-8"))
 
@@ -610,7 +610,7 @@ def convert(tsv_files, output: TextIO, verbose: int):
     """
     Convert schemasheets to a LinkML schema
 
-       fairstructure -d . my_schema/*tsv
+       schemasheets -d . my_schema/*tsv
     """
     if verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)

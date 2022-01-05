@@ -1,4 +1,4 @@
-# fairstructure - structuring your data using spreadsheets
+# schemasheets - structuring your data using spreadsheets
 
 Create a data dictionary / schema for your data using simple spreadsheets - no coding required.
 
@@ -69,7 +69,7 @@ a website that can be easily hosted on github.
 To create only LinkML yaml:
 
 ```bash
-fairstructure -o my.yaml  src/*.tsv
+schemasheets -o my.yaml  src/*.tsv
 ```
 
 
@@ -285,7 +285,7 @@ description into different sheets:
 - sheets for enums
 - sheets for types
 
-Currently fairstructure has no built in facilities for interacting directly with google sheets - it is up to you to both download and upload these
+Currently schemasheets has no built in facilities for interacting directly with google sheets - it is up to you to both download and upload these
 
 TODO: scripts for merging/splitting sheets
 
