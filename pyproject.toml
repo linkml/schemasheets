@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "fairstructure"
+name = "schemasheets"
 version = "0.1.0"
 description = ""
 authors = ["cmungall <cjm@berkeleybop.org>"]
@@ -19,5 +19,5 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-fairstructure = "fairstructure.schemamaker:convert"
+sheets2linkml = "fairstructure.schemamaker:convert"
 sheets2project = "fairstructure.sheets_to_project:multigen"

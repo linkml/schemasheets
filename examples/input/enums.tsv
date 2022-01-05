@@ -1,0 +1,9 @@
+ValueSet	Value	Mapping	Desc
+> enum	permissible_value	meaning	description
+FamilialRelationshipType			familial relationships
+FamilialRelationshipType	SIBLING_OF	famrel:01	share the same parent
+FamilialRelationshipType	PARENT_OF	famrel:02	biological parent
+FamilialRelationshipType	CHILD_OF	famrel:03	inverse of parent
+GenderType			gender
+GenderType	nonbinary man	GSSO:009254	
+GenderType	nonbinary woma	GSSO:009253	

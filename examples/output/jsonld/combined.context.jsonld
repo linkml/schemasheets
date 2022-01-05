@@ -1,0 +1,16 @@
+{
+   "_comments": "Auto generated from combined.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-01-05T12:15:37\n    Schema: PersonInfo\n    \n    id: https://w3id.org/linkml/examples/personinfo\n    description: Information about people, based on [schema.org](http://schema.org)\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "GSSO": {
+         "@id": "http://purl.obolibrary.org/obo/GSSO_",
+         "@prefix": true
+      },
+      "famrel": "https://example.org/FamilialRelations#",
+      "linkml": "https://w3id.org/linkml/",
+      "personinfo": "https://w3id.org/linkml/examples/personinfo/",
+      "sdo": "http://schema.org/",
+      "wikidata": "http://www.wikidata.org/entity/",
+      "@vocab": "https://w3id.org/linkml/examples/personinfo/",
+      "id": "@id"
+   }
+}

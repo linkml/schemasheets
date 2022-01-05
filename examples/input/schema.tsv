@@ -1,0 +1,3 @@
+Schema	uri	Desc	Schema Prefix
+> schema	id	description	default_prefix
+PersonInfo	https://w3id.org/linkml/examples/personinfo	Information about people, based on [schema.org](http://schema.org)	personinfo

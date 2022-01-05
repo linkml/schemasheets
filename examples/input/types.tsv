@@ -1,0 +1,4 @@
+Type	base	uri	Desc
+> type	base	uri	description
+DecimalDegree	float	xsd:decimal	A decimal degree expresses latitude or longitude as decimal fractions
+Lang	str	xsd:string	language tag

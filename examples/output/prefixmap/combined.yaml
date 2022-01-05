@@ -1,0 +1,8 @@
+{
+   "GSSO": "http://purl.obolibrary.org/obo/GSSO_",
+   "famrel": "https://example.org/FamilialRelations#",
+   "linkml": "https://w3id.org/linkml/",
+   "personinfo": "https://w3id.org/linkml/examples/personinfo/",
+   "sdo": "http://schema.org/",
+   "wikidata": "http://www.wikidata.org/entity/"
+}

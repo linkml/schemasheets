@@ -1,0 +1,140 @@
+@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sdo: <http://schema.org/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix wikidata: <http://www.wikidata.org/entity/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+linkml:SubsetDefinition a owl:Class ;
+    rdfs:label "subset_definition" ;
+    skos:definition "the name and description of a subset" .
+
+<https://w3id.org/linkml/examples/personinfo> a owl:Ontology ;
+    rdfs:label "PersonInfo" ;
+    IAO:0000700 personinfo:Event,
+        personinfo:Organization,
+        personinfo:Person ;
+    dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+    skos:definition "Information about people, based on [schema.org](http://schema.org)" ;
+    linkml:generation_date "2022-01-05T12:15:38" ;
+    linkml:metamodel_version "1.7.0" ;
+    linkml:source_file "combined.yaml" ;
+    linkml:source_file_date "2022-01-05T12:15:36" ;
+    linkml:source_file_size 4139 .
+
+personinfo:DecimalDegree a owl:Class,
+        linkml:TypeDefinition ;
+    rdfs:label "DecimalDegree" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onDataRange xsd:decimal ;
+            owl:onProperty linkml:topValue ;
+            owl:qualifiedCardinality 1 ] ;
+    skos:definition "A decimal degree expresses latitude or longitude as decimal fractions" .
+
+personinfo:ForProfit a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "ForProfit" ;
+    rdfs:subClassOf personinfo:Organization .
+
+personinfo:Lang a owl:Class,
+        linkml:TypeDefinition ;
+    rdfs:label "Lang" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onDataRange xsd:string ;
+            owl:onProperty linkml:topValue ;
+            owl:qualifiedCardinality 1 ] ;
+    skos:definition "language tag" .
+
+personinfo:NonProfit a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "NonProfit" ;
+    rdfs:subClassOf personinfo:Organization ;
+    skos:exactMatch wikidata:Q163740 .
+
+personinfo:description a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "description" ;
+    rdfs:range linkml:String ;
+    skos:definition "a textual description" .
+
+personinfo:MedicalEvent a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "MedicalEvent" ;
+    rdfs:subClassOf personinfo:Event ;
+    skos:definition "a medical encounter" .
+
+personinfo:Person a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "Person" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:MedicalEvent ;
+            owl:onProperty personinfo:has_medical_history ],
+        [ a owl:Restriction ;
+            owl:onClass linkml:String ;
+            owl:onProperty personinfo:id ;
+            owl:qualifiedCardinality 1 ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:Decimal ;
+            owl:onProperty personinfo:age ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:Decimal ;
+            owl:onProperty personinfo:gender ],
+        [ a owl:Restriction ;
+            owl:onClass linkml:String ;
+            owl:onProperty personinfo:name ;
+            owl:qualifiedCardinality 1 ] ;
+    skos:definition "a person,living or dead" ;
+    skos:exactMatch sdo:Person,
+        wikidata:Q215627 .
+
+personinfo:age a owl:ObjectProperty,
+        linkml:SlotDefinition .
+
+personinfo:gender a owl:ObjectProperty,
+        linkml:SlotDefinition .
+
+personinfo:has_medical_history a owl:ObjectProperty,
+        linkml:SlotDefinition .
+
+personinfo:id a owl:ObjectProperty,
+        linkml:SlotDefinition .
+
+linkml:TypeDefinition a owl:Class ;
+    rdfs:label "type_definition" ;
+    skos:definition "A data type definition." .
+
+personinfo:Event a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "Event" ;
+    skos:definition "grouping class for events" ;
+    skos:exactMatch wikidata:Q1656682 .
+
+personinfo:name a owl:ObjectProperty,
+        linkml:SlotDefinition .
+
+linkml:topValue a owl:DatatypeProperty ;
+    rdfs:label "value" .
+
+personinfo:Organization a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "Organization" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onClass linkml:String ;
+            owl:onProperty personinfo:name ;
+            owl:qualifiedCardinality 1 ] .
+
+linkml:ClassDefinition a owl:Class ;
+    rdfs:label "class_definition" ;
+    skos:definition "the definition of a class or interface" .
+
+linkml:SlotDefinition a owl:Class ;
+    rdfs:label "slot_definition" ;
+    skos:definition "the definition of a property or a slot" .
+
+
