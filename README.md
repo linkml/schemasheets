@@ -13,6 +13,8 @@ Create a data dictionary / schema for your data using simple spreadsheets - no c
 
 See the [test google sheets](https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=55566104) for examples
 
+See also the [examples](examples) folder which has an end-to-end example
+
 ## How it works
 
 The following example shows a schema sheet for a schema that is focused around
