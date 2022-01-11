@@ -10,9 +10,6 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.7, 3.8, 3.9]
 
     steps:
 
@@ -22,10 +19,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.9
       
       #----------------------------------------------
       #          install & configure poetry         
@@ -71,7 +68,7 @@ jobs:
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         with:
-          name: pytest-results-${{ matrix.python-version }}
+          name: pytest-results
           path: htmlcov
         # Use always() to always run this step to publish test results when there are test failures
         if: ${{ always() }}
