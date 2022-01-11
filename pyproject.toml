@@ -1,8 +1,14 @@
 [tool.poetry]
 name = "schemasheets"
-version = "0.1.0"
-description = ""
+version = "0.1.1"
+description = "Package to author schemas using spreadsheets"
 authors = ["cmungall <cjm@berkeleybop.org>"]
+
+readme = "README.md"
+
+homepage = "https://github.com/linkml/schemasheets"
+repository = "https://github.com/linkml/schemasheets"
+documentation = "https://github.com/linkml/schemasheets"
 
 [tool.poetry.dependencies]
 python = "^3.9"
