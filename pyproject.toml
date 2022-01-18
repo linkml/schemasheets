@@ -26,5 +26,5 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-sheets2linkml = "fairstructure.schemamaker:convert"
-sheets2project = "fairstructure.sheets_to_project:multigen"
+sheets2linkml = "schemasheets.schemamaker:convert"
+sheets2project = "schemasheets.sheets_to_project:multigen"
