@@ -39,7 +39,9 @@ jobs:
     #                 build dist
     #----------------------------------------------
     - name: Build source and wheel archives
-      run: poetry build
+      run: |
+        poetry version $(git describe --tags --abbrev=0)
+        poetry build
 
     #----------------------------------------------
     #          publish package to PyPI     
