@@ -1,0 +1,511 @@
+{
+  "name": "TEMP",
+  "id": "TEMP",
+  "imports": [
+    "linkml:types"
+  ],
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "prefixes": [
+    {
+      "prefix_prefix": "linkml",
+      "prefix_reference": "https://w3id.org/linkml/"
+    },
+    {
+      "prefix_prefix": "TEMP",
+      "prefix_reference": "http://example.org/TEMP/"
+    },
+    {
+      "prefix_prefix": "sdo",
+      "prefix_reference": "http://example.org/sdo/"
+    },
+    {
+      "prefix_prefix": "wikidata",
+      "prefix_reference": "http://www.wikidata.org/entity/"
+    }
+  ],
+  "default_prefix": "TEMP",
+  "default_range": "string",
+  "subsets": [
+    {
+      "name": "b",
+      "definition_uri": "http://example.org/TEMP/B",
+      "from_schema": "TEMP",
+      "@type": "SubsetDefinition"
+    },
+    {
+      "name": "a",
+      "definition_uri": "http://example.org/TEMP/A",
+      "from_schema": "TEMP",
+      "@type": "SubsetDefinition"
+    }
+  ],
+  "types": [
+    {
+      "name": "string",
+      "definition_uri": "https://w3id.org/linkml/String",
+      "description": "A character string",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "integer",
+      "definition_uri": "https://w3id.org/linkml/Integer",
+      "description": "An integer",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "int",
+      "uri": "http://www.w3.org/2001/XMLSchema#integer",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "boolean",
+      "definition_uri": "https://w3id.org/linkml/Boolean",
+      "description": "A binary (true or false) value",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "Bool",
+      "uri": "http://www.w3.org/2001/XMLSchema#boolean",
+      "repr": "bool",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "float",
+      "definition_uri": "https://w3id.org/linkml/Float",
+      "description": "A real number that conforms to the xsd:float specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#float",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "double",
+      "definition_uri": "https://w3id.org/linkml/Double",
+      "description": "A real number that conforms to the xsd:double specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#double",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "decimal",
+      "definition_uri": "https://w3id.org/linkml/Decimal",
+      "description": "A real number with arbitrary precision that conforms to the xsd:decimal specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "Decimal",
+      "uri": "http://www.w3.org/2001/XMLSchema#decimal",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "time",
+      "definition_uri": "https://w3id.org/linkml/Time",
+      "description": "A time object represents a (local) time of day, independent of any particular day",
+      "notes": [
+        "URI is dateTime because OWL reasoners don't work with straight date or time"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "date",
+      "definition_uri": "https://w3id.org/linkml/Date",
+      "description": "a date (year, month and day) in an idealized calendar",
+      "notes": [
+        "URI is dateTime because OWL reasoners don't work with straight date or time"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDDate",
+      "uri": "http://www.w3.org/2001/XMLSchema#date",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "datetime",
+      "definition_uri": "https://w3id.org/linkml/Datetime",
+      "description": "The combination of a date and time",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDDateTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uriorcurie",
+      "definition_uri": "https://w3id.org/linkml/Uriorcurie",
+      "description": "a URI or a CURIE",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "URIorCURIE",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uri",
+      "definition_uri": "https://w3id.org/linkml/Uri",
+      "description": "a complete URI",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "URI",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "ncname",
+      "definition_uri": "https://w3id.org/linkml/Ncname",
+      "description": "Prefix part of CURIE",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NCName",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "objectidentifier",
+      "definition_uri": "https://w3id.org/linkml/Objectidentifier",
+      "description": "A URI or CURIE that represents an object in the model.",
+      "comments": [
+        "Used for inheritence and type checking"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "ElementIdentifier",
+      "uri": "http://www.w3.org/ns/shex#iri",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "nodeidentifier",
+      "definition_uri": "https://w3id.org/linkml/Nodeidentifier",
+      "description": "A URI, CURIE or BNODE that represents a node in a model.",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NodeIdentifier",
+      "uri": "http://www.w3.org/ns/shex#nonLiteral",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    }
+  ],
+  "slots": [
+    {
+      "name": "id",
+      "definition_uri": "http://example.org/TEMP/id",
+      "exact_mappings": [
+        "http://example.org/sdo/identifier"
+      ],
+      "description": "any identifier",
+      "from_schema": "TEMP",
+      "slot_uri": "http://example.org/TEMP/id",
+      "identifier": true,
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "range": "string",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "description",
+      "definition_uri": "http://example.org/TEMP/description",
+      "exact_mappings": [
+        "http://example.org/sdo/description"
+      ],
+      "description": "a textual description",
+      "from_schema": "TEMP",
+      "slot_uri": "http://example.org/TEMP/description",
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "name",
+      "definition_uri": "http://example.org/TEMP/name",
+      "from_schema": "TEMP",
+      "slot_uri": "http://example.org/TEMP/name",
+      "owner": "Organization",
+      "domain_of": [
+        "Person",
+        "Organization"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "age",
+      "definition_uri": "http://example.org/TEMP/age",
+      "from_schema": "TEMP",
+      "slot_uri": "http://example.org/TEMP/age",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "gender",
+      "definition_uri": "http://example.org/TEMP/gender",
+      "from_schema": "TEMP",
+      "slot_uri": "http://example.org/TEMP/gender",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "has_medical_history",
+      "definition_uri": "http://example.org/TEMP/has_medical_history",
+      "from_schema": "TEMP",
+      "slot_uri": "http://example.org/TEMP/has_medical_history",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Person_id",
+      "definition_uri": "http://example.org/TEMP/id",
+      "exact_mappings": [
+        "http://example.org/sdo/identifier"
+      ],
+      "description": "identifier for a person",
+      "from_schema": "TEMP",
+      "is_a": "id",
+      "domain": "Person",
+      "slot_uri": "http://example.org/TEMP/id",
+      "identifier": true,
+      "alias": "id",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "id",
+      "range": "string",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Person_name",
+      "definition_uri": "http://example.org/TEMP/name",
+      "exact_mappings": [
+        "http://example.org/sdo/name"
+      ],
+      "description": "full name",
+      "from_schema": "TEMP",
+      "is_a": "name",
+      "domain": "Person",
+      "slot_uri": "http://example.org/TEMP/name",
+      "alias": "name",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "name",
+      "range": "string",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Person_age",
+      "definition_uri": "http://example.org/TEMP/age",
+      "description": "age in years",
+      "from_schema": "TEMP",
+      "is_a": "age",
+      "domain": "Person",
+      "slot_uri": "http://example.org/TEMP/age",
+      "alias": "age",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "age",
+      "range": "decimal",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Person_gender",
+      "definition_uri": "http://example.org/TEMP/gender",
+      "description": "age in years",
+      "from_schema": "TEMP",
+      "is_a": "gender",
+      "domain": "Person",
+      "slot_uri": "http://example.org/TEMP/gender",
+      "alias": "gender",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "gender",
+      "range": "decimal",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Person_has_medical_history",
+      "definition_uri": "http://example.org/TEMP/has_medical_history",
+      "description": "medical history",
+      "from_schema": "TEMP",
+      "is_a": "has_medical_history",
+      "status": "testing",
+      "domain": "Person",
+      "slot_uri": "http://example.org/TEMP/has_medical_history",
+      "multivalued": true,
+      "inlined": true,
+      "alias": "has medical history",
+      "owner": "Person",
+      "domain_of": [
+        "Person"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "has medical history",
+      "range": "MedicalEvent",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "Organization_name",
+      "definition_uri": "http://example.org/TEMP/name",
+      "exact_mappings": [
+        "http://example.org/sdo/name"
+      ],
+      "description": "full name",
+      "from_schema": "TEMP",
+      "is_a": "name",
+      "domain": "Organization",
+      "slot_uri": "http://example.org/TEMP/name",
+      "alias": "name",
+      "owner": "Organization",
+      "domain_of": [
+        "Organization"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "name",
+      "range": "string",
+      "required": true,
+      "@type": "SlotDefinition"
+    }
+  ],
+  "classes": [
+    {
+      "name": "Person",
+      "definition_uri": "http://example.org/TEMP/Person",
+      "exact_mappings": [
+        "sdo:Person",
+        "wikidata:Q215627"
+      ],
+      "description": "a person,living or dead",
+      "from_schema": "TEMP",
+      "status": "release",
+      "slots": [
+        "Person_id",
+        "Person_name",
+        "Person_age",
+        "Person_gender",
+        "Person_has_medical_history"
+      ],
+      "slot_usage": {},
+      "class_uri": "http://example.org/TEMP/Person",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "Organization",
+      "definition_uri": "http://example.org/TEMP/Organization",
+      "from_schema": "TEMP",
+      "slots": [
+        "Organization_name"
+      ],
+      "slot_usage": {},
+      "class_uri": "http://example.org/TEMP/Organization",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "Event",
+      "definition_uri": "http://example.org/TEMP/Event",
+      "exact_mappings": [
+        "wikidata:Q1656682"
+      ],
+      "description": "grouping class for events",
+      "in_subset": [
+        "a"
+      ],
+      "from_schema": "TEMP",
+      "status": "release",
+      "slot_usage": {},
+      "class_uri": "http://example.org/TEMP/Event",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "MedicalEvent",
+      "definition_uri": "http://example.org/TEMP/MedicalEvent",
+      "description": "a medical encounter",
+      "in_subset": [
+        "b"
+      ],
+      "from_schema": "TEMP",
+      "is_a": "Event",
+      "status": "testing",
+      "slot_usage": {},
+      "class_uri": "http://example.org/TEMP/MedicalEvent",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "ForProfit",
+      "definition_uri": "http://example.org/TEMP/ForProfit",
+      "from_schema": "TEMP",
+      "is_a": "Organization",
+      "slots": [
+        "Organization_name"
+      ],
+      "slot_usage": {},
+      "class_uri": "http://example.org/TEMP/ForProfit",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "NonProfit",
+      "definition_uri": "http://example.org/TEMP/NonProfit",
+      "exact_mappings": [
+        "wikidata:Q163740"
+      ],
+      "from_schema": "TEMP",
+      "is_a": "Organization",
+      "slots": [
+        "Organization_name"
+      ],
+      "slot_usage": {},
+      "class_uri": "http://example.org/TEMP/NonProfit",
+      "@type": "ClassDefinition"
+    }
+  ],
+  "metamodel_version": "1.7.0",
+  "source_file": "schema.yaml",
+  "source_file_date": "2022-01-01T14:00:02",
+  "source_file_size": 3046,
+  "generation_date": "2022-01-01T14:00:03",
+  "@type": "SchemaDefinition",
+  "@context": [
+    "tmp/jsonld/schema.context.jsonld",
+    "https://w3id.org/linkml/types.context.jsonld",
+    {
+      "@base": "http://example.org/TEMP/"
+    }
+  ]
+}

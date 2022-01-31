@@ -1,0 +1,74 @@
+@prefix TEMP: <http://example.org/TEMP/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+TEMP:Event a sh:NodeShape ;
+    sh:closed true ;
+    sh:description "grouping class for events" ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:targetClass TEMP:Event .
+
+TEMP:ForProfit a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:order 0 ;
+            sh:path TEMP:name ] ;
+    sh:targetClass TEMP:ForProfit .
+
+TEMP:NonProfit a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:order 0 ;
+            sh:path TEMP:name ] ;
+    sh:targetClass TEMP:NonProfit .
+
+TEMP:Organization a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:description "full name" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:order 0 ;
+            sh:path TEMP:name ] ;
+    sh:targetClass TEMP:Organization .
+
+TEMP:Person a sh:NodeShape ;
+    sh:closed true ;
+    sh:description "a person,living or dead" ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:description "identifier for a person" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:order 0 ;
+            sh:path TEMP:id ],
+        [ sh:description "full name" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:order 1 ;
+            sh:path TEMP:name ],
+        [ sh:description "age in years" ;
+            sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path TEMP:age ],
+        [ sh:class TEMP:MedicalEvent ;
+            sh:description "medical history" ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 4 ;
+            sh:path TEMP:has_medical_history ],
+        [ sh:description "age in years" ;
+            sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path TEMP:gender ] ;
+    sh:targetClass TEMP:Person .
+
+TEMP:MedicalEvent a sh:NodeShape ;
+    sh:closed true ;
+    sh:description "a medical encounter" ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:targetClass TEMP:MedicalEvent .
+

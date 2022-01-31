@@ -1,0 +1,236 @@
+id: https://w3id.org/linkml/configschema
+name: configschema
+description: |-
+  Data model for configuration of schema sheets.
+  Note this is a supplement to the datamodel encoded in python in TableConfig.py
+prefixes:
+  linkml: https://w3id.org/linkml/
+  this: https://w3id.org/linkml/configschema/
+  carvoc: https://w3id.org/carvoc/
+default_prefix: this
+imports:
+  - linkml:types
+
+classes:
+  ColumnSettings:
+    description: |-
+      configuration for an individual column in a schema sheet.
+      These settings are typically specified as YAML blocks beneath
+      the relevant column header.
+    attributes:
+      curie_prefix:
+        description: CURIE prefix prepended to column value
+      prefix:
+        description: string to be prefixed onto the column value
+      suffix:
+        description: string to be suffixied onto the column value
+      template:
+        description: jinja templated format string
+      vmap:
+        description: |-
+          Specifies a mapping for column values
+        range: ValueMap
+        multivalued: true
+        inlined: true
+      applies_to_class:
+        description: |-
+          if a value C is specified, then this column in the relevant row is interpreted as
+          pertaining to C
+        range: ElementReference
+      applies_to_slot:
+        range: ElementReference
+      tag:
+        range: string
+
+  ValueMap:
+    slots:
+      - map_key
+      - map_value
+slots:
+  map_key:
+    key: true
+  map_value:
+
+types:
+  ElementReference:
+    base: str
+    uri: xsd:string
+
+enums:
+  Cardinality:
+    aliases:
+      - multiplicity
+      - applicability
+    description: >-
+      vocabulary for describing cardinality and applicability of slots or fields
+    permissible_values:
+      mandatory:
+        meaning: carvoc:Mandatory
+        description: At least one value MUST be provided
+        annotations:
+          maps_to: "required: true"
+          min: 1
+          opposite: optional
+          interpretation: MUST
+          aliases: required
+          mixs_notation: M
+          code: M
+      optional:
+        meaning: carvoc:Optional
+        description: A value MAY be provided
+        annotations:
+          maps_to: "required: false"
+          min: 0
+          opposite: mandatory
+          interpretation: MAY
+          aliases: permissible
+          mixs_notation: X
+          code: "O"
+      recommended:
+        meaning: carvoc:Recommended
+        description: A value SHOULD be provided
+        annotations:
+          maps_to: "{required: false, recommended: true}"
+          min: 0
+          opposite: not_recommended
+          interpretation: SHOULD
+          aliases: strongly suggested
+          code: R
+      not_recommended:
+        meaning: carvoc:NotRecommended
+        description: Values are permitted, but SHOULD NOT be filled in
+        annotations:
+          maps_to: "{required: false, recommended: false, recommended_against: true}"
+          min: 0
+          opposite: recommended
+          interpretation: SHOULD NOT
+          aliases: recommended against
+          code: "-R"
+      applicable:
+        meaning: carvoc:Applicable
+        description: union of optional and mandatory
+        comments:
+          - use of this descriptor is generally not recommendes as it is usually possible to commit
+        annotations:
+          min: 0
+          opposite: not_applicable
+          interpretation: MAY
+          code: "O/M"
+      not_applicable:
+        meaning: carvoc:NotApplicable
+        description: A value MUST NOT be provided
+        comments:
+          - a use case for this is for a field that has been deprecated
+          - a use case for this is for annotating a field that is not applicable in a particular context
+        annotations:
+          max: 0
+          min: 0
+          opposite: applicable
+          interpretation: MUST NOT
+          mixs_notation: "-"
+          code: "-"
+      zero_or_one:
+        meaning: carvoc:ZeroToOne
+        description: not required, single-valued
+        annotations:
+          maps_to: "{required: false, multivalued: false}"
+          min: 0
+          max: 1
+          interpretation: MUST, MAY
+          uml: 0..1
+          code: "0..1"
+        mixins:
+          - optional
+          - single-valued
+      exactly_one:
+        meaning: carvoc:ExactlyOne
+        description: required, single-valued
+        annotations:
+          maps_to: "{required: true, multivalued: false}"
+          min: 1
+          max: 1
+          interpretation: MUST
+          uml: 1..1
+          code: "1..1"
+        mixins:
+          - mandatory
+          - single-valued
+      zero_to_many:
+        meaning: carvoc:ZeroToMany
+        description: not required, multi-valued
+        annotations:
+          maps_to: "{required: false, multivalued: true}"
+          min: 0
+          max: "*"
+          interpretation: MAY
+          uml: 0..*
+          code: "0..*"
+        mixins:
+          - optional
+          - multi-valued
+      one_to_many:
+        meaning: carvoc:OneToMany
+        description: required, multi-valued
+        annotations:
+          maps_to: "{required: true, multivalued: true}"
+          min: 1
+          max: "*"
+          interpretation: MUST, MAY
+          uml: 1..*
+          code: "1..*"
+        mixins:
+          - mandatory
+          - multi-valued
+      single_valued:
+        meaning: carvoc:SingleValued
+        description: not multi-valued
+        annotations:
+          maps_to: "multivalued: false"
+          max: 1
+          opposite: multi-valued
+          interpretation: MAY
+          mixs_notation: "1"
+          code: "SV"
+      multi_valued:
+        meaning: carvoc:MultiValued
+        description: multi-valued
+        annotations:
+          maps_to: "multivalued: true"
+          max: "*"
+          opposite: single-valued
+          interpretation: MAY
+          mixs_notation: "m"
+          code: "MV"
+      conditional:
+        meaning: carvoc:Conditional
+        description: A qualifier on cardinalities that indicates the interpretation is context-dependent
+        annotations:
+          maps_to: "conditional: true"
+          mixs_notation: E
+          code: "E+"
+      unconditional:
+        meaning: carvoc:Unconditional
+        description: A qualifier on cardinalities that indicates the interpretation is context-independent
+        annotations:
+          maps_to: "conditional: false"
+          code: "E-"
+      conditional_mandatory:
+        meaning: carvoc:ConditionalMandatory
+        annotations:
+          maps_to: "{required: true, conditional: true}"
+          mixs_notation: C
+          code: "EM"
+        mixins:
+          - mandatory
+          - conditional
+  Shortcuts:
+    permissible_values:
+      cardinality:
+      ignore:
+      metatype:
+      class:
+        meaning: linkml:ClassDefinition
+      slot:
+        meaning: linkml:SlotDefinition
+      enum:
+        meaning: linkml:EnumDefinition

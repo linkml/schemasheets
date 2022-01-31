@@ -1,0 +1,32 @@
+type Event
+  {
+  }
+
+type ForProfit
+  {
+    name: String!
+  }
+
+type MedicalEvent
+  {
+  }
+
+type NonProfit
+  {
+    name: String!
+  }
+
+type Organization
+  {
+    name: String!
+  }
+
+type Person
+  {
+    id: String!
+    name: String!
+    age: Decimal
+    gender: Decimal
+    hasMedicalHistory: [MedicalEvent]
+  }
+

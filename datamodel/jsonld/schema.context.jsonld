@@ -1,0 +1,11 @@
+{
+   "_comments": "Auto generated from schema.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-01-01T14:00:03\n    Schema: TEMP\n    \n    id: TEMP\n    description: \n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "TEMP": "http://example.org/TEMP/",
+      "linkml": "https://w3id.org/linkml/",
+      "sdo": "http://example.org/sdo/",
+      "wikidata": "http://www.wikidata.org/entity/",
+      "@vocab": "http://example.org/TEMP/",
+      "id": "@id"
+   }
+}

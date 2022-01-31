@@ -1,0 +1,21 @@
+message ForProfit
+ {
+  name String = 1
+ }
+message NonProfit
+ {
+  name String = 1
+ }
+message Organization
+ {
+  name String = 1
+ }
+// a person,living or dead
+message Person
+ {
+  id String = 1
+  name String = 2
+  optional age Decimal = 3
+  optional gender Decimal = 4
+  repeated hasMedicalHistory MedicalEvent = 5
+ }

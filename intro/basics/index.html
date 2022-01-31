@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://linkml.github.io/schemasheets/intro/basics/">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Basics - Schemasheets</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
+
+        <script src="../../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-2SYBSJVZ23"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-2SYBSJVZ23');
+        </script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="../..">Schemasheets</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href="../.." class="nav-link">About</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../../install/" class="nav-link">Installation</a>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Guide <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="./" class="dropdown-item active">Basics</a>
+</li>
+                                    
+<li>
+    <a href="../converting/" class="dropdown-item">Converting</a>
+</li>
+                                    
+<li>
+    <a href="../prefixes/" class="dropdown-item">Prefixes</a>
+</li>
+                                    
+<li>
+    <a href="../grids/" class="dropdown-item">Grids</a>
+</li>
+                                    
+<li>
+    <a href="../enums/" class="dropdown-item">Enums</a>
+</li>
+                                    
+<li>
+    <a href="../cardinality/" class="dropdown-item">Cardinality</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">How to <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../../howto/data-dictionaries" class="dropdown-item">Data Dictionaries</a>
+</li>
+                                    
+<li>
+    <a href="../../howto/google-sheets/" class="dropdown-item">Working with Google Sheets</a>
+</li>
+                                    
+<li>
+    <a href="../../howto/excel/" class="dropdown-item">Working with Excel</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="navitem">
+                                <a href="../../specification" class="nav-link">Specification</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../../datamodel/" class="nav-link">Datamodel</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../../install/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../converting/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/linkml/schemasheets/edit/master/docs/intro/basics.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#basics" class="nav-link">Basics</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#example" class="nav-link">Example</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#header-line" class="nav-link">Header Line</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#column-descriptors" class="nav-link">Column Descriptors</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#schema-elements" class="nav-link">Schema Elements</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#core-concepts" class="nav-link">Core Concepts</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="basics">Basics</h1>
+<p>Schemasheets allow you to write schemas to manage your data without writing any code. You keep the source for your schema as a spreadsheet (e.g. in google sheets), and convert to LinkML</p>
+<h2 id="example">Example</h2>
+<p>The following example shows a schema sheet for a schema that is focused around
+the concept of a Person. The rows in the sheet describe either <em>classes</em> or <em>slots</em> (fields)</p>
+<table>
+<thead>
+<tr>
+<th>record</th>
+<th>field</th>
+<th>key</th>
+<th>multiplicity</th>
+<th>range</th>
+<th>desc</th>
+<th>schema.org</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&gt;</code> class</td>
+<td>slot</td>
+<td>identifier</td>
+<td>cardinality</td>
+<td>range</td>
+<td>description</td>
+<td><code>exact_mappings: {curie_prefix: sdo}</code></td>
+</tr>
+<tr>
+<td>-</td>
+<td>id</td>
+<td>yes</td>
+<td>1</td>
+<td>string</td>
+<td>any identifier</td>
+<td>identifier</td>
+</tr>
+<tr>
+<td>-</td>
+<td>description</td>
+<td>no</td>
+<td>0..1</td>
+<td>string</td>
+<td>a textual description</td>
+<td>description</td>
+</tr>
+<tr>
+<td>Person</td>
+<td></td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>a person,living or dead</td>
+<td>Person</td>
+</tr>
+<tr>
+<td>Person</td>
+<td>id</td>
+<td>yes</td>
+<td>1</td>
+<td>string</td>
+<td>identifier for a person</td>
+<td>identifier</td>
+</tr>
+<tr>
+<td>Person, Organization</td>
+<td>name</td>
+<td>no</td>
+<td>1</td>
+<td>string</td>
+<td>full name</td>
+<td>name</td>
+</tr>
+<tr>
+<td>Person</td>
+<td>age</td>
+<td>no</td>
+<td>0..1</td>
+<td>decimal</td>
+<td>age in years</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Person</td>
+<td>gender</td>
+<td>no</td>
+<td>0..1</td>
+<td>decimal</td>
+<td>age in years</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Person</td>
+<td>has medical history</td>
+<td>no</td>
+<td>0..*</td>
+<td>MedicalEvent</td>
+<td>medical history</td>
+<td>-</td>
+</tr>
+<tr>
+<td>MedicalEvent</td>
+<td></td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>You can see this example as a google sheet:</p>
+<ul>
+<li><a href="https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=55566104">personinfo google sheet</a></li>
+</ul>
+<p>The sheet is structured as follows:</p>
+<h2 id="header-line">Header Line</h2>
+<p>The first line is a header line. You get to decide the column headers</p>
+<table>
+<thead>
+<tr>
+<th>record</th>
+<th>field</th>
+<th>key</th>
+<th>multiplicity</th>
+<th>range</th>
+<th>desc</th>
+<th>schema.org</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="column-descriptors">Column Descriptors</h2>
+<ul>
+<li>Subsequent lines starting with <code>&gt;</code> are <em>column descriptors</em></li>
+<li>these provide a way to interpret the columns</li>
+<li>descriptors can be drawn from the <a href="https://linkml.io">linkml</a> vocabulary</li>
+</ul>
+<h2 id="schema-elements">Schema Elements</h2>
+<p>Remaining rows are <em>elements</em> of your schema</p>
+<ul>
+<li>Each element gets its own row</li>
+<li>A row can represent a class (record, table), field (column), enumeration, or other element types</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>record</th>
+<th>field</th>
+<th>key</th>
+<th>multiplicity</th>
+<th>range</th>
+<th>desc</th>
+<th>schema.org</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&gt;</code> class</td>
+<td>slot</td>
+<td>identifier</td>
+<td>cardinality</td>
+<td>range</td>
+<td>description</td>
+<td><code>exact_mappings: {curie_prefix: sdo}</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="core-concepts">Core Concepts</h2>
+<p>The most basic schema concepts are <em>classes</em> and <em>slots</em></p>
+<ul>
+<li>classes represent record types, similar to tables in a database or sheets in a spreadsheet</li>
+<li>slots represent fields, similar to columns in a database or spreadsheet </li>
+</ul>
+<p>These can be used in combination:</p>
+<ul>
+<li>If a <em>class</em> is provided, but a <em>slot</em> is not, then the row represents a class. </li>
+<li>If a <em>slot</em> is provided, but a <em>class</em> is not, then the row represents a slot (field)</li>
+<li>If both <em>class</em> and <em>slot</em> are provided, then the row represents the <em>usage</em> of a slot in the context of a class</li>
+</ul></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js" defer></script>
+        <script src="../../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
