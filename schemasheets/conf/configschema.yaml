@@ -1,25 +1,47 @@
 id: https://w3id.org/linkml/configschema
-name: configschema
+name: Schemasheets-Mappings
 description: |-
-  Data model for configuration of schema sheets.
-  Note this is a supplement to the datamodel encoded in python in TableConfig.py
+  This is the datamodel for Schemasheets Configurations.
+
+  Note that for most purposes you will likely not need to consult this.
+
+  The key class is [ColumnSettings](ColumnSettings)
+
+  Two controlled vocabularies are specified here:
+
+  - [Cardinality](Cardinality) - terms and abbreviations that can be used for cardinality
+  - [Shortcuts](Shortcuts) - species column configurations
+  
 prefixes:
   linkml: https://w3id.org/linkml/
-  this: https://w3id.org/linkml/configschema/
+  schemasheets: https://w3id.org/linkml/configschema/
   carvoc: https://w3id.org/carvoc/
-default_prefix: this
+default_prefix: schemasheets
 imports:
   - linkml:types
-
+see_also:
+  - https://linkml.io/schemasheets
+  
 classes:
   ColumnSettings:
     description: |-
       configuration for an individual column in a schema sheet.
+      
       These settings are typically specified as YAML blocks beneath
-      the relevant column header.
+      the relevant column header, for example:
+
+      ```
+      > class
+      ```
+        
     attributes:
       curie_prefix:
-        description: CURIE prefix prepended to column value
+        description: >-
+          CURIE prefix prepended to column value.
+          This may be used for column that describe mapping or class/slot uri properties of the element.
+          For example, with column settings `exact_mapping: {curie_prefix: dcterms}`,
+          an element row with column value `contributor`, the value will be transformed to `dcterms:contributor`
+          
       prefix:
         description: string to be prefixed onto the column value
       suffix:
@@ -43,16 +65,21 @@ classes:
         range: string
 
   ValueMap:
+    description: |-
+      A key-value dictionary
     slots:
       - map_key
       - map_value
 slots:
   map_key:
     key: true
+    description: key in the dictionary
   map_value:
+    description: key in the dictionary
 
 types:
   ElementReference:
+    description: A pointer to an element in a datamodel
     base: str
     uri: xsd:string
 
@@ -61,8 +88,11 @@ enums:
     aliases:
       - multiplicity
       - applicability
-    description: >-
-      vocabulary for describing cardinality and applicability of slots or fields
+    description: |-
+      vocabulary for describing cardinality and applicability of slots or fields.
+
+      Most elements in the dictionary have been mapped to a vocabulary called "carvoc",
+      this has yet to be released.
     permissible_values:
       mandatory:
         meaning: carvoc:Mandatory
@@ -224,13 +254,28 @@ enums:
           - mandatory
           - conditional
   Shortcuts:
+    description: |-
+      A vocabulary of permissible values as column descriptors that do not have an exact equivalent in the LinkML datamodel,
+      and instead act as shortcuts to either a collection of elements or a type of mapping behavior
     permissible_values:
       cardinality:
+        description: The column is used to describe the cardinality of a slot, with values from the Cardinality enum
       ignore:
+        description: The column is ignored
       metatype:
+        description: The column describes what kind of element is specified in the row
       class:
         meaning: linkml:ClassDefinition
+        description: The column is populated with class names
       slot:
         meaning: linkml:SlotDefinition
+        description: The column is populated with slot names
       enum:
         meaning: linkml:EnumDefinition
+        description: The column is populated with enum names
+      schema:
+        meaning: linkml:EnumDefinition
+        description: The column is populated with schema names
+      subset:
+        meaning: linkml:EnumDefinition
+        description: The column is populated with subset names
