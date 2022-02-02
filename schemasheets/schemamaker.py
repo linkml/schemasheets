@@ -286,8 +286,16 @@ class SchemaMaker:
                     if cc.maps_to == 'cardinality':
                         self.set_cardinality(actual_element, v)
                     elif cc.metaslot:
-                        if isinstance(v, list):
+                        if cc.maps_to == 'annotations':
+                            anns = yaml.load(v[0])
+                            for ann_key, ann_val in anns.items():
+                                actual_element.annotations[ann_key] = ann_val
+                        elif isinstance(v, list):
                             setattr(actual_element, cc.maps_to, getattr(actual_element, cc.maps_to, []) + v)
+                        elif isinstance(v, dict):
+                            for v_k, v_v in v.items():
+                                curr_dict = getattr(actual_element, cc.maps_to)
+                                curr_dict[v_k] = v_v
                         else:
                             curr_val = getattr(actual_element, cc.maps_to)
                             if curr_val and curr_val != 'TEMP' and curr_val != v and \

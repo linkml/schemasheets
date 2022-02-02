@@ -9,7 +9,7 @@ F	age	Person	no	0..1	decimal		age in years
 F	gender	Person	no	0..1	decimal		age in years					
 F	has medical history	Person	no	0..*	MedicalEvent		medical history				T	
 C	Person						a person,living or dead	Person	Q215627		R	
-C	Event						grouping class for events		Q1656682	a	R
+C	Event						grouping class for events		Q1656682	a	R	
 C	MedicalEvent					Event	a medical encounter			b	T	
 C	ForProfit					Organization						
 C	NonProfit					Organization			Q163740			foo
