@@ -1,5 +1,5 @@
 # Auto generated from configschema.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-03T11:25:54
+# Generation date: 2022-02-02T11:11:10
 # Schema: configschema
 #
 # id: https://w3id.org/linkml/configschema
@@ -70,6 +70,7 @@ class ColumnSettings(YAMLRoot):
     suffix: Optional[str] = None
     template: Optional[str] = None
     vmap: Optional[Union[Dict[Union[str, ValueMapMapKey], Union[dict, "ValueMap"]], List[Union[dict, "ValueMap"]]]] = empty_dict()
+    inner_key: Optional[str] = None
     applies_to_class: Optional[str] = None
     applies_to_slot: Optional[str] = None
     tag: Optional[str] = None
@@ -88,6 +89,9 @@ class ColumnSettings(YAMLRoot):
             self.template = str(self.template)
 
         self._normalize_inlined_as_dict(slot_name="vmap", slot_type=ValueMap, key_name="map_key", keyed=True)
+
+        if self.inner_key is not None and not isinstance(self.inner_key, str):
+            self.inner_key = str(self.inner_key)
 
         if self.applies_to_class is not None and not isinstance(self.applies_to_class, str):
             self.applies_to_class = str(self.applies_to_class)
@@ -224,6 +228,9 @@ slots.columnSettings__template = Slot(uri=THIS.template, name="columnSettings__t
 
 slots.columnSettings__vmap = Slot(uri=THIS.vmap, name="columnSettings__vmap", curie=THIS.curie('vmap'),
                    model_uri=THIS.columnSettings__vmap, domain=None, range=Optional[Union[Dict[Union[str, ValueMapMapKey], Union[dict, ValueMap]], List[Union[dict, ValueMap]]]])
+
+slots.columnSettings__inner_key = Slot(uri=THIS.inner_key, name="columnSettings__inner_key", curie=THIS.curie('inner_key'),
+                   model_uri=THIS.columnSettings__inner_key, domain=None, range=Optional[str])
 
 slots.columnSettings__applies_to_class = Slot(uri=THIS.applies_to_class, name="columnSettings__applies_to_class", curie=THIS.curie('applies_to_class'),
                    model_uri=THIS.columnSettings__applies_to_class, domain=None, range=Optional[str])

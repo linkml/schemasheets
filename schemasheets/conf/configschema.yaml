@@ -54,6 +54,10 @@ classes:
         range: ValueMap
         multivalued: true
         inlined: true
+      inner_key:
+        range: string
+        description: |-
+          for complex fields such as annotations that are modeled as dicts, this is used to specify which key in the dict the value should be applied to
       applies_to_class:
         description: |-
           if a value C is specified, then this column in the relevant row is interpreted as
