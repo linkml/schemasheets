@@ -623,7 +623,7 @@ def convert(tsv_files, output: TextIO, verbose: int):
     """
     Convert schemasheets to a LinkML schema
 
-       schemasheets -d . my_schema/*tsv
+       sheets2linkml --output my_schema.yaml my_schema/*tsv
     """
     if verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)
@@ -637,7 +637,7 @@ def convert(tsv_files, output: TextIO, verbose: int):
 
 
 if __name__ == '__main__':
-    cli()
+    convert()
 
 
 

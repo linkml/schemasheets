@@ -38,7 +38,7 @@ def multigen(tsv_files, dir, verbose: int, repair: bool,
 
     Generate all downstream artefacts using default configuration:
 
-       schemasheets -d . my_schema/*tsv
+       sheets2linkml --output my_schema.yaml my_schema/*tsv
 
 
     """
@@ -76,4 +76,4 @@ def multigen(tsv_files, dir, verbose: int, repair: bool,
 
 
 if __name__ == '__main__':
-    cli()
+    multigen()
