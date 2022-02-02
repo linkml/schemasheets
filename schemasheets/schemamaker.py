@@ -16,7 +16,7 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, 
     SlotDefinition, EnumDefinition, PermissibleValue, SubsetDefinition, TypeDefinition, Element
 from linkml_runtime.utils.schemaview import SchemaView
 
-from schemasheets.utils.configschema import ColumnSettings, Shortcuts, Cardinality
+from schemasheets.conf.configschema import ColumnSettings, Shortcuts, Cardinality
 from schemasheets.utils.prefixtool import guess_prefix_expansion
 
 
@@ -245,9 +245,7 @@ class SchemaMaker:
                         if v is not None and v.startswith('>'):
                             v = v.replace('>', '')
                         if v:
-                            #print(f'PARSING: {v}')
                             meta_obj = yaml.safe_load(v)
-                            #print(f'PARSING: {v} => {meta_obj}')
                             table_config.add_info(k, meta_obj)
                         else:
                             logging.debug(f'Empty val {v} for {k} in {row}')
@@ -286,24 +284,31 @@ class SchemaMaker:
                     if cc.maps_to == 'cardinality':
                         self.set_cardinality(actual_element, v)
                     elif cc.metaslot:
-                        if cc.maps_to == 'annotations':
+                        if cc.maps_to == 'annotations' and not cc.settings.inner_key:
                             anns = yaml.load(v[0])
                             for ann_key, ann_val in anns.items():
                                 actual_element.annotations[ann_key] = ann_val
                         elif isinstance(v, list):
+                            #print(f'SETTING {k} to {v}')
                             setattr(actual_element, cc.maps_to, getattr(actual_element, cc.maps_to, []) + v)
                         elif isinstance(v, dict):
                             for v_k, v_v in v.items():
                                 curr_dict = getattr(actual_element, cc.maps_to)
                                 curr_dict[v_k] = v_v
                         else:
-                            curr_val = getattr(actual_element, cc.maps_to)
+                            if cc.settings.inner_key:
+                                curr_val = getattr(actual_element, cc.maps_to).get(cc.settings.inner_key, None)
+                            else:
+                                curr_val = getattr(actual_element, cc.maps_to)
                             if curr_val and curr_val != 'TEMP' and curr_val != v and \
                                     not isinstance(actual_element, SchemaDefinition) and \
                                     not isinstance(actual_element, Prefix):
                                 logging.warning(f'Overwriting value for {k}, was {curr_val}, now {v}')
                                 raise ValueError(f'Cannot reset value for {k}, was {curr_val}, now {v}')
-                            setattr(actual_element, cc.maps_to, v)
+                            if cc.settings.inner_key:
+                                getattr(actual_element, cc.maps_to)[cc.settings.inner_key] = v
+                            else:
+                                setattr(actual_element, cc.maps_to, v)
                     elif cc.is_element_type:
                         logging.debug(f'Already accounted for {k}')
                     elif cc.maps_to == 'metatype':
@@ -501,7 +506,7 @@ class SchemaMaker:
                     v = bmap[v.lower()]
                 else:
                     v = bool(v)
-        if metaslot and metaslot.multivalued:
+        if metaslot and metaslot.multivalued and not column_config.settings.inner_key:
             if not isinstance(v, list):
                 if v is None:
                     v = []

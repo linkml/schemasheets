@@ -1,5 +1,5 @@
 # Auto generated from configschema.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-02-02T11:06:36
+# Generation date: 2022-02-02T11:11:10
 # Schema: configschema
 #
 # id: https://w3id.org/linkml/configschema
