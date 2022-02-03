@@ -1,10 +1,12 @@
 # Auto generated from configschema.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-02-02T11:11:10
-# Schema: configschema
+# Generation date: 2022-02-02T15:51:35
+# Schema: Schemasheets-Mappings
 #
 # id: https://w3id.org/linkml/configschema
-# description: Data model for configuration of schema sheets. Note this is a supplement to the datamodel encoded
-#              in python in TableConfig.py
+# description: This is the datamodel for Schemasheets Configurations. Note that for most purposes you will likely
+#              not need to consult this. The key class is [ColumnSettings](ColumnSettings) Two controlled
+#              vocabularies are specified here: - [Cardinality](Cardinality) - terms and abbreviations that can be
+#              used for cardinality - [Shortcuts](Shortcuts) - species column configurations
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
@@ -33,17 +35,18 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 # Namespaces
 CARVOC = CurieNamespace('carvoc', 'https://w3id.org/carvoc/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-THIS = CurieNamespace('this', 'https://w3id.org/linkml/configschema/')
+SCHEMASHEETS = CurieNamespace('schemasheets', 'https://w3id.org/linkml/configschema/')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
-DEFAULT_ = THIS
+DEFAULT_ = SCHEMASHEETS
 
 
 # Types
 class ElementReference(str):
+    """ A pointer to an element in a datamodel """
     type_class_uri = XSD.string
     type_class_curie = "xsd:string"
     type_name = "ElementReference"
-    type_model_uri = THIS.ElementReference
+    type_model_uri = SCHEMASHEETS.ElementReference
 
 
 # Class references
@@ -55,21 +58,27 @@ class ValueMapMapKey(extended_str):
 class ColumnSettings(YAMLRoot):
     """
     configuration for an individual column in a schema sheet.
+
     These settings are typically specified as YAML blocks beneath
-    the relevant column header.
+    the relevant column header, for example:
+
+    ```
+    > class
+    ```
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = THIS.ColumnSettings
-    class_class_curie: ClassVar[str] = "this:ColumnSettings"
+    class_class_uri: ClassVar[URIRef] = SCHEMASHEETS.ColumnSettings
+    class_class_curie: ClassVar[str] = "schemasheets:ColumnSettings"
     class_name: ClassVar[str] = "ColumnSettings"
-    class_model_uri: ClassVar[URIRef] = THIS.ColumnSettings
+    class_model_uri: ClassVar[URIRef] = SCHEMASHEETS.ColumnSettings
 
     curie_prefix: Optional[str] = None
     prefix: Optional[str] = None
     suffix: Optional[str] = None
     template: Optional[str] = None
     vmap: Optional[Union[Dict[Union[str, ValueMapMapKey], Union[dict, "ValueMap"]], List[Union[dict, "ValueMap"]]]] = empty_dict()
+    regular_expression_match: Optional[str] = None
     inner_key: Optional[str] = None
     applies_to_class: Optional[str] = None
     applies_to_slot: Optional[str] = None
@@ -90,6 +99,9 @@ class ColumnSettings(YAMLRoot):
 
         self._normalize_inlined_as_dict(slot_name="vmap", slot_type=ValueMap, key_name="map_key", keyed=True)
 
+        if self.regular_expression_match is not None and not isinstance(self.regular_expression_match, str):
+            self.regular_expression_match = str(self.regular_expression_match)
+
         if self.inner_key is not None and not isinstance(self.inner_key, str):
             self.inner_key = str(self.inner_key)
 
@@ -107,12 +119,15 @@ class ColumnSettings(YAMLRoot):
 
 @dataclass
 class ValueMap(YAMLRoot):
+    """
+    A key-value dictionary
+    """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = THIS.ValueMap
-    class_class_curie: ClassVar[str] = "this:ValueMap"
+    class_class_uri: ClassVar[URIRef] = SCHEMASHEETS.ValueMap
+    class_class_curie: ClassVar[str] = "schemasheets:ValueMap"
     class_name: ClassVar[str] = "ValueMap"
-    class_model_uri: ClassVar[URIRef] = THIS.ValueMap
+    class_model_uri: ClassVar[URIRef] = SCHEMASHEETS.ValueMap
 
     map_key: Union[str, ValueMapMapKey] = None
     map_value: Optional[str] = None
@@ -185,58 +200,77 @@ class Cardinality(EnumDefinitionImpl):
     )
 
 class Shortcuts(EnumDefinitionImpl):
-
-    cardinality = PermissibleValue(text="cardinality")
-    ignore = PermissibleValue(text="ignore")
-    metatype = PermissibleValue(text="metatype")
+    """
+    A vocabulary of permissible values as column descriptors that do not have an exact equivalent in the LinkML
+    datamodel, and instead act as shortcuts to either a collection of elements or a type of mapping behavior
+    """
+    cardinality = PermissibleValue(text="cardinality",
+                                             description="The column is used to describe the cardinality of a slot, with values from the Cardinality enum")
+    ignore = PermissibleValue(text="ignore",
+                                   description="The column is ignored")
+    metatype = PermissibleValue(text="metatype",
+                                       description="The column describes what kind of element is specified in the row")
     slot = PermissibleValue(text="slot",
+                               description="The column is populated with slot names",
                                meaning=LINKML.SlotDefinition)
     enum = PermissibleValue(text="enum",
+                               description="The column is populated with enum names",
                                meaning=LINKML.EnumDefinition)
+    schema = PermissibleValue(text="schema",
+                                   description="The column is populated with schema names",
+                                   meaning=LINKML.EnumDefinition)
+    subset = PermissibleValue(text="subset",
+                                   description="The column is populated with subset names",
+                                   meaning=LINKML.EnumDefinition)
 
     _defn = EnumDefinition(
         name="Shortcuts",
+        description="A vocabulary of permissible values as column descriptors that do not have an exact equivalent in the LinkML datamodel, and instead act as shortcuts to either a collection of elements or a type of mapping behavior",
     )
 
     @classmethod
     def _addvals(cls):
         setattr(cls, "class",
                 PermissibleValue(text="class",
+                                 description="The column is populated with class names",
                                  meaning=LINKML.ClassDefinition) )
 
 # Slots
 class slots:
     pass
 
-slots.map_key = Slot(uri=THIS.map_key, name="map_key", curie=THIS.curie('map_key'),
-                   model_uri=THIS.map_key, domain=None, range=URIRef)
+slots.map_key = Slot(uri=SCHEMASHEETS.map_key, name="map_key", curie=SCHEMASHEETS.curie('map_key'),
+                   model_uri=SCHEMASHEETS.map_key, domain=None, range=URIRef)
 
-slots.map_value = Slot(uri=THIS.map_value, name="map_value", curie=THIS.curie('map_value'),
-                   model_uri=THIS.map_value, domain=None, range=Optional[str])
+slots.map_value = Slot(uri=SCHEMASHEETS.map_value, name="map_value", curie=SCHEMASHEETS.curie('map_value'),
+                   model_uri=SCHEMASHEETS.map_value, domain=None, range=Optional[str])
 
-slots.columnSettings__curie_prefix = Slot(uri=THIS.curie_prefix, name="columnSettings__curie_prefix", curie=THIS.curie('curie_prefix'),
-                   model_uri=THIS.columnSettings__curie_prefix, domain=None, range=Optional[str])
+slots.columnSettings__curie_prefix = Slot(uri=SCHEMASHEETS.curie_prefix, name="columnSettings__curie_prefix", curie=SCHEMASHEETS.curie('curie_prefix'),
+                   model_uri=SCHEMASHEETS.columnSettings__curie_prefix, domain=None, range=Optional[str])
 
-slots.columnSettings__prefix = Slot(uri=THIS.prefix, name="columnSettings__prefix", curie=THIS.curie('prefix'),
-                   model_uri=THIS.columnSettings__prefix, domain=None, range=Optional[str])
+slots.columnSettings__prefix = Slot(uri=SCHEMASHEETS.prefix, name="columnSettings__prefix", curie=SCHEMASHEETS.curie('prefix'),
+                   model_uri=SCHEMASHEETS.columnSettings__prefix, domain=None, range=Optional[str])
 
-slots.columnSettings__suffix = Slot(uri=THIS.suffix, name="columnSettings__suffix", curie=THIS.curie('suffix'),
-                   model_uri=THIS.columnSettings__suffix, domain=None, range=Optional[str])
+slots.columnSettings__suffix = Slot(uri=SCHEMASHEETS.suffix, name="columnSettings__suffix", curie=SCHEMASHEETS.curie('suffix'),
+                   model_uri=SCHEMASHEETS.columnSettings__suffix, domain=None, range=Optional[str])
 
-slots.columnSettings__template = Slot(uri=THIS.template, name="columnSettings__template", curie=THIS.curie('template'),
-                   model_uri=THIS.columnSettings__template, domain=None, range=Optional[str])
+slots.columnSettings__template = Slot(uri=SCHEMASHEETS.template, name="columnSettings__template", curie=SCHEMASHEETS.curie('template'),
+                   model_uri=SCHEMASHEETS.columnSettings__template, domain=None, range=Optional[str])
 
-slots.columnSettings__vmap = Slot(uri=THIS.vmap, name="columnSettings__vmap", curie=THIS.curie('vmap'),
-                   model_uri=THIS.columnSettings__vmap, domain=None, range=Optional[Union[Dict[Union[str, ValueMapMapKey], Union[dict, ValueMap]], List[Union[dict, ValueMap]]]])
+slots.columnSettings__vmap = Slot(uri=SCHEMASHEETS.vmap, name="columnSettings__vmap", curie=SCHEMASHEETS.curie('vmap'),
+                   model_uri=SCHEMASHEETS.columnSettings__vmap, domain=None, range=Optional[Union[Dict[Union[str, ValueMapMapKey], Union[dict, ValueMap]], List[Union[dict, ValueMap]]]])
 
-slots.columnSettings__inner_key = Slot(uri=THIS.inner_key, name="columnSettings__inner_key", curie=THIS.curie('inner_key'),
-                   model_uri=THIS.columnSettings__inner_key, domain=None, range=Optional[str])
+slots.columnSettings__regular_expression_match = Slot(uri=SCHEMASHEETS.regular_expression_match, name="columnSettings__regular_expression_match", curie=SCHEMASHEETS.curie('regular_expression_match'),
+                   model_uri=SCHEMASHEETS.columnSettings__regular_expression_match, domain=None, range=Optional[str])
 
-slots.columnSettings__applies_to_class = Slot(uri=THIS.applies_to_class, name="columnSettings__applies_to_class", curie=THIS.curie('applies_to_class'),
-                   model_uri=THIS.columnSettings__applies_to_class, domain=None, range=Optional[str])
+slots.columnSettings__inner_key = Slot(uri=SCHEMASHEETS.inner_key, name="columnSettings__inner_key", curie=SCHEMASHEETS.curie('inner_key'),
+                   model_uri=SCHEMASHEETS.columnSettings__inner_key, domain=None, range=Optional[str])
 
-slots.columnSettings__applies_to_slot = Slot(uri=THIS.applies_to_slot, name="columnSettings__applies_to_slot", curie=THIS.curie('applies_to_slot'),
-                   model_uri=THIS.columnSettings__applies_to_slot, domain=None, range=Optional[str])
+slots.columnSettings__applies_to_class = Slot(uri=SCHEMASHEETS.applies_to_class, name="columnSettings__applies_to_class", curie=SCHEMASHEETS.curie('applies_to_class'),
+                   model_uri=SCHEMASHEETS.columnSettings__applies_to_class, domain=None, range=Optional[str])
 
-slots.columnSettings__tag = Slot(uri=THIS.tag, name="columnSettings__tag", curie=THIS.curie('tag'),
-                   model_uri=THIS.columnSettings__tag, domain=None, range=Optional[str])
+slots.columnSettings__applies_to_slot = Slot(uri=SCHEMASHEETS.applies_to_slot, name="columnSettings__applies_to_slot", curie=SCHEMASHEETS.curie('applies_to_slot'),
+                   model_uri=SCHEMASHEETS.columnSettings__applies_to_slot, domain=None, range=Optional[str])
+
+slots.columnSettings__tag = Slot(uri=SCHEMASHEETS.tag, name="columnSettings__tag", curie=SCHEMASHEETS.curie('tag'),
+                   model_uri=SCHEMASHEETS.columnSettings__tag, domain=None, range=Optional[str])

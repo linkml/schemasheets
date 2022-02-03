@@ -54,6 +54,10 @@ classes:
         range: ValueMap
         multivalued: true
         inlined: true
+      regular_expression_match:
+        range: string
+        description: |-
+          A regular expression term, the match expression should be in parens
       inner_key:
         range: string
         description: |-
@@ -92,11 +96,9 @@ enums:
     aliases:
       - multiplicity
       - applicability
-    description: |-
-      vocabulary for describing cardinality and applicability of slots or fields.
-
-      Most elements in the dictionary have been mapped to a vocabulary called "carvoc",
-      this has yet to be released.
+    description: vocabulary for describing cardinality and applicability of slots or fields
+    notes:
+      - Most elements in the dictionary have been mapped to a vocabulary called carvoc, this has yet to be released.
     permissible_values:
       mandatory:
         meaning: carvoc:Mandatory
@@ -258,7 +260,7 @@ enums:
           - mandatory
           - conditional
   Shortcuts:
-    description: |-
+    description: >-
       A vocabulary of permissible values as column descriptors that do not have an exact equivalent in the LinkML datamodel,
       and instead act as shortcuts to either a collection of elements or a type of mapping behavior
     permissible_values:

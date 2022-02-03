@@ -14,7 +14,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import Annotation
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, Prefix, \
     SlotDefinition, EnumDefinition, PermissibleValue, SubsetDefinition, TypeDefinition, Element
-from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.utils.schemaview import SchemaView, re
 
 from schemasheets.conf.configschema import ColumnSettings, Shortcuts, Cardinality
 from schemasheets.utils.prefixtool import guess_prefix_expansion
@@ -137,6 +137,7 @@ class TableConfig:
         """
         if col not in self.columns:
             self.columns[col] = ColumnConfig(col)
+        #print(f'ADDING: {col}')
         self.columns[col].add_info(info)
         if self.columns[col].maps_to == 'metatype':
             if self.metatype_column and self.metatype_column != col:
@@ -191,6 +192,8 @@ class SchemaMaker:
     element_map: Dict[Tuple[str, str], Element] = None
     metamodel: SchemaView = None
     cardinality_vocabulary: str = None
+    default_name: str = None
+    unique_slots: bool = None
 
     def create_schema(self, csv_files: Union[str, List[str]], **kwargs) -> SchemaDefinition:
         """
@@ -200,7 +203,9 @@ class SchemaMaker:
         :param kwargs:
         :return: generated schema
         """
-        n = 'TEMP'
+        n = self.default_name
+        if n is None:
+            n = 'TEMP'
         self.schema = SchemaDefinition(id=n, name=n, default_prefix=n, default_range='string')
         if not isinstance(csv_files, list):
             csv_files = [csv_files]
@@ -209,6 +214,10 @@ class SchemaMaker:
         self.schema.imports.append('linkml:types')
         self.schema.prefixes['linkml'] = Prefix('linkml', 'https://w3id.org/linkml/')
         self._tidy_slot_usage()
+        prefix = self.schema.default_prefix
+        if prefix not in self.schema.prefixes:
+            logging.error(f'Prefix {prefix} not declared: using default')
+            self.schema.prefixes[prefix] = Prefix(prefix, f'https://example.org/{prefix}/')
         return self.schema
 
     def _tidy_slot_usage(self):
@@ -248,9 +257,16 @@ class SchemaMaker:
                             meta_obj = yaml.safe_load(v)
                             table_config.add_info(k, meta_obj)
                         else:
-                            logging.debug(f'Empty val {v} for {k} in {row}')
+                            if line_num == 2:
+                                # TODO: consider auto-interpreting
+                                raise ValueError(f'Enter an interpretation for {k}')
+                            logging.debug(f'Empty val for {k} in line {line_num}')
                 else:
                     rows.append(row)
+        # TODO: check why this doesn't work
+        #while rows and all(x for x in rows[-1] if not x):
+        #    print(f'TRIMMING: {rows[-1]}')
+        #    rows.pop()
         logging.info(f'ROWS={len(rows)}')
         for row in rows:
             try:
@@ -258,7 +274,6 @@ class SchemaMaker:
                 line_num += 1
             except ValueError as e:
                 raise SchemaSheetRowException(f'Error in line {line_num}, row={row}') from e
-
 
 
     def add_row(self, row: Dict[str, Any], table_config: TableConfig):
@@ -272,6 +287,8 @@ class SchemaMaker:
                 name = element.name
             logging.debug(f'ADDING: {row} // {name}')
             for k, v in row.items():
+                if k not in table_config.columns:
+                    raise ValueError(f'Expected to find {k} in {table_config.columns.keys()}')
                 cc = table_config.columns[k]
                 v = self.normalize_value(v, cc)
                 if v:
@@ -374,6 +391,8 @@ class SchemaMaker:
                     vmap[T_SLOT] = [self.get_current_element(SlotDefinition(name_val))]
                 else:
                     raise ValueError(f'Unknown metatype: {typ}')
+        if table_config.column_by_element_type is None:
+            raise ValueError(f'No table_config.column_by_element_type')
         for k, elt_cls in tmap.items():
             if k in table_config.column_by_element_type:
                 col = table_config.column_by_element_type[k]
@@ -420,9 +439,12 @@ class SchemaMaker:
                 for c in vmap[T_CLASS]:
                     #c: ClassDefinition = vmap[T_CLASS]
                     c.slots.append(main_elt.name)
-                    c.slot_usage[main_elt.name] = SlotDefinition(main_elt.name)
-                    main_elt = c.slot_usage[main_elt.name]
-                    yield main_elt
+                    if self.unique_slots:
+                        yield main_elt
+                    else:
+                        c.slot_usage[main_elt.name] = SlotDefinition(main_elt.name)
+                        main_elt = c.slot_usage[main_elt.name]
+                        yield main_elt
             else:
                 yield main_elt
         elif T_CLASS in vmap:
@@ -462,7 +484,7 @@ class SchemaMaker:
 
         General rules:
 
-        - The strings "", "-", and "n/a" will be treated as if empty/None
+        - The strings "", and "n/a" will be treated as if empty/None
         - for boolean descriptors, the values "yes" and "no" are permissible for True/False
 
         Specific settings:
@@ -483,16 +505,35 @@ class SchemaMaker:
             v = None
         elif v == 'n/a':
             v = None
+        if v and (v.startswith(' ') or v.endswith(' ')):
+            logging.warning(f'Stripping value: "{v}" for {column_config.name}')
+            v = v.strip()
         if v and column_config:
+            re_match = column_config.settings.regular_expression_match
+            if re_match:
+                m = re.search(re_match, v)
+                if m:
+                    v = m.group(1)
+                else:
+                    logging.error(f'No match using {column_config.settings.regular_expression_match} on {v}')
+                    v = None
             if column_config.settings.curie_prefix:
-                v = f'{column_config.settings.curie_prefix}:{v}'
+                if ':' in v:
+                    logging.warning(f'Will not prefix {v} with {column_config.settings.curie_prefix} as it is already prefixed')
+                else:
+                    v = f'{column_config.settings.curie_prefix}:{v}'
             if column_config.settings.prefix:
                 v = f'{column_config.settings.prefix}{v}'
             if column_config.settings.suffix:
                 v = f'{column_config.settings.suffix}{v}'
             if column_config.settings.vmap:
-
-                v = column_config.settings.vmap[v].map_value
+                vmap = column_config.settings.vmap
+                if v in vmap:
+                    v = vmap[v].map_value
+                elif '*' in vmap:
+                    v = vmap['*'].map_value
+                else:
+                    logging.warning(f'No mapping for {v}, passing through')
         if metaslot and metaslot.range:
             rng = metaslot.range
             if rng == 'boolean':
@@ -511,7 +552,12 @@ class SchemaMaker:
                 if v is None:
                     v = []
                 else:
-                    v = [v]
+                    if 'mappings' in metaslot.name and ' ' in v:
+                        logging.warning(f'Splitting on space for mappings in {v}')
+                        v = v.split(' ')
+                        v = [v1 for v1 in v if v1]
+                    else:
+                        v = [v]
         return v
 
 
@@ -588,14 +634,21 @@ class SchemaMaker:
         #    schema.prefixes[pfx] = Prefix(pfx, f'http://example.org/{pfx}/')
         #    logging.info(f'Set default prefix: {schema.prefixes[pfx]}')
         prefixes = set()
-        for e in sv.all_elements(imports=False).values():
-            for curies in sv.get_mappings(e.name).values():
-                for curie in curies:
-                    if ':' in curie:
-                        prefixes.add(curie.split(':')[0])
+        for e in list(sv.all_elements(imports=False).values()):
+            # TODO: this does not include slot_usage
+            map_ix = sv.get_mappings(e.name)
+            for t, curies in map_ix.items():
+                #print(f'xxx: {e.name} {t} N = {len(curies)} ex={e.exact_mappings}')
+                if curies:
+                    #print(f'REPAIRING: {e.name} N = {curies}')
+                    for curie in curies:
+                        if ':' in curie:
+                            prefixes.add(curie.split(':')[0])
         namespaces = sv.namespaces()
         for pfx in prefixes:
+            #print(f'CH: {pfx}')
             if pfx not in namespaces:
+                #print(f'GUESSING: {pfx}')
                 pfx_ref = guess_prefix_expansion(pfx)
                 if not pfx_ref:
                     pfx_ref = f'http://example.org/{pfx}/'
@@ -617,9 +670,19 @@ class SchemaMaker:
               type=click.File(mode="w"),
               default=sys.stdout,
               help="output file")
+@click.option("-n", "--name",
+              help="name of the schema")
+@click.option("--unique-slots/--no-unique-slots",
+              default=False,
+              show_default=True,
+              help="All slots are treated as unique and top level and do not belong to the specified class")
+@click.option("--repair/--no-repair",
+              default=True,
+              show_default=True,
+              help="Auto-repair schema")
 @click.option("-v", "--verbose", count=True)
 @click.argument('tsv_files', nargs=-1)
-def convert(tsv_files, output: TextIO, verbose: int):
+def convert(tsv_files, output: TextIO, name, repair, unique_slots: bool, verbose: int):
     """
     Convert schemasheets to a LinkML schema
 
@@ -632,7 +695,11 @@ def convert(tsv_files, output: TextIO, verbose: int):
     else:
         logging.basicConfig(level=logging.WARNING)
     sm = SchemaMaker()
+    sm.default_name = name
+    sm.unique_slots = unique_slots
     schema = sm.create_schema(list(tsv_files))
+    if repair:
+        schema = sm.repair_schema(schema)
     output.write(yaml_dumper.dumps(schema))
 
 

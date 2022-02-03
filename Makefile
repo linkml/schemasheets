@@ -20,6 +20,10 @@ sync-examples:
 datamodel-docs: schemasheets/conf/configschema.yaml
 	gen-markdown $< -d docs/datamodel/
 
+tests/input/rda-crosswalk.tsv:
+	curl -L -s 'https://docs.google.com/spreadsheets/d/1mu9iWZxX4DvtklLIQgEloM8oZfzZdzfJ/export?format=tsv&gid=1108662376' > $@
+
+
 serve:
 	$(RUN) mkdocs serve
 

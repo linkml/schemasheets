@@ -18,6 +18,10 @@ from schemasheets.schemamaker import SchemaMaker
               default=True,
               show_default=True,
               help="Automatically repair missing schema elements")
+@click.option("-n", "--name",
+              default="schema",
+              show_default=True,
+              help="name of the schema")
 @click.option("--generator-arguments", "-A",
               help="yaml configuration for generators")
 @click.option("--config-file", "-C",
@@ -29,9 +33,14 @@ from schemasheets.schemamaker import SchemaMaker
 @click.option("--include", "-I",
               multiple=True,
               help="list of artefacts to be included. If not set, defaults to all")  # TODO: make this an enum
+@click.option("--unique-slots/--no-unique-slots",
+              default=False,
+              show_default=True,
+              help="All slots are treated as unique and top level and do not belong to the specified class")
 @click.option("-v", "--verbose", count=True)
 @click.argument('tsv_files', nargs=-1)
-def multigen(tsv_files, dir, verbose: int, repair: bool,
+def multigen(tsv_files, dir, verbose: int, repair: bool, name,
+             unique_slots: bool,
              exclude: List[str], include: List[str], config_file, generator_arguments: str, **kwargs):
     """
     Generate an entire set of schema files from Schemasheets
@@ -66,10 +75,13 @@ def multigen(tsv_files, dir, verbose: int, repair: bool,
         dir = '.'
     project_config.directory = dir
     sm = SchemaMaker()
+    if name:
+        sm.default_name = name
+    sm.unique_slots = unique_slots
     schema = sm.create_schema(list(tsv_files))
     if repair:
         schema = sm.repair_schema(schema)
-    out_file = os.path.join(dir, 'schema.yaml')
+    out_file = os.path.join(dir, f'{name}.yaml')
     yaml_dumper.dump(schema, to_file=out_file)
     gen = ProjectGenerator()
     gen.generate(out_file, project_config)
