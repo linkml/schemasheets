@@ -17,7 +17,6 @@ enums:
     aliases:
     - te_a1
     - te_a2
-    from_schema: https://example.com/test_schema
     permissible_values:
       test_pv:
         text: test_pv
