@@ -1,5 +1,5 @@
 # Auto generated from configschema.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-02-02T15:51:35
+# Generation date: 2022-02-08T17:49:39
 # Schema: Schemasheets-Mappings
 #
 # id: https://w3id.org/linkml/configschema
@@ -83,6 +83,7 @@ class ColumnSettings(YAMLRoot):
     applies_to_class: Optional[str] = None
     applies_to_slot: Optional[str] = None
     tag: Optional[str] = None
+    internal_separator: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.curie_prefix is not None and not isinstance(self.curie_prefix, str):
@@ -113,6 +114,9 @@ class ColumnSettings(YAMLRoot):
 
         if self.tag is not None and not isinstance(self.tag, str):
             self.tag = str(self.tag)
+
+        if self.internal_separator is not None and not isinstance(self.internal_separator, str):
+            self.internal_separator = str(self.internal_separator)
 
         super().__post_init__(**kwargs)
 
@@ -274,3 +278,6 @@ slots.columnSettings__applies_to_slot = Slot(uri=SCHEMASHEETS.applies_to_slot, n
 
 slots.columnSettings__tag = Slot(uri=SCHEMASHEETS.tag, name="columnSettings__tag", curie=SCHEMASHEETS.curie('tag'),
                    model_uri=SCHEMASHEETS.columnSettings__tag, domain=None, range=Optional[str])
+
+slots.columnSettings__internal_separator = Slot(uri=SCHEMASHEETS.internal_separator, name="columnSettings__internal_separator", curie=SCHEMASHEETS.curie('internal_separator'),
+                   model_uri=SCHEMASHEETS.columnSettings__internal_separator, domain=None, range=Optional[str])

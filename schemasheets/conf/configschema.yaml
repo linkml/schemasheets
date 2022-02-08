@@ -71,6 +71,11 @@ classes:
         range: ElementReference
       tag:
         range: string
+      internal_separator:
+        range: string
+        description: |-
+          What character should be used to pack multiple values for a single slot (like comments, aliases, etc.)
+          Into one spreadsheet cell? Suggested value = |
 
   ValueMap:
     description: |-
