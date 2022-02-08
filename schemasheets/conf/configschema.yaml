@@ -71,7 +71,6 @@ classes:
         range: ElementReference
       tag:
         range: string
-      internal_separator: '|'
 
   ValueMap:
     description: |-
