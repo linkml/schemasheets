@@ -556,6 +556,12 @@ class SchemaMaker:
                         logging.warning(f'Splitting on space for mappings in {v}')
                         v = v.split(' ')
                         v = [v1 for v1 in v if v1]
+                    # elif 'aliases' in metaslot.name and '|' in v:
+                    #     logging.warning(f'Splitting on | for aliases in {v}')
+                    #     v = v.split('|')
+                    #     v = [v1 for v1 in v if v1]
+                    elif column_config.settings.internal_separator:
+                        v = v.split(column_config.settings.internal_separator)
                     else:
                         v = [v]
         return v

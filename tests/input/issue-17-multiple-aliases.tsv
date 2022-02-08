@@ -1,0 +1,7 @@
+Schema	uri	Schema Prefix	prefix	URI	enum	permissible_value	aliases
+> schema	id	default_prefix	prefix	prefix_reference	enum	permissible_value	aliases
+>							internal_separator: "|"
+test_schema	https://example.com/test_schema	test_schema
+			test_schema	https://example.com/test_schema/
+					test_enum		te_a1|te_a2
+					test_enum	test_pv	tpv_a1|tpv_a2
