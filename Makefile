@@ -29,3 +29,6 @@ serve:
 
 gh-deploy:
 	$(RUN) mkdocs gh-deploy
+
+examples/output/examples.yaml: examples/input/schema.tsv examples/input/examples.tsv
+	$(RUN) sheets2linkml --output $@ $^
