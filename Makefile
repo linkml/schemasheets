@@ -30,5 +30,14 @@ serve:
 gh-deploy:
 	$(RUN) mkdocs gh-deploy
 
-examples/output/examples.yaml: examples/input/schema.tsv examples/input/examples.tsv
+examples/output/single_examples.yaml: examples/input/schema.tsv examples/input/prefixes.tsv examples/input/single_examples.tsv
 	$(RUN) sheets2linkml --output $@ $^
+
+
+examples/output/multiple_examples_per_slot.yaml: examples/input/schema.tsv examples/input/prefixes.tsv examples/input/multiple_examples_per_slot.tsv
+	$(RUN) sheets2linkml --output $@ $^
+
+.PHONY: clean all test gh-deploy serve datamodel-docs sync-examples cogs-% all_py
+
+clean:
+	rm -rf examples/output/*examples*yaml
