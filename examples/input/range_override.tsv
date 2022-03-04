@@ -1,0 +1,8 @@
+class	slot	description	range	enum	permissible_value
+> class	slot	description	range	enum	permissible_value
+class_for_range_override					
+	slot_for_range_override	terms for testing range override			
+class_for_range_override	slot_for_range_override		enum_for_range_override		
+				enum_for_range_override	one
+				enum_for_range_override	two
+				enum_for_range_override	three
