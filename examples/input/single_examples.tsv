@@ -1,0 +1,7 @@
+class	slot	description	example
+> class	slot	description	examples
+class_for_example			
+	slot_for_example	terms for testing example creation	for example, do not crash
+	sfe2	terms for testing example creation	never ever crash
+class_for_example	slot_for_example
+class_for_example	sfe2

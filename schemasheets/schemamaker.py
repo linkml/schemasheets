@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import List, Union, Any, Dict, Tuple, Generator, TextIO
 
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import Annotation
+from linkml_runtime.linkml_model import Annotation, Example
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, Prefix, \
     SlotDefinition, EnumDefinition, PermissibleValue, SubsetDefinition, TypeDefinition, Element
 from linkml_runtime.utils.schemaview import SchemaView, re
@@ -301,7 +301,10 @@ class SchemaMaker:
                     if cc.maps_to == 'cardinality':
                         self.set_cardinality(actual_element, v)
                     elif cc.metaslot:
-                        if cc.maps_to == 'annotations' and not cc.settings.inner_key:
+                        if cc.maps_to == 'examples':
+                            for vi in v:
+                                actual_element.examples.append(Example(value=vi))
+                        elif cc.maps_to == 'annotations' and not cc.settings.inner_key:
                             anns = yaml.load(v[0])
                             for ann_key, ann_val in anns.items():
                                 actual_element.annotations[ann_key] = ann_val

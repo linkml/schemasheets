@@ -1,0 +1,6 @@
+class	slot	description	examples
+> class	slot	description	examples
+>			internal_separator: "|"
+class_for_example			
+	slot_for_example	terms for testing example creation	for example, do not crash|never ever crash
+class_for_example	slot_for_example		
