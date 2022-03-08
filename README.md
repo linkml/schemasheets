@@ -2,7 +2,7 @@
 
 <p align="center">
     <a href="https://github.com/linkml/schemasheets/actions/workflows/main.yml">
-        <img alt="Tests" src="https://github.com/linkml/schemasheets/actions/workflows/main.yml/badge.svg" />
+        <img alt="Tests" src="https://github.com/linkml/schemasheets/actions/workflows/main.yaml/badge.svg" />
     </a>
     <a href="https://pypi.org/project/linkml">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/linkml" />
