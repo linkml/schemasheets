@@ -61,3 +61,10 @@ examples/output/range_override_examples_reasoned.ttl: examples/output/range_over
 	@echo But Makefile keeps going!?
 	- grep -i error $@
 
+configured_owl_via_project: examples/output/range_override_examples.yaml
+	$(RUN) gen-project \
+		--include owl \
+		--generator-arguments 'owl: {type-objects: false}' \
+		--dir examples/output $<
+
+
