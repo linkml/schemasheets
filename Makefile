@@ -32,6 +32,7 @@ gh-deploy:
 
 examples/output/single_examples.yaml: examples/input/schema.tsv examples/input/prefixes.tsv examples/input/single_examples.tsv
 	$(RUN) sheets2linkml --output $@ $^
+	$(RUN) python schemasheets/schemaview_vs_examples.py
 
 
 examples/output/multiple_examples_per_slot.yaml: examples/input/schema.tsv examples/input/prefixes.tsv examples/input/multiple_examples_per_slot.tsv
@@ -66,5 +67,4 @@ configured_owl_via_project: examples/output/range_override_examples.yaml
 		--include owl \
 		--generator-arguments 'owl: {type-objects: false}' \
 		--dir examples/output $<
-
 

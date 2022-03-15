@@ -1,9 +1,7 @@
 import sys
 import csv
 import logging
-import pkgutil
-from pathlib import PurePath
-from functools import lru_cache
+
 
 import click
 import yaml
@@ -11,12 +9,15 @@ from dataclasses import dataclass
 from typing import List, Union, Any, Dict, Tuple, Generator, TextIO
 
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import Annotation
+from linkml_runtime.linkml_model import Annotation, Example
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, Prefix, \
     SlotDefinition, EnumDefinition, PermissibleValue, SubsetDefinition, TypeDefinition, Element
 from linkml_runtime.utils.schemaview import SchemaView, re
 
-from schemasheets.conf.configschema import ColumnSettings, Shortcuts, Cardinality
+from schemasheets.schemasheet_datamodel import ColumnConfig, TableConfig, get_configmodel, get_metamodel, COL_NAME, \
+    DESCRIPTOR, \
+    tmap, T_CLASS, T_PV, T_SLOT, T_SUBSET, T_SCHEMA, T_ENUM, T_PREFIX, T_TYPE, SchemaSheet
+from schemasheets.conf.configschema import Cardinality
 from schemasheets.utils.prefixtool import guess_prefix_expansion
 
 
@@ -24,163 +25,9 @@ class SchemaSheetRowException(Exception):
     pass
 
 
-c = ClassDefinition
-T_SCHEMA = 'schema'
-T_CLASS = 'class'
-T_SLOT = 'slot'
-T_ENUM = 'enum'
-T_PV = 'permissible_value'
-T_TYPE = 'type'
-T_SUBSET = 'subset'
-T_PREFIX = 'prefix'
-
-tmap = {
-    T_SCHEMA: SchemaDefinition,
-    T_CLASS: ClassDefinition,
-    T_SLOT: SlotDefinition,
-    T_ENUM: EnumDefinition,
-    T_PV: PermissibleValue,
-    T_TYPE: TypeDefinition,
-    T_SUBSET: SubsetDefinition,
-    T_PREFIX: Prefix
-}
-
-COL_NAME = str
-DESCRIPTOR = str
-@dataclass
-class ColumnConfig:
-    """
-    Configuration for a single column in a schema sheet
-    """
-    name: COL_NAME
-    maps_to: DESCRIPTOR = None
-    settings: ColumnSettings = None
-    metaslot: SlotDefinition = None
-    is_element_type: bool = None
-
-    def merge_settings(self, settings: ColumnSettings) -> None:
-        """
-        merges specified settings into current settings
-
-        :param settings: settings to be merged
-        """
-        for k, v in vars(settings).items():
-            if v:
-                setattr(self.settings, k, v)
-
-    def add_info(self, info: Union[Dict, DESCRIPTOR]) -> None:
-        """
-        Adds configuration/settings in the form of a dict object.
-
-        Information can be incrementally added:
-
-        - the first piece of information should be the descriptor
-        - after that individual settings can be added
-
-        :param info: configuration
-        :return:
-        """
-        if self.maps_to is None:
-            self.settings = ColumnSettings()
-            if isinstance(info, dict):
-                items = list(info.items())
-                if len(items) != 1:
-                    raise ValueError(f'Unexpected settings: {info}')
-                else:
-                    item = items[0]
-                    self.maps_to = item[0]
-                    if isinstance(item[1], dict):
-                        settings = ColumnSettings(**item[1])
-                    else:
-                        raise ValueError(f'Expected dict after first element of {items}')
-                    self.merge_settings(settings)
-            else:
-                self.maps_to = info
-            mm = get_metamodel()
-            snmap = mm.slot_name_mappings()
-            # TODO: use alias
-            snmap['uri'] = snmap['type_uri']
-            if self.maps_to in snmap:
-                self.metaslot = snmap[self.maps_to]
-            else:
-                if self.maps_to not in tmap and self.maps_to not in Shortcuts:
-                    raise ValueError(f'Cannot interpret: {self.maps_to}')
-        else:
-            settings = ColumnSettings(**info)
-            self.merge_settings(settings)
 
 
-@dataclass
-class TableConfig:
-    """
-    Configuration for an entire table / schema sheet
 
-    """
-    name: str = None
-    """table name"""
-
-    columns: Dict[COL_NAME, ColumnConfig] = None
-    """maps column names to config"""
-
-    column_by_element_type: Dict[str, COL_NAME] = None
-    """maps element types (schema, class, ...) to the name of the column that represents them"""
-
-    metatype_column: COL_NAME = None
-    name_column: COL_NAME = None
-
-    def add_info(self, col: COL_NAME, info: Union[Dict, DESCRIPTOR]) -> None:
-        """
-        Wrapper for :ref:`ColumnConfig.add_info`
-
-        :param col:
-        :param info:
-        """
-        if col not in self.columns:
-            self.columns[col] = ColumnConfig(col)
-        #print(f'ADDING: {col}')
-        self.columns[col].add_info(info)
-        if self.columns[col].maps_to == 'metatype':
-            if self.metatype_column and self.metatype_column != col:
-                raise ValueError(f'Multiple metatype columns not allowed: {self.metatype_column}, {col}')
-            self.metatype_column = col
-        if self.columns[col].maps_to == 'name':
-            if self.name_column:
-                raise ValueError(f'Multiple name columns not allowed: {self.name_column}, {col}')
-            self.name_column = col
-        if self.column_by_element_type is None:
-            self.column_by_element_type = {}
-        for c, cc in self.columns.items():
-            if cc.maps_to in tmap:
-                self.column_by_element_type[cc.maps_to] = c
-                cc.is_element_type = True
-
-
-@lru_cache()
-def get_metamodel() -> SchemaView:
-    """
-    Returns the LinkML schema metamodel as a SchemaView object
-
-    this can be retired when https://github.com/linkml/linkml-runtime/pull/100/
-    is in major release
-    :return:
-    """
-    package = 'linkml_runtime.linkml_model.meta'
-    full_path = PurePath('model') / 'schema'
-    data = pkgutil.get_data(package, f'{full_path}/meta.yaml')
-    return SchemaView(data.decode("utf-8"))
-
-@lru_cache()
-def get_configmodel() -> SchemaView:
-    """
-    Returns the Config schema metamodel as a SchemaView object
-
-    this can be retired when https://github.com/linkml/linkml-runtime/pull/100/
-    is in major release
-    :return:
-    """
-    package = 'schemasheets.conf.configschema'
-    data = pkgutil.get_data(package, f'configschema.yaml')
-    return SchemaView(data.decode("utf-8"))
 
 
 @dataclass
@@ -197,7 +44,7 @@ class SchemaMaker:
 
     def create_schema(self, csv_files: Union[str, List[str]], **kwargs) -> SchemaDefinition:
         """
-        Create a LinkML schema from a collection of FAIR Schema Sheets
+        Create a LinkML schema from a collection of Schema Sheets
 
         :param csv_files: schema sheets
         :param kwargs:
@@ -232,6 +79,7 @@ class SchemaMaker:
                 c.slots.remove(sn)
                 del c.slot_usage[sn]
 
+
     def merge_sheet(self, file_name: str, delimiter='\t') -> None:
         """
         Merge information from the given schema sheet into the current schema
@@ -241,39 +89,21 @@ class SchemaMaker:
         :return:
         """
         logging.info(f'READING {file_name} D={delimiter}')
-        table_config = TableConfig(columns={})
-        line_num = 1
         with open(file_name, newline='') as tsv_file:
             reader = csv.DictReader(tsv_file, delimiter=delimiter)
-            rows = []
-            for row in reader:
-                k0 = list(row.keys())[0]
-                if row[k0].startswith('>'):
+            schemasheet = SchemaSheet.from_dictreader(reader)
+            line_num = schemasheet.start_line_number
+            # TODO: check why this doesn't work
+            #while rows and all(x for x in rows[-1] if not x):
+            #    print(f'TRIMMING: {rows[-1]}')
+            #    rows.pop()
+            logging.info(f'ROWS={len(schemasheet.rows)}')
+            for row in schemasheet.rows:
+                try:
+                    self.add_row(row, schemasheet.table_config)
                     line_num += 1
-                    for k, v in row.items():
-                        if v is not None and v.startswith('>'):
-                            v = v.replace('>', '')
-                        if v:
-                            meta_obj = yaml.safe_load(v)
-                            table_config.add_info(k, meta_obj)
-                        else:
-                            if line_num == 2:
-                                # TODO: consider auto-interpreting
-                                raise ValueError(f'Enter an interpretation for {k}')
-                            logging.debug(f'Empty val for {k} in line {line_num}')
-                else:
-                    rows.append(row)
-        # TODO: check why this doesn't work
-        #while rows and all(x for x in rows[-1] if not x):
-        #    print(f'TRIMMING: {rows[-1]}')
-        #    rows.pop()
-        logging.info(f'ROWS={len(rows)}')
-        for row in rows:
-            try:
-                self.add_row(row, table_config)
-                line_num += 1
-            except ValueError as e:
-                raise SchemaSheetRowException(f'Error in line {line_num}, row={row}') from e
+                except ValueError as e:
+                    raise SchemaSheetRowException(f'Error in line {line_num}, row={row}') from e
 
 
     def add_row(self, row: Dict[str, Any], table_config: TableConfig):
@@ -301,7 +131,10 @@ class SchemaMaker:
                     if cc.maps_to == 'cardinality':
                         self.set_cardinality(actual_element, v)
                     elif cc.metaslot:
-                        if cc.maps_to == 'annotations' and not cc.settings.inner_key:
+                        if cc.maps_to == 'examples':
+                            for vi in v:
+                                actual_element.examples.append(Example(value=vi))
+                        elif cc.maps_to == 'annotations' and not cc.settings.inner_key:
                             anns = yaml.load(v[0])
                             for ann_key, ann_val in anns.items():
                                 actual_element.annotations[ann_key] = ann_val
