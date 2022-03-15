@@ -16,6 +16,7 @@ nav:
       - Grids: intro/grids.md
       - Enums: intro/enums.md
       - Cardinality: intro/cardinality.md
+      - Exporting to schemasheets: intro/export.md      
   - How to:
       - Data Dictionaries: howto/data-dictionaries
       - Working with Google Sheets: howto/google-sheets.md
