@@ -6,9 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         
-        <link rel="canonical" href="https://linkml.github.io/schemasheets/intro/mixed-sheets/">
+        <link rel="canonical" href="https://linkml.github.io/schemasheets/intro/export/">
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>Mixed sheets - Schemasheets</title>
+        <title>Exporting to schemasheets - Schemasheets</title>
         <link href="../../css/bootstrap.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
@@ -47,7 +47,7 @@
                             <li class="navitem">
                                 <a href="../../install/" class="nav-link">Installation</a>
                             </li>
-                            <li class="dropdown">
+                            <li class="dropdown active">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Guide <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
@@ -76,7 +76,7 @@
 </li>
                                     
 <li>
-    <a href="../export/" class="dropdown-item">Exporting to schemasheets</a>
+    <a href="./" class="dropdown-item active">Exporting to schemasheets</a>
 </li>
                                 </ul>
                             </li>
@@ -112,7 +112,17 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a href="https://github.com/linkml/schemasheets/edit/master/docs/intro/mixed-sheets.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a rel="prev" href="../cardinality/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../../howto/google-sheets/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/linkml/schemasheets/edit/master/docs/intro/export.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -132,8 +142,24 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#mixed-sheets" class="nav-link">Mixed sheets</a>
+            <li class="nav-item" data-level="1"><a href="#exporting-a-schema-to-schemasheets" class="nav-link">Exporting a schema to schemasheets</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#use-case" class="nav-link">Use Case</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#status" class="nav-link">Status</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#usage" class="nav-link">Usage</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#converting-between-two-different-schemasheet-specs" class="nav-link">Converting between two different schemasheet specs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -141,244 +167,89 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="mixed-sheets">Mixed sheets</h1>
-<p>In all of the examples above, distinct descriptors are used for class names, slot names, type names, enum names, etc</p>
-<p>An alternative pattern is to mix element types in a single sheet, indicate the name of the element using <code>name</code> and the type using <code>metatype</code>.</p>
-<p>For example:</p>
-<table>
-<thead>
-<tr>
-<th>type</th>
-<th>item</th>
-<th>applies to</th>
-<th>key</th>
-<th>multiplicity</th>
-<th>range</th>
-<th>parents</th>
-<th>desc</th>
-<th>schema.org</th>
-<th>wikidata</th>
-<th>belongs</th>
-<th>status</th>
-<th>notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>&gt;</code> metatype</td>
-<td>name</td>
-<td>class</td>
-<td>identifier</td>
-<td>cardinality</td>
-<td>range</td>
-<td>is_a</td>
-<td>description</td>
-<td><code>exact_mappings: {curie_prefix: sdo}</code></td>
-<td><code>exact_mappings: {curie_prefix: wikidata}</code></td>
-<td>in_subset</td>
-<td>status</td>
-<td>ignore</td>
-</tr>
-<tr>
-<td><code>&gt; vmap: {C: class, F: slot}</code></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><code>&gt;</code></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>curie_prefix: wikidata</td>
-<td></td>
-<td><code>vmap: {T: testing, R: release}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>F</td>
-<td>id</td>
-<td></td>
-<td>yes</td>
-<td>1</td>
-<td>string</td>
-<td></td>
-<td>any identifier</td>
-<td>identifier</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>F</td>
-<td>name</td>
-<td>Person, Organization</td>
-<td>no</td>
-<td>1</td>
-<td>string</td>
-<td></td>
-<td>full name</td>
-<td>name</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>F</td>
-<td>description</td>
-<td></td>
-<td>no</td>
-<td>0..1</td>
-<td>string</td>
-<td></td>
-<td>a textual description</td>
-<td>description</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>F</td>
-<td>age</td>
-<td>Person</td>
-<td>no</td>
-<td>0..1</td>
-<td>decimal</td>
-<td></td>
-<td>age in years</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>F</td>
-<td>gender</td>
-<td>Person</td>
-<td>no</td>
-<td>0..1</td>
-<td>decimal</td>
-<td></td>
-<td>age in years</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>F</td>
-<td>has medical history</td>
-<td>Person</td>
-<td>no</td>
-<td>0..*</td>
-<td>MedicalEvent</td>
-<td></td>
-<td>medical history</td>
-<td></td>
-<td></td>
-<td></td>
-<td>T</td>
-<td></td>
-</tr>
-<tr>
-<td>C</td>
-<td>Person</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>a person,living or dead</td>
-<td>Person</td>
-<td>Q215627</td>
-<td></td>
-<td>R</td>
-<td></td>
-</tr>
-<tr>
-<td>C</td>
-<td>Event</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>grouping class for events</td>
-<td></td>
-<td>Q1656682</td>
-<td>a</td>
-<td>R</td>
-<td></td>
-</tr>
-<tr>
-<td>C</td>
-<td>MedicalEvent</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>Event</td>
-<td>a medical encounter</td>
-<td></td>
-<td></td>
-<td>b</td>
-<td>T</td>
-<td></td>
-</tr>
-<tr>
-<td>C</td>
-<td>ForProfit</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>Organization</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>C</td>
-<td>NonProfit</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>Organization</td>
-<td></td>
-<td></td>
-<td>Q163740</td>
-<td></td>
-<td></td>
-<td>foo</td>
-</tr>
-</tbody>
-</table>
+<h1 id="exporting-a-schema-to-schemasheets">Exporting a schema to schemasheets</h1>
+<h2 id="use-case">Use Case</h2>
+<p>Sometimes you might want to export from an existing LinkML schema to schemasheets - 
+for example to migrate the source of some or part of a schema to sheet-based editing.</p>
+<p>The <code>sheets2linkml</code> command will convert schemasheet(s) to a LinkML schema</p>
+<p>The reverse operation <code>linkml2sheets</code> will convert a LinkML schema to schemasheets</p>
+<h2 id="status">Status</h2>
+<p><strong>THIS COMMAND IS ONLY PARTIALLY IMPLEMENTED</strong> -- not all parts of the specification are considered.
+However, you may still find this useful for "bootstrapping" schema sheets</p>
+<h2 id="usage">Usage</h2>
+<p>Type</p>
+<pre><code class="language-bash">linkml2sheets --help
+</code></pre>
+<p>to get complete help</p>
+<p>Broadly there are two usage scenarios:</p>
 <ul>
-<li><a href="https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=509198484">personinfo with tyoes</a></li>
-</ul></div>
+<li>when you have a single sheet</li>
+<li>when your schema is mapped to multiple sheets (e.g. enums and slots in different sheets)</li>
+</ul>
+<p>In both cases you need two inputs</p>
+<ol>
+<li>A linkml schema, specified in yaml</li>
+<li>One or more schemasheets that serve as the specification<ul>
+<li>these do not need to have any data</li>
+<li>they do need the columns used and column descriptors</li>
+</ul>
+</li>
+</ol>
+<h3 id="single-sheet-usage">Single-sheet usage</h3>
+<p>Here you pass a single TSV specification on the command line</p>
+<p>You can use the <code>--output</code> (<code>-o</code>) option to write output to a single sheet file.
+Or omit this to write on stdout.</p>
+<h3 id="multi-sheet-usage">Multi-sheet usage</h3>
+<p>Here you multiple TSV specifications on the command line</p>
+<p>You must use the <code>--directory</code> (<code>-d</code>) option to specify which directory
+the files are written to. The filenames will be the same.</p>
+<p>So for example, if you had a folder:</p>
+<pre><code>sheets/
+  enums.tsv
+  slots.tsv
+</code></pre>
+<p>where:</p>
+<ul>
+<li>each tsv contains minimally the column specifications,</li>
+<li>you pass in <code>sheets/*tsv</code> as input</li>
+<li>you pass <code>--directory output</code></li>
+</ul>
+<p>Then you will generate a folder:</p>
+<pre><code>output/
+  enums.tsv
+  slots.tsv
+</code></pre>
+<p>the headers will be the same as the TSVs in the input,
+but it will include "data" rows, where each row is a matching
+schema element</p>
+<p>the input and output directory can be identical, but
+you will need to pass in <code>--overwrite</code> to explicitly overwrite,
+this guards against accidental overwrites.</p>
+<h2 id="converting-between-two-different-schemasheet-specs">Converting between two different schemasheet specs</h2>
+<p>schemasheets allows <em>custom</em> sheet formats that map to the LinkML standard.</p>
+<p>you can use the combination of sheets2linkml and linkml2sheets to convert betweeen two sheet specifications.</p>
+<p>For example, let's say for schema1.tsv, you use a spreadsheet with the following headers:</p>
+<ul>
+<li>record: <code>&gt; class</code></li>
+<li>field: <code>&gt; slot</code></li>
+<li>cardinality: <code>&gt; cardinality</code></li>
+<li>info: <code>&gt; description</code></li>
+</ul>
+<p>and for schema2.tsv you have:</p>
+<ul>
+<li>table: <code>&gt; class</code></li>
+<li>attribute: <code>&gt; slot</code></li>
+<li>required: <code>&gt; required</code></li>
+<li>multivalued: <code>&gt; multivalued</code></li>
+<li>description: <code>&gt; description</code></li>
+</ul>
+<p>(here each list element is a column, and the part after the <code>&gt;</code> is the 2nd row)</p>
+<p>If you do:</p>
+<pre><code class="language-bash">sheets2linkml schema1.tsv &gt; schema1.yaml
+linkml2sheets -s schema1.yaml schema2.tsv &gt; schema2_full.tsv
+</code></pre>
+<p>then this will effectively map schema1.tsv onto the format for schema2.tsv.
+And you can swap the arguments to go in the reverse direction.</p></div>
             </div>
         </div>
 
