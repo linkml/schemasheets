@@ -75,6 +75,7 @@ class ColumnConfig:
         :return:
         """
         if self.maps_to is None:
+            # The first descriptor row describes what the column maps to
             self.settings = ColumnSettings()
             if isinstance(info, dict):
                 items = list(info.items())
@@ -120,7 +121,10 @@ class TableConfig:
     """maps element types (schema, class, ...) to the name of the column that represents them"""
 
     metatype_column: COL_NAME = None
+    """Column that represents the metatype designator"""
+
     name_column: COL_NAME = None
+    """Column that represents that name of the entity"""
 
     def add_info(self, col: COL_NAME, info: Union[Dict, DESCRIPTOR]) -> None:
         """

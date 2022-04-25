@@ -33,7 +33,7 @@ class SchemaSheetRowException(Exception):
 @dataclass
 class SchemaMaker:
     """
-    Engine for making LinkML schemas from FAIR Schema Sheets
+    Engine for making LinkML schemas from Schema Sheets
     """
     schema: SchemaDefinition = None
     element_map: Dict[Tuple[str, str], Element] = None
@@ -214,7 +214,7 @@ class SchemaMaker:
             if tc in row:
                 typ = self.normalize_value(row[tc], table_config.columns[tc])
                 if not table_config.name_column:
-                    raise ValueError(f'name column must be set when type column ({tc}) is set')
+                    raise ValueError(f'name column must be set when type column ({tc}) is set; row={row}')
                 name_val = row[table_config.name_column]
                 if not name_val:
                     raise ValueError(f'name column must be set when type column ({tc}) is set')
@@ -317,15 +317,19 @@ class SchemaMaker:
 
         General rules:
 
-        - The strings "", and "n/a" will be treated as if empty/None
+        - The strings "", ".", and "n/a" will be treated as if empty/None
         - for boolean descriptors, the values "yes" and "no" are permissible for True/False
+        - leading and trailing whitespace is trimmed/stripped
 
         Specific settings:
 
         - See configschema for all options
 
+        For example, if this method is called with a value v and a column config that has
+        a regex pattern, then the regex is used to extract the value from v
+
         :param v:
-        :param column_config:
+        :param column_config: optional
         :return:
         """
         if column_config:
@@ -339,7 +343,10 @@ class SchemaMaker:
         elif v == 'n/a':
             v = None
         if v and (v.startswith(' ') or v.endswith(' ')):
-            logging.warning(f'Stripping value: "{v}" for {column_config.name}')
+            if column_config:
+                logging.warning(f'Stripping value: "{v}" for {column_config.name}')
+            else:
+                logging.warning(f'Stripping value: "{v}" (no column config)')
             v = v.strip()
         if v and column_config:
             re_match = column_config.settings.regular_expression_match

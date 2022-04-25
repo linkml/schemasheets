@@ -169,7 +169,7 @@ enums:
           opposite: applicable
           interpretation: MUST NOT
           mixs_notation: "-"
-          code: "-"
+          code: "0..0"
       zero_or_one:
         meaning: carvoc:ZeroToOne
         description: not required, single-valued
