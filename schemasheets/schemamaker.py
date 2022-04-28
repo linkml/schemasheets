@@ -441,7 +441,6 @@ class SchemaMaker:
             pvs = sv.get_enum('Cardinality').permissible_values
             for pv in pvs.values():
                 annv = pv.annotations.get(cvocab)
-                #print(f'CHECKING {card} == {annv}')
                 if card and annv and annv.value == card:
                     matches.append(pv)
                 if card == pv.text:
