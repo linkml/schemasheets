@@ -13,12 +13,17 @@ INPUT_DIR = os.path.join(ROOT, 'input')
 OUTPUT_DIR = os.path.join(ROOT, 'output')
 
 def test_export_slots():
+    """
+    Tests linkml2sheets
+    """
     sm = SchemaMaker()
     fn = os.path.join(INPUT_DIR, 'personinfo.tsv')
     out_fn = os.path.join(OUTPUT_DIR, 'personinfo-roundtrip.tsv')
+    # sheets2linkml
     schema = sm.create_schema(fn)
     exporter = SchemaExporter(schemamaker=sm)
     sv = SchemaView(schema)
+    # linkml2sheets, using original sheets as specification
     exporter.export(sv, specification=fn, to_file=out_fn)
     for row in exporter.rows:
         print(row)

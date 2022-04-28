@@ -45,11 +45,21 @@ Remaining rows are **elements** of your schema
 
 - Each element gets its own row
 - A row can represent a class (record, table), field (column), enumeration, or other element types
-- The type of the row is indicated by whether columns with metatype descriptors are filled
-   - E.g. if a column header "field" has a descriptor "slot" then any row with a non-null value is interpreted as a slot
-- If a `metatype` descriptor is present then this is used
-- A row must represent exactly one element type
-- If both class and slot descriptors are present then the row is interpreted as a slot in the context of that class (see slot_usage)
+- If a `metatype` descriptor is used:
+    - the type of the row is indicated by the metatype value (one of: class, slot, enum, type, schema)
+    - a name field must be  present, this indicates the name of the element
+- If a `metatype` descriptor is note used:
+    - some combination of class, slot, enum, permissible value schema, type are used to determine the row type plus the name
+    - if both class and slot are populated the row is interpreted as `slot_usage`
+    - if only class is populated the row is a class element with name determined by the value of the class column
+    - if only slot is populated the row is a slot element with name determined by the value of the slot column
+    - if only type is populated the row is a type element with name determined by the value of the type column
+    - if only enum is populated the row is a enum element with name determined by the value of the enum column
+    - if both enum and permissible_value are populated the row is a permissible value element for that enum
+    - if permissible_value must not be populated without enum being populated
+    - if only schema is populated the row is a scheme element with name determined by the value of the schema column
+    - schema column may be populated in conjunction with any of the combination above to place the element in a schema
+    - all other combinations are forbidden
 - All sheets/TSVs are combined together into a single LinkML schema as YAML
 - This LinkML schema can be translated to other formats as per the LinkML [generators](https://linkml.io/linkml/generators/index.html)
 

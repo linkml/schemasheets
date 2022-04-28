@@ -61,8 +61,22 @@ class SchemaExporter:
                 delimiter=self.delimiter,
                 fieldnames=table_config.columns.keys())
             writer.writeheader()
+            descriptor_rows = self._get_descriptor_rows(schemasheet.table_config)
+            col0 = list(table_config.columns.keys())[0]
+            for row in descriptor_rows:
+                row[col0] = f'>{row[col0]}'
+                writer.writerow(row)
             for row in self.rows:
                 writer.writerow(row)
+
+    def _get_descriptor_rows(self, table_config: TableConfig) -> List[Dict]:
+        rows = []
+        row0 = {}
+        for cn, col in table_config.columns.items():
+            row0[cn] = col.maps_to
+        rows.append(row0)
+        return rows
+
 
 
     def export_element(self, element: Element, parent: Optional[Element], schemaview: SchemaView, table_config: TableConfig):
