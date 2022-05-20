@@ -2,6 +2,11 @@
 
 examples/output
 
+bin
+
+# open office tmp files
+*#
+
 .idea
 conf/*json
 .cogs
