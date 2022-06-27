@@ -1,5 +1,9 @@
 .DS_Store
 
+nmdc_roundtrip/
+nmdc_verbatims/
+slot_definition_reports/
+
 examples/output
 
 bin

@@ -68,3 +68,29 @@ configured_owl_via_project: examples/output/range_override_examples.yaml
 		--generator-arguments 'owl: {type-objects: false}' \
 		--dir examples/output $<
 
+# ---
+
+slot_definition_reports/slot_definition_range_tally.tsv:
+	$(RUN) python schemasheets/get_metaclass_slotvals.py \
+		--selected_element slot_definition \
+		--directory slot_definition_reports
+
+nmdc_verbatims/annotations.tsv:
+	$(RUN) python schemasheets/verbatim_sheets.py \
+		--schema_source 'https://raw.githubusercontent.com/microbiomedata/nmdc-schema/main/src/schema/nmdc.yaml' \
+		--directory nmdc_verbatims
+
+nmdc_roundtrip/nmdc_roundtrip.yaml: nmdc_verbatims/annotations.tsv
+	# add
+	# internal_separator: "|"
+	# for emit_prefixes
+	# ---
+	# sheets2linkml casts integers to strings?!
+	mkdir -p nmdc_roundtrip
+	$(RUN) sheets2linkml \
+		--output $@ nmdc_verbatims/*
+
+nmdc_roundtrip/nmdc_roundtrip_generated.yaml: nmdc_roundtrip/nmdc_roundtrip.yaml
+	- $(RUN) gen-linkml \
+		--output $@ \
+		--format yaml $<
