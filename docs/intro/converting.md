@@ -20,6 +20,6 @@ a website that can be easily hosted on github.
 To create only LinkML yaml:
 
 ```bash
-schemasheets -o my.yaml  src/*.tsv
+sheets2linkml -o my.yaml  src/*.tsv
 ```
 
