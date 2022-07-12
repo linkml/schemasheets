@@ -16,6 +16,7 @@ SHEET = os.path.join(INPUT_DIR, 'personinfo.tsv')
 ROUNDTRIPPED_SHEET = os.path.join(OUTPUT_DIR, 'personinfo-roundtrip.tsv')
 MINISHEET = os.path.join(OUTPUT_DIR, 'mini.tsv')
 TEST_SPEC = os.path.join(INPUT_DIR, 'test-spec.tsv')
+ENUM_SPEC = os.path.join(INPUT_DIR, 'enums.tsv')
 
 EXPECTED = [
     {
@@ -54,7 +55,7 @@ EXPECTED = [
 
 def test_roundtrip_schema():
     """
-    Tests linkml2sheets by roundtripping from a schema in YAML
+    Tests linkml2sheets by roundtripping from the standard personinfo schema in YAML
     """
     sm = SchemaMaker()
     # sheets2linkml, from SHEET
@@ -67,13 +68,11 @@ def test_roundtrip_schema():
     exporter.export(sv, specification=SHEET, to_file=ROUNDTRIPPED_SHEET)
     for row in exporter.rows:
         logging.info(row)
-        print(row)
     for record in EXPECTED:
         assert record in exporter.rows
 
 
 def _roundtrip(schema: SchemaDefinition, specification: str):
-    #print(yaml_dumper.dumps(schema))
     sm = SchemaMaker()
     exporter = SchemaExporter(schemamaker=sm)
     sv = SchemaView(schema)
@@ -81,16 +80,17 @@ def _roundtrip(schema: SchemaDefinition, specification: str):
     for row in exporter.rows:
         print(row)
     schema2 = sm.create_schema(MINISHEET)
-    #print(yaml_dumper.dumps(schema2))
     sv2 = SchemaView(schema2)
     for e in sv.all_elements().values():
         e2 = sv2.get_element(e.name)
+        if e2 is None:
+            raise ValueError(f"Could not find {e.name}")
         e2.from_schema = e.from_schema
-        print(f"Comparing:\n - {e}\n - {e2}")
+        #print(f"Comparing:\n - {e}\n - {e2}")
         for s, v in vars(e).items():
             v2 = getattr(e2, s, None)
-            if v:
-                print(f"   {s}: {v} ?= {v2}")
+            if v != v2:
+                logging.error(f"   {s}: {v} ?= {v2}")
             assert v == v2
 
 
@@ -113,7 +113,21 @@ def test_dynamic():
     _roundtrip(schema, TEST_SPEC)
 
 
+def test_enums():
+    """
+    tests a specification that is dedicated to enums
+    """
+    sb = SchemaBuilder()
+    sb.add_enum('E', ['V1', 'V2'])
+    sb.add_defaults()
+    schema = sb.schema
+    #_roundtrip(schema, ENUM_SPEC)
+
+
 def test_spec():
+    """
+    Tests parsing of specification rows from TSV
+    """
     schemasheet = SchemaSheet.from_csv(TEST_SPEC)
     table_config = schemasheet.table_config
     #for c in table_config.columns.values():
