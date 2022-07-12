@@ -6,12 +6,13 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional, TextIO, Union
 
 import click
-from linkml_runtime.linkml_model import Element, SlotDefinition
+from linkml_runtime.linkml_model import Element, SlotDefinition, SubsetDefinition, ClassDefinition, EnumDefinition, PermissibleValue, \
+    TypeDefinition
 from linkml_runtime.utils.formatutils import underscore
-from linkml_runtime.utils.schemaview import SchemaView, ClassDefinition
+from linkml_runtime.utils.schemaview import SchemaView
 
 from schemasheets.schemamaker import SchemaMaker
-from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet
+from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet, T_ENUM, T_PV, T_TYPE, T_SUBSET
 
 ROW = Dict[str, Any]
 
@@ -30,7 +31,7 @@ class SchemaExporter:
         """
         Exports a schema to a schemasheets TSV
 
-        EITHER a specification OR a table_config must be passed. This imforms
+        EITHER a specification OR a table_config must be passed. This informs
         how schema elements are mapped to rows
 
         :param schemaview:
@@ -43,6 +44,8 @@ class SchemaExporter:
             schemasheet = SchemaSheet.from_csv(specification, delimiter=self.delimiter)
             table_config = schemasheet.table_config
             logging.info(f'Remaining rows={len(schemasheet.rows)}')
+        if specification is None and table_config is None:
+            raise ValueError("Must specify EITHER specification OR table_config")
         for slot in schemaview.all_slots().values():
             self.export_element(slot, None, schemaview, table_config)
         for cls in schemaview.all_classes().values():
@@ -51,6 +54,14 @@ class SchemaExporter:
                 self.export_element(att, cls, schemaview, table_config)
             for su in cls.slot_usage.values():
                 self.export_element(su, cls, schemaview, table_config)
+        for e in schemaview.all_enums().values():
+            self.export_element(e, None, schemaview, table_config)
+            for pv in e.permissible_values.values():
+                self.export_element(pv, e, schemaview, table_config)
+        for typ in schemaview.all_types().values():
+            self.export_element(typ, None, schemaview, table_config)
+        for subset in schemaview.all_subsets().values():
+            self.export_element(subset, None, schemaview, table_config)
         if to_file:
             if isinstance(to_file, str) or isinstance(to_file, Path):
                 stream = open(to_file, 'w', encoding='utf-8')
@@ -61,48 +72,68 @@ class SchemaExporter:
                 delimiter=self.delimiter,
                 fieldnames=table_config.columns.keys())
             writer.writeheader()
-            descriptor_rows = self._get_descriptor_rows(schemasheet.table_config)
+            descriptor_rows = schemasheet.table_config_rows
             col0 = list(table_config.columns.keys())[0]
             for row in descriptor_rows:
-                row[col0] = f'>{row[col0]}'
+                row[col0] = row[col0]
                 writer.writerow(row)
             for row in self.rows:
                 writer.writerow(row)
 
-    def _get_descriptor_rows(self, table_config: TableConfig) -> List[Dict]:
-        rows = []
-        row0 = {}
-        for cn, col in table_config.columns.items():
-            row0[cn] = col.maps_to
-        rows.append(row0)
-        return rows
-
-
-
     def export_element(self, element: Element, parent: Optional[Element], schemaview: SchemaView, table_config: TableConfig):
+        """
+        Translates an individual schema element to a row
+
+        A row is either a simple row representing a standalone element, or it represents a contextualized element, in
+        which case a *parent* element is also provided.
+
+        - A PermissibleValue element *MUST* be contextualized using a parent EnumDefinition
+        - A SlotDefinition element *MAY* be contextualized using a parent ClassDefinition
+
+        :param element:
+        :param parent:
+        :param schemaview:
+        :param table_config:
+        :return:
+        """
+        # Step 1: determine both primary key (pk) column, a pk of any parent
         pk_col = None
         parent_pk_col = None
         for col_name, col_config in table_config.columns.items():
             if col_config.is_element_type:
                 t = col_config.maps_to
                 if t == T_CLASS:
+                    # slots MAY be contextualized by classes
                     if isinstance(element, ClassDefinition):
                         pk_col = col_name
                     if isinstance(parent, ClassDefinition):
                         parent_pk_col = col_name
                 elif t == T_SLOT and isinstance(element, SlotDefinition):
                     pk_col = col_name
+                elif t == T_TYPE and isinstance(element, TypeDefinition):
+                    pk_col = col_name
+                elif t == T_SUBSET and isinstance(element, SubsetDefinition):
+                    pk_col = col_name
+                elif t == T_ENUM:
+                    # permissible values MUST be contextualized by enums
+                    if isinstance(element, EnumDefinition):
+                        pk_col = col_name
+                    if isinstance(parent, EnumDefinition):
+                        parent_pk_col = col_name
+                elif t == T_PV and isinstance(element, PermissibleValue):
+                    pk_col = col_name
                 else:
                     pass
         if not pk_col:
+            logging.warning(f"Skipping element: {element}, no PK")
             return
+        # Step 2: iterate through all columns in the spec, and populate a row object
         exported_row = {}
         for col_name, col_config in table_config.columns.items():
             settings = col_config.settings
             if col_config.metaslot:
                 v = getattr(element, underscore(col_config.metaslot.name), None)
                 if v is not None and v != [] and v != {}:
-                    exclude = False
                     def repl(v: str) -> Optional[str]:
                         if settings.curie_prefix:
                             pfx = f'{settings.curie_prefix}:'
@@ -122,7 +153,12 @@ class SchemaExporter:
                             exported_row[col_name] = str(v)
             elif col_config.is_element_type:
                 if pk_col == col_name:
-                    exported_row[col_name] = element.name
+                    if isinstance(element, PermissibleValue):
+                        exported_row[col_name] = element.text
+                        if not parent_pk_col:
+                            raise ValueError(f"Cannot have floating permissible value {element.text}")
+                    else:
+                        exported_row[col_name] = element.name
                 elif parent_pk_col == col_name:
                     exported_row[col_name] = parent.name
                 else:
