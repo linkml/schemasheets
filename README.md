@@ -18,9 +18,52 @@
     </a>
 </p>
 
-Schemasheets is a framework for managing your schema using
-spreadsheets (Google Sheets, Excel). It works by compiling down to
-[LinkML](https://linkml.io), which can itself be compuled to a variety
-of formalisms.
+![linkml logo](https://avatars.githubusercontent.com/u/79337873?s=200&v=4)
+![google sheets logo](https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Google_Sheets_logo_%282014-2020%29.svg/175px-Google_Sheets_logo_%282014-2020%29.svg.png)
 
-For more info, see the [documentation](https://linkml.io/schemasheets)
+Create a [data dictionary](https://linkml.io/schemasheets/howto/data-dictionaries/) / schema for your data using simple spreadsheets - *no coding required*.
+
+## About
+
+Schemasheets is a framework for managing your schema using
+spreadsheets ([Google Sheets](https://linkml.io/schemasheets/howto/google-sheets/), [Excel](https://linkml.io/schemasheets/howto/excel/)). It works by compiling down to
+[LinkML](https://linkml.io), which can itself be compiled to a variety
+of formalisms, or used for different purposes like data validation
+
+- [installation](https://linkml.io/schemasheets/install/)
+- [basics](https://linkml.io/schemasheets/intro/basics/)
+
+## Documentation
+
+See the [Schema Sheets Manual](https://linkml.io/schemasheets)
+
+## Quick Start
+
+```bash
+pip install schemasheets
+```
+
+You should then be able to run the following commands:
+
+- sheets2linkml - Convert schemasheets to a LinkML schema
+- linkml2sheets - Convert a LinkML schema to schemasheets
+- sheets2project - Generate an entire set of schema files (JSON-Schema, SHACL, SQL, ...) from Schemasheets
+
+## Companion tools
+
+We recommend using [COGS](https://linkml.io/schemasheets/howto/google-sheets/) to synchronize your google sheets with local files using a git-like mechanism
+
+## Details
+
+1. Author your schema as a google sheet or excel spreadsheet
+2. [Generate schemas](https://linkml.io/linkml/generators/index.html):
+    - LinkML
+    - SHACL and ShEx
+    - JSON-Schema
+    - SQL DDL
+    - OWL
+3. Get tooling for free:
+    - Data validators
+    - Python bindings
+    - Create a website for your schema
+
