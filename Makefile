@@ -38,7 +38,7 @@ examples/output/single_examples.yaml: examples/input/schema.tsv examples/input/p
 examples/output/multiple_examples_per_slot.yaml: examples/input/schema.tsv examples/input/prefixes.tsv examples/input/multiple_examples_per_slot.tsv
 	$(RUN) sheets2linkml --output $@ $^
 
-.PHONY: clean all test gh-deploy serve datamodel-docs sync-examples cogs-% all_py range_override_reasoning
+.PHONY: clean all test gh-deploy serve datamodel-docs sync-examples cogs-% all_py range_override_reasoning temp
 
 clean:
 	rm -rf examples/output/*examples*yaml*
@@ -94,3 +94,8 @@ nmdc_roundtrip/nmdc_roundtrip_generated.yaml: nmdc_roundtrip/nmdc_roundtrip.yaml
 	- $(RUN) gen-linkml \
 		--output $@ \
 		--format yaml $<
+
+
+temp:
+	mkdir -p temp
+	poetry run linkml2sheets -s tests/output/personinfo.yaml tests/input/personinfo.tsv -d temp
