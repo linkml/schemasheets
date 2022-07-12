@@ -8,10 +8,10 @@ from typing import Dict, Any, List, Optional, TextIO, Union
 import click
 from linkml_runtime.linkml_model import Element, SlotDefinition
 from linkml_runtime.utils.formatutils import underscore
-from linkml_runtime.utils.schemaview import SchemaView, ClassDefinition
+from linkml_runtime.utils.schemaview import SchemaView, ClassDefinition, EnumDefinition, PermissibleValue
 
 from schemasheets.schemamaker import SchemaMaker
-from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet
+from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet, T_ENUM, T_PV
 
 ROW = Dict[str, Any]
 
@@ -53,6 +53,10 @@ class SchemaExporter:
                 self.export_element(att, cls, schemaview, table_config)
             for su in cls.slot_usage.values():
                 self.export_element(su, cls, schemaview, table_config)
+        for e in schemaview.all_enums().values():
+            self.export_element(e, None, schemaview, table_config)
+            for pv in e.permissible_values.values():
+                self.export_element(pv, e, schemaview, table_config)
         if to_file:
             if isinstance(to_file, str) or isinstance(to_file, Path):
                 stream = open(to_file, 'w', encoding='utf-8')
@@ -75,6 +79,8 @@ class SchemaExporter:
         """
         Translates an individual schema element to a row
 
+        A row is either 
+
         :param element:
         :param parent:
         :param schemaview:
@@ -94,9 +100,17 @@ class SchemaExporter:
                         parent_pk_col = col_name
                 elif t == T_SLOT and isinstance(element, SlotDefinition):
                     pk_col = col_name
+                elif t == T_ENUM:
+                    if isinstance(element, EnumDefinition):
+                        pk_col = col_name
+                    if isinstance(parent, EnumDefinition):
+                        parent_pk_col = col_name
+                elif t == T_PV and isinstance(element, PermissibleValue):
+                    pk_col = col_name
                 else:
                     pass
         if not pk_col:
+            logging.warning(f"Skipping element: {element}, no PK")
             return
         # Step 2: iterate through all columns in the spec, and populate a row object
         exported_row = {}
@@ -105,7 +119,6 @@ class SchemaExporter:
             if col_config.metaslot:
                 v = getattr(element, underscore(col_config.metaslot.name), None)
                 if v is not None and v != [] and v != {}:
-                    exclude = False
                     def repl(v: str) -> Optional[str]:
                         if settings.curie_prefix:
                             pfx = f'{settings.curie_prefix}:'
@@ -125,7 +138,12 @@ class SchemaExporter:
                             exported_row[col_name] = str(v)
             elif col_config.is_element_type:
                 if pk_col == col_name:
-                    exported_row[col_name] = element.name
+                    if isinstance(element, PermissibleValue):
+                        exported_row[col_name] = element.text
+                        if not parent_pk_col:
+                            raise ValueError(f"Cannot have floating permissible value {element.text}")
+                    else:
+                        exported_row[col_name] = element.name
                 elif parent_pk_col == col_name:
                     exported_row[col_name] = parent.name
                 else:

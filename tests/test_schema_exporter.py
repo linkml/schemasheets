@@ -84,7 +84,7 @@ def _roundtrip(schema: SchemaDefinition, specification: str):
     for e in sv.all_elements().values():
         e2 = sv2.get_element(e.name)
         if e2 is None:
-            raise ValueError(f"Could not find {e.name}")
+            raise ValueError(f"Could not find {e}")
         e2.from_schema = e.from_schema
         #print(f"Comparing:\n - {e}\n - {e2}")
         for s, v in vars(e).items():
@@ -121,7 +121,11 @@ def test_enums():
     sb.add_enum('E', ['V1', 'V2'])
     sb.add_defaults()
     schema = sb.schema
-    #_roundtrip(schema, ENUM_SPEC)
+    # TODO: add this functionality to SchemaBuilder
+    e = schema.enums['E']
+    e.description = 'test desc'
+    #print(yaml_dumper.dumps(schema))
+    _roundtrip(schema, ENUM_SPEC)
 
 
 def test_spec():
