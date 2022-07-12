@@ -5,6 +5,7 @@ from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import TypeDefinition
+from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView, SchemaDefinition, SlotDefinition
 from schemasheets.schema_exporter import SchemaExporter
 from schemasheets.schemamaker import SchemaMaker
@@ -19,6 +20,7 @@ MINISHEET = os.path.join(OUTPUT_DIR, 'mini.tsv')
 TEST_SPEC = os.path.join(INPUT_DIR, 'test-spec.tsv')
 ENUM_SPEC = os.path.join(INPUT_DIR, 'enums.tsv')
 TYPES_SPEC = os.path.join(INPUT_DIR, 'types.tsv')
+SLOT_SPEC = os.path.join(INPUT_DIR, 'slot-spec.tsv')
 
 EXPECTED = [
     {
@@ -74,26 +76,38 @@ def test_roundtrip_schema():
         assert record in exporter.rows
 
 
-def _roundtrip(schema: SchemaDefinition, specification: str):
+def _roundtrip(schema: SchemaDefinition, specification: str, must_pass=True) -> SchemaDefinition:
+    """
+    Tests a roundtrip from a Schema object to sheets, and then back to a schema, using
+    the specified specification
+
+    :param schema:
+    :param specification:
+    :return:
+    """
     sm = SchemaMaker()
     exporter = SchemaExporter(schemamaker=sm)
     sv = SchemaView(schema)
     exporter.export(schemaview=sv, specification=specification, to_file=MINISHEET)
-    for row in exporter.rows:
-        print(row)
+    #for row in exporter.rows:
+    #    print(row)
     schema2 = sm.create_schema(MINISHEET)
     sv2 = SchemaView(schema2)
     for e in sv.all_elements().values():
         e2 = sv2.get_element(e.name)
         if e2 is None:
+            if not must_pass:
+                continue
             raise ValueError(f"Could not find {e}")
         e2.from_schema = e.from_schema
         #print(f"Comparing:\n - {e}\n - {e2}")
         for s, v in vars(e).items():
             v2 = getattr(e2, s, None)
             if v != v2:
-                logging.error(f"   {s}: {v} ?= {v2}")
-            assert v == v2
+                logging.error(f"   UNEXPECTED {s}: {v} ?= {v2}")
+            if must_pass:
+                assert v == v2
+    return schema2
 
 
 def test_dynamic():
@@ -149,16 +163,37 @@ def test_types():
     _roundtrip(schema, TYPES_SPEC)
 
 
-def test_spec():
+def test_parse_specification_from_tsv():
     """
     Tests parsing of specification rows from TSV
     """
     schemasheet = SchemaSheet.from_csv(TEST_SPEC)
     table_config = schemasheet.table_config
-    #for c in table_config.columns.values():
-    #    print(c)
     mixins_config = table_config.columns["mixins"]
-    #print(mixins_config)
     assert "|" == mixins_config.settings.internal_separator
+
+
+def test_export_metamodel():
+    metamodel_sv = package_schemaview('linkml_runtime.linkml_model.meta')
+    metamodel_schema = metamodel_sv.schema
+    roundtripped_schema = _roundtrip(metamodel_schema, TEST_SPEC, must_pass=False)
+    logging.info(yaml_dumper.dumps(roundtripped_schema))
+
+
+def test_export_metamodel_slots():
+    sm = SchemaMaker()
+    metamodel_sv = package_schemaview('linkml_runtime.linkml_model.meta')
+    metamodel_schema = metamodel_sv.schema
+    exporter = SchemaExporter(schemamaker=sm)
+    sv = SchemaView(metamodel_schema)
+    exporter.export(sv, specification=SLOT_SPEC, to_file=MINISHEET)
+    all_of_slot_rows = [row for row in exporter.rows if row['slot'] == 'all_of']
+    assert 1 == len(all_of_slot_rows)
+    [s] = [row for row in exporter.rows if row['slot'] == 'status']
+    # NOTE: this test may be too rigid, if the metamodel documentation changes then the results
+    # of this will change
+    examples = s['examples']
+    assert 'bibo:draft' == examples
+
 
 

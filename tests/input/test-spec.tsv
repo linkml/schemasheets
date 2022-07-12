@@ -1,3 +1,3 @@
 record	field	key	multiplicity	range	parents	desc	schema.org	wikidata	belongs	status	special	special2	notes	mixins	slots	title	regex
 > class	slot	identifier	cardinality	range	is_a	description	exact_mappings: {curie_prefix: sdo}	exact_mappings: {curie_prefix: wikidata}	in_subset	status	annotations	annotations	ignore	mixins	slots	title	pattern
->								curie_prefix: wikidata		vmap: {T: testing, R: release}	inner_key: special	inner_key: special2		internal_separator: "|"	internal_separator: "|"
+>								curie_prefix: wikidata	internal_separator: "|"	vmap: {T: testing, R: release}	inner_key: special	inner_key: special2		internal_separator: "|"	internal_separator: "|"
