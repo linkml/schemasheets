@@ -57,6 +57,10 @@ class SchemaExporter:
             self.export_element(e, None, schemaview, table_config)
             for pv in e.permissible_values.values():
                 self.export_element(pv, e, schemaview, table_config)
+        for typ in schemaview.all_types().values():
+            self.export_element(typ, None, schemaview, table_config)
+        for subset in schemaview.all_subsets().values():
+            self.export_element(subset, None, schemaview, table_config)
         if to_file:
             if isinstance(to_file, str) or isinstance(to_file, Path):
                 stream = open(to_file, 'w', encoding='utf-8')
@@ -79,7 +83,11 @@ class SchemaExporter:
         """
         Translates an individual schema element to a row
 
-        A row is either 
+        A row is either a simple row representing a standalone element, or it represents a contextualized element, in
+        which case a *parent* element is also provided.
+
+        - A PermissibleValue element *MUST* be contextualized using a parent EnumDefinition
+        - A SlotDefinition element *MAY* be contextualized using a parent ClassDefinition
 
         :param element:
         :param parent:
@@ -94,6 +102,7 @@ class SchemaExporter:
             if col_config.is_element_type:
                 t = col_config.maps_to
                 if t == T_CLASS:
+                    # slots MAY be contextualized by classes
                     if isinstance(element, ClassDefinition):
                         pk_col = col_name
                     if isinstance(parent, ClassDefinition):
@@ -101,6 +110,7 @@ class SchemaExporter:
                 elif t == T_SLOT and isinstance(element, SlotDefinition):
                     pk_col = col_name
                 elif t == T_ENUM:
+                    # permissible values MUST be contextualized by enums
                     if isinstance(element, EnumDefinition):
                         pk_col = col_name
                     if isinstance(parent, EnumDefinition):

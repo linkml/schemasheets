@@ -103,10 +103,8 @@ def test_dynamic():
     sb.add_class('A', [])
     sb.add_class('M1', [])
     sb.add_class('M2', [])
-    sb.add_class('X', [], description='d1', is_a="A", mixins=["M1"])
-    sb.add_class('Y', [], description='d2', is_a="A", mixins=["M1", "M2"])
-    #sb.add_class('X', ['s1', 's2'], description='d1', is_a="A", mixins=[])
-    #sb.add_class('Y', ['s2', 's3'], description='d2', is_a="A", mixins=[])
+    sb.add_class('X', ['s1', 's2'], description='d1', is_a="A", mixins=["M1"])
+    sb.add_class('Y', ['s1', 's2'], description='d2', is_a="A", mixins=["M1", "M2"])
     sb.add_slot(SlotDefinition('s1', title="ts1", description='s1', range="Y"))
     sb.add_defaults()
     schema = sb.schema
