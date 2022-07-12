@@ -25,3 +25,4 @@ nav:
   - Datamodel: datamodel/
 site_url: https://linkml.github.io/schemasheets/
 repo_url: https://github.com/linkml/schemasheets/
+edit_uri: blob/main/docs/

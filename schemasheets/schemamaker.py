@@ -271,7 +271,8 @@ class SchemaMaker:
                 c: ClassDefinition
                 for c in vmap[T_CLASS]:
                     #c: ClassDefinition = vmap[T_CLASS]
-                    c.slots.append(main_elt.name)
+                    if main_elt.name not in c.slots:
+                        c.slots.append(main_elt.name)
                     if self.unique_slots:
                         yield main_elt
                     else:

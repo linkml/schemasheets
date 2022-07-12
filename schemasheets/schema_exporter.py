@@ -6,8 +6,9 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional, TextIO, Union
 
 import click
-from linkml_runtime.linkml_model import Element, SlotDefinition, SubsetDefinition, ClassDefinition, EnumDefinition, PermissibleValue, \
-    TypeDefinition
+from linkml_runtime.linkml_model import Element, SlotDefinition, SubsetDefinition, ClassDefinition, EnumDefinition, \
+    PermissibleValue, \
+    TypeDefinition, Example
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -15,6 +16,13 @@ from schemasheets.schemamaker import SchemaMaker
 from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet, T_ENUM, T_PV, T_TYPE, T_SUBSET
 
 ROW = Dict[str, Any]
+
+
+def _configuration_has_primary_keys_for(table_config: TableConfig, metatype: str) -> bool:
+    for col_name, col_config in table_config.columns.items():
+        if col_config.is_element_type and col_config.maps_to == metatype:
+            return True
+    return False
 
 
 @dataclass
@@ -48,12 +56,13 @@ class SchemaExporter:
             raise ValueError("Must specify EITHER specification OR table_config")
         for slot in schemaview.all_slots().values():
             self.export_element(slot, None, schemaview, table_config)
-        for cls in schemaview.all_classes().values():
-            self.export_element(cls, None, schemaview, table_config)
-            for att in cls.attributes.values():
-                self.export_element(att, cls, schemaview, table_config)
-            for su in cls.slot_usage.values():
-                self.export_element(su, cls, schemaview, table_config)
+        if _configuration_has_primary_keys_for(table_config, T_CLASS):
+            for cls in schemaview.all_classes().values():
+                self.export_element(cls, None, schemaview, table_config)
+                for att in cls.attributes.values():
+                    self.export_element(att, cls, schemaview, table_config)
+                for su in cls.slot_usage.values():
+                    self.export_element(su, cls, schemaview, table_config)
         for e in schemaview.all_enums().values():
             self.export_element(e, None, schemaview, table_config)
             for pv in e.permissible_values.values():
@@ -125,7 +134,7 @@ class SchemaExporter:
                 else:
                     pass
         if not pk_col:
-            logging.warning(f"Skipping element: {element}, no PK")
+            logging.info(f"Skipping element: {element}, no PK")
             return
         # Step 2: iterate through all columns in the spec, and populate a row object
         exported_row = {}
@@ -134,7 +143,12 @@ class SchemaExporter:
             if col_config.metaslot:
                 v = getattr(element, underscore(col_config.metaslot.name), None)
                 if v is not None and v != [] and v != {}:
-                    def repl(v: str) -> Optional[str]:
+                    def repl(v: Any) -> Optional[str]:
+                        if col_config.maps_to == 'examples':
+                            if isinstance(v, Example):
+                                return v.value
+                            else:
+                                raise ValueError(f"Expected Example, got {type(v)} for {v}")
                         if settings.curie_prefix:
                             pfx = f'{settings.curie_prefix}:'
                             if v.startswith(pfx):
