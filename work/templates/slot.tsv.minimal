@@ -1,0 +1,3 @@
+slot  	alias	aliases	examples_values
+> slot	alias	aliases	examples
+>		"internal_separator: ""|"""
