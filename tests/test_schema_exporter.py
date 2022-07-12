@@ -4,6 +4,7 @@ import os
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
 from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model import TypeDefinition
 from linkml_runtime.utils.schemaview import SchemaView, SchemaDefinition, SlotDefinition
 from schemasheets.schema_exporter import SchemaExporter
 from schemasheets.schemamaker import SchemaMaker
@@ -17,6 +18,7 @@ ROUNDTRIPPED_SHEET = os.path.join(OUTPUT_DIR, 'personinfo-roundtrip.tsv')
 MINISHEET = os.path.join(OUTPUT_DIR, 'mini.tsv')
 TEST_SPEC = os.path.join(INPUT_DIR, 'test-spec.tsv')
 ENUM_SPEC = os.path.join(INPUT_DIR, 'enums.tsv')
+TYPES_SPEC = os.path.join(INPUT_DIR, 'types.tsv')
 
 EXPECTED = [
     {
@@ -124,6 +126,20 @@ def test_enums():
     e.description = 'test desc'
     #print(yaml_dumper.dumps(schema))
     _roundtrip(schema, ENUM_SPEC)
+
+
+def test_types():
+    """
+    tests a specification that is dedicated to types
+    """
+    sb = SchemaBuilder()
+    #sb.add_defaults()
+    schema = sb.schema
+    # TODO: add this functionality to SchemaBuilder
+    t = TypeDefinition('MyString', description='my string', typeof='string')
+    schema.types[t.name] = t
+    #print(yaml_dumper.dumps(schema))
+    _roundtrip(schema, TYPES_SPEC)
 
 
 def test_spec():

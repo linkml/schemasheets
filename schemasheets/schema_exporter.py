@@ -6,12 +6,13 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional, TextIO, Union
 
 import click
-from linkml_runtime.linkml_model import Element, SlotDefinition
+from linkml_runtime.linkml_model import Element, SlotDefinition, SubsetDefinition, ClassDefinition, EnumDefinition, PermissibleValue, \
+    TypeDefinition
 from linkml_runtime.utils.formatutils import underscore
-from linkml_runtime.utils.schemaview import SchemaView, ClassDefinition, EnumDefinition, PermissibleValue
+from linkml_runtime.utils.schemaview import SchemaView
 
 from schemasheets.schemamaker import SchemaMaker
-from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet, T_ENUM, T_PV
+from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet, T_ENUM, T_PV, T_TYPE, T_SUBSET
 
 ROW = Dict[str, Any]
 
@@ -108,6 +109,10 @@ class SchemaExporter:
                     if isinstance(parent, ClassDefinition):
                         parent_pk_col = col_name
                 elif t == T_SLOT and isinstance(element, SlotDefinition):
+                    pk_col = col_name
+                elif t == T_TYPE and isinstance(element, TypeDefinition):
+                    pk_col = col_name
+                elif t == T_SUBSET and isinstance(element, SubsetDefinition):
                     pk_col = col_name
                 elif t == T_ENUM:
                     # permissible values MUST be contextualized by enums
