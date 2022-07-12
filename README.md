@@ -21,7 +21,7 @@
 ![linkml logo](https://avatars.githubusercontent.com/u/79337873?s=200&v=4)
 ![google sheets logo](https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Google_Sheets_logo_%282014-2020%29.svg/175px-Google_Sheets_logo_%282014-2020%29.svg.png)
 
-Create a [data dictionary]*https://linkml.io/schemasheets/howto/data-dictionaries/) / schema for your data using simple spreadsheets - *no coding required*.
+Create a [data dictionary](https://linkml.io/schemasheets/howto/data-dictionaries/) / schema for your data using simple spreadsheets - *no coding required*.
 
 ## About
 
