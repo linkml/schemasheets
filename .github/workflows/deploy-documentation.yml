@@ -1,6 +1,6 @@
 name: Auto-deployment of Documentation
 on:
-  push:
+  pull_request:
     branches: [ main ]
 jobs:
   build-docs:
