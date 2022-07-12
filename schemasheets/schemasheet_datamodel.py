@@ -164,6 +164,7 @@ class SchemaSheet:
     table_config: TableConfig
     rows: List[ROW]
     start_line_number: int
+    table_config_rows: List[ROW] = None
 
     @classmethod
     def from_csv(cls, path: str, delimiter='\t'):
@@ -182,9 +183,11 @@ class SchemaSheet:
         table_config = TableConfig(columns={})
         rows = []
         line_num = 1
+        table_config_rows = []
         for row in reader:
             k0 = list(row.keys())[0]
             if row[k0].startswith('>'):
+                table_config_rows.append(row)
                 line_num += 1
                 for k, v in row.items():
                     if v is not None and v.startswith('>'):
@@ -199,8 +202,10 @@ class SchemaSheet:
                         logging.debug(f'Empty val for {k} in line {line_num}')
             else:
                 rows.append(row)
-        # TODO: use a dataclass rather than tuple
-        return SchemaSheet(table_config=table_config, rows=rows, start_line_number=line_num)
+        return SchemaSheet(table_config=table_config,
+                           table_config_rows=table_config_rows,
+                           rows=rows,
+                           start_line_number=line_num)
 
 @lru_cache()
 def get_metamodel() -> SchemaView:

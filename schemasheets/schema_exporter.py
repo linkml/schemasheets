@@ -30,7 +30,7 @@ class SchemaExporter:
         """
         Exports a schema to a schemasheets TSV
 
-        EITHER a specification OR a table_config must be passed. This imforms
+        EITHER a specification OR a table_config must be passed. This informs
         how schema elements are mapped to rows
 
         :param schemaview:
@@ -43,6 +43,8 @@ class SchemaExporter:
             schemasheet = SchemaSheet.from_csv(specification, delimiter=self.delimiter)
             table_config = schemasheet.table_config
             logging.info(f'Remaining rows={len(schemasheet.rows)}')
+        if specification is None and table_config is None:
+            raise ValueError("Must specify EITHER specification OR table_config")
         for slot in schemaview.all_slots().values():
             self.export_element(slot, None, schemaview, table_config)
         for cls in schemaview.all_classes().values():
@@ -61,7 +63,8 @@ class SchemaExporter:
                 delimiter=self.delimiter,
                 fieldnames=table_config.columns.keys())
             writer.writeheader()
-            descriptor_rows = self._get_descriptor_rows(schemasheet.table_config)
+            #descriptor_rows = self._get_descriptor_rows(schemasheet)
+            descriptor_rows = schemasheet.table_config_rows
             col0 = list(table_config.columns.keys())[0]
             for row in descriptor_rows:
                 row[col0] = f'>{row[col0]}'
@@ -69,7 +72,8 @@ class SchemaExporter:
             for row in self.rows:
                 writer.writerow(row)
 
-    def _get_descriptor_rows(self, table_config: TableConfig) -> List[Dict]:
+    def _get_descriptor_rows(self, schemasheet: SchemaSheet) -> List[Dict]:
+        table_config = schemasheet
         rows = []
         row0 = {}
         for cn, col in table_config.columns.items():
@@ -77,9 +81,17 @@ class SchemaExporter:
         rows.append(row0)
         return rows
 
-
-
     def export_element(self, element: Element, parent: Optional[Element], schemaview: SchemaView, table_config: TableConfig):
+        """
+        Translates an individual schema element to a row
+
+        :param element:
+        :param parent:
+        :param schemaview:
+        :param table_config:
+        :return:
+        """
+        # Step 1: determine both primary key (pk) column, a pk of any parent
         pk_col = None
         parent_pk_col = None
         for col_name, col_config in table_config.columns.items():
@@ -96,6 +108,7 @@ class SchemaExporter:
                     pass
         if not pk_col:
             return
+        # Step 2: iterate through all columns in the spec, and populate a row object
         exported_row = {}
         for col_name, col_config in table_config.columns.items():
             settings = col_config.settings

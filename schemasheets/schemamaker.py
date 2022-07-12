@@ -392,6 +392,7 @@ class SchemaMaker:
                 if v is None:
                     v = []
                 else:
+                    #print(f"MS: {metaslot.name}; sep = {column_config.settings.internal_separator} // {column_config}")
                     if column_config.settings.internal_separator:
                         v = v.split(column_config.settings.internal_separator)
                     else:
