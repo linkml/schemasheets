@@ -17,7 +17,7 @@ a website that can be easily hosted on github.
 
 ## Generating a LinkML schema
 
-To create only LinkML yaml:
+To create *only* LinkML yaml:
 
 ```bash
 sheets2linkml -o my.yaml  src/*.tsv

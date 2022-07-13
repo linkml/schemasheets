@@ -185,6 +185,9 @@ class SchemaSheet:
         line_num = 1
         table_config_rows = []
         for row in reader:
+            # google sheets
+            if "" in row:
+                del row[""]
             k0 = list(row.keys())[0]
             if row[k0].startswith('>'):
                 table_config_rows.append(row)

@@ -49,21 +49,51 @@ You should then be able to run the following commands:
 - linkml2sheets - Convert a LinkML schema to schemasheets
 - sheets2project - Generate an entire set of schema files (JSON-Schema, SHACL, SQL, ...) from Schemasheets
 
-## Companion tools
+As an example, take a look at the different tabs in the google sheet with ID [1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ](https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=55566104)
+
+The personinfo tab contains the bulk of the metadata elements:
+
+|record|field|key|multiplicity|range|desc|schema.org|
+|---|---|---|---|---|---|---|
+|`>` class|slot|identifier|cardinality|range|description|exact_mappings: {curie_prefix: sdo}|
+|`>`|||||||
+||id|yes|1|string|any identifier|identifier|
+||description|no|0..1|string|a textual description|description|
+|Person||n/a|n/a|n/a|a person,living or dead|Person|
+|Person|id|yes|1|string|identifier for a person|identifier|
+|Person, Organization|name|no|1|string|full name|name|
+|Person|age|no|0..1|decimal|age in years||
+|Person|gender|no|0..1|decimal|age in years||
+|Person|has medical history|no|0..*|MedicalEvent|medical history||
+|Event|||||grouping class for events||
+|MedicalEvent||n/a|n/a|n/a|a medical encounter||
+|ForProfit|||||||
+|NonProfit|||||||
+
+This demonstrator schema contains both *record types* (e.g Person, MedicalEvent) as well as *fields* (e.g. id, age, gender)
+
+You can convert this like this:
+
+```bash
+sheets2linkml --gsheet-id 1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ personinfo types prefixes -o personinfo.yaml
+```
+
+This will generate a LinkML YAML file `personinfo.yaml` from 3 of the tabs in the google sheet
+
+You can also work directly with TSVs:
+
+```
+wget https://raw.githubusercontent.com/linkml/schemasheets/main/tests/input/personinfo.tsv 
+sheets2linkml personinfo.tsv  -o personinfo.yaml
+```
 
 We recommend using [COGS](https://linkml.io/schemasheets/howto/google-sheets/) to synchronize your google sheets with local files using a git-like mechanism
 
-## Details
+## Finding out more
 
-1. Author your schema as a google sheet or excel spreadsheet
-2. [Generate schemas](https://linkml.io/linkml/generators/index.html):
-    - LinkML
-    - SHACL and ShEx
-    - JSON-Schema
-    - SQL DDL
-    - OWL
-3. Get tooling for free:
-    - Data validators
-    - Python bindings
-    - Create a website for your schema
+* [Schema Sheets Manual](https://linkml.io/schemasheets)
+   * [Specification](https://linkml.io/schemasheets/specification/)
+   * [Internal Datamodel](https://linkml.io/schemasheets/datamodel/)
+* [linkml/schemasheets](https://github.com/linkml/schemasheets) code repo
+* [linkml/linkml](https://github.com/linkml/linkml) main LinkML repo
 

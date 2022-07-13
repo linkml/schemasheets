@@ -38,13 +38,14 @@ constructed automatically from this, no coding required.
 
 ## Future Developments
 
-Schemasheets was released at the beginning of 2022. It is not yet
-production software, and some parts may not be stable. We hope to
-harden parts of the toolchain, and also add more features that make it
-easier for non-technical people to use, include:
+We hope to soon harden parts of the toolchain, and also add more
+features that make it easier for non-technical people to use, include:
 
 - Web based tooling for managing schemas
 - Integration of existing LinkML tools, such as automated schema inference and mapping
 
+## How to read this documentation
 
+Use the section headings at the top of this page to jump to any
+section, or Previous/Next to follow in a linear order.
 
