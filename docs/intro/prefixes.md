@@ -13,12 +13,17 @@ populated will represent prefixes. The prefix expansion is specified using [pref
 |famrel|https://example.org/FamilialRelations#
 |GSSO|http://purl.obolibrary.org/obo/GSSO_|
 
+See:
+
+- the prefixes tab on the [example google sheet](https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=225448537)
+- [tests/input/prefixes.tsv](https://github.com/linkml/schemasheets/blob/main/tests/input/prefixes.tsv) equivalent file in github
+
 ## Recommendations
 
-We recommend you specify prefixes in their own sheet.
+Although prefixes can be combined into one sheet, we recommend you specify prefixes in their own sheet.
 
 ## Automatic prefixes
 
 If prefixes are not provided, and you do not specify `--no-repair` then prefixes
-will be inferred using [bioregistry](https://bioregistry.io)
+will be inferred using [bioregistry](https://bioregistry.io), provided you use common, standard prefixes.
 

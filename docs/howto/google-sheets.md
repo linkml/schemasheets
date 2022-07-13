@@ -28,9 +28,15 @@ Currently schemasheets has no built in facilities for interacting directly with 
 
 TODO: scripts for merging/splitting sheets
 
-## Manual upload/download
+## gsheets option
 
-Note that you can create a URL from a google sheet to the TSV download - TODO
+For going from sheets to linkml, you can specify `--gsheet-id`, then each argument becomes the name of a sheet. This automatically downloads each sheet and dynamically transforms.
+
+E.g.
+
+```bash
+sheets2linkml --gsheet-id 1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ personinfo types prefixes -o personinfo.yaml
+```
 
 ## COGS
 
@@ -41,6 +47,3 @@ We recommend the COGS framework for working with google sheets
 A common pattern is a single sheet document for a schema, with
 different sheets/tabs for different parts of the schema
 
-## Example
-
-TODO
