@@ -103,6 +103,9 @@
                             <li class="navitem">
                                 <a href="../../datamodel/" class="nav-link">Datamodel</a>
                             </li>
+                            <li class="navitem">
+                                <a href="../../faq/" class="nav-link">FAQ</a>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ml-auto">
@@ -185,7 +188,7 @@ descriptions or assignment of controlled vocabulary/ontology terms</p>
 <li>If both <code>enum</code> and <code>permissible_value</code> are provided, the row represents a particular enum value</li>
 </ul>
 <h2 id="example">Example</h2>
-<p>The following example includes two enums:</p>
+<p>The following example includes two enums, each with a few permissible values</p>
 <table>
 <thead>
 <tr>
@@ -211,19 +214,19 @@ descriptions or assignment of controlled vocabulary/ontology terms</p>
 <tr>
 <td>FamilialRelationshipType</td>
 <td>SIBLING_OF</td>
-<td>famrel:01</td>
+<td>KIN:007</td>
 <td>share the same parent</td>
 </tr>
 <tr>
 <td>FamilialRelationshipType</td>
 <td>PARENT_OF</td>
-<td>famrel:02</td>
+<td>KIN:003</td>
 <td>biological parent</td>
 </tr>
 <tr>
 <td>FamilialRelationshipType</td>
 <td>CHILD_OF</td>
-<td>famrel:03</td>
+<td>KIN:032</td>
 <td>inverse of parent</td>
 </tr>
 <tr>
@@ -255,11 +258,12 @@ descriptions or assignment of controlled vocabulary/ontology terms</p>
 <ul>
 <li><a href="https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=823426713">enums google sheet</a></li>
 </ul>
-<p>All other descriptors are optional, but we recommend you provide descriptions of
+<p>Although optionable recommend you provide descriptions of
 both the enumeration and the <a href="https://w3id.org/linkml/meaning">meaning</a> descriptor which
 maps the value to a vocabulary or ontology term.</p>
+<p>Note that prefixes should be separately declared. In the examples here, we are using two different ontologies.</p>
 <h2 id="more-info">More info</h2>
-<p>For more on enumerations, see <a href="https://linkml.io/linkml/intro/tutorial06.html">the linkml tutorial</a></p></div>
+<p>For more on enumerations, see <a href="https://linkml.io/linkml/schemas/models.html#enums">LinkML Schema Guide</a> and the <a href="https://linkml.io/linkml/intro/tutorial06.html">the linkml tutorial</a></p></div>
             </div>
         </div>
 

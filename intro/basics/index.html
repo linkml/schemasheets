@@ -103,6 +103,9 @@
                             <li class="navitem">
                                 <a href="../../datamodel/" class="nav-link">Datamodel</a>
                             </li>
+                            <li class="navitem">
+                                <a href="../../faq/" class="nav-link">FAQ</a>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ml-auto">
@@ -172,7 +175,7 @@
                     <div class="col-md-9" role="main">
 
 <h1 id="basics">Basics</h1>
-<p>Schemasheets allow you to write schemas to manage your data without writing any code. You keep the source for your schema as a spreadsheet (e.g. in google sheets), and convert to LinkML</p>
+<p>Schemasheets allow you to write schemas to manage your data without writing any code. You keep the source for your schema as a spreadsheet (e.g. in google sheets), and convert to LinkML using <code>sheets2linkml</code></p>
 <h2 id="example">Example</h2>
 <p>The following example shows a schema sheet for a schema that is focused around
 the concept of a Person. The rows in the sheet describe either <em>classes</em> or <em>slots</em> (fields)</p>
@@ -281,10 +284,14 @@ the concept of a Person. The rows in the sheet describe either <em>classes</em> 
 </tr>
 </tbody>
 </table>
-<p>You can see this example as a google sheet:</p>
+<p>You can see this example as a google sheet, or as a file in GitHub:</p>
 <ul>
 <li><a href="https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=55566104">personinfo google sheet</a></li>
+<li><a href="https://github.com/linkml/schemasheets/blob/main/tests/input/personinfo.tsv">tests/input/personinfo.tsv</a> equivalent file in github</li>
 </ul>
+<p>To convert this, assuming <code>personinfo.tsv</code> is in your current directory:</p>
+<pre><code class="language-bash">sheets2linkml personinfo.tsv
+</code></pre>
 <p>The sheet is structured as follows:</p>
 <h2 id="header-line">Header Line</h2>
 <p>The first line is a header line. You get to decide the column headers</p>
@@ -318,12 +325,7 @@ the concept of a Person. The rows in the sheet describe either <em>classes</em> 
 <li>these provide a way to interpret the columns</li>
 <li>descriptors can be drawn from the <a href="https://linkml.io">linkml</a> vocabulary</li>
 </ul>
-<h2 id="schema-elements">Schema Elements</h2>
-<p>Remaining rows are <em>elements</em> of your schema</p>
-<ul>
-<li>Each element gets its own row</li>
-<li>A row can represent a class (record, table), field (column), enumeration, or other element types</li>
-</ul>
+<p>In the example above, there is a single row of descriptions:</p>
 <table>
 <thead>
 <tr>
@@ -348,6 +350,67 @@ the concept of a Person. The rows in the sheet describe either <em>classes</em> 
 </tr>
 </tbody>
 </table>
+<p>Here the column named <code>record</code> maps to the LinkML element class, <code>field</code> to slot, and so on.</p>
+<p>The final column is an example of a <em>complex mapping</em> which we will get to later.</p>
+<h2 id="schema-elements">Schema Elements</h2>
+<p>Remaining rows are <em>elements</em> of your schema</p>
+<ul>
+<li>Each element gets its own row</li>
+<li>A row can represent a class (record, table), field (column), enumeration, or other element types</li>
+</ul>
+<p>Looking at the first three element rows, we can see the first two represent fields (slots), in particular a field called <code>id</code> which is an identifier, and a field called <code>description</code></p>
+<table>
+<thead>
+<tr>
+<th>record</th>
+<th>field</th>
+<th>key</th>
+<th>multiplicity</th>
+<th>range</th>
+<th>desc</th>
+<th>schema.org</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&gt;</code> class</td>
+<td>slot</td>
+<td>identifier</td>
+<td>cardinality</td>
+<td>range</td>
+<td>description</td>
+<td><code>exact_mappings: {curie_prefix: sdo}</code></td>
+</tr>
+<tr>
+<td>-</td>
+<td>id</td>
+<td>yes</td>
+<td>1</td>
+<td>string</td>
+<td>any identifier</td>
+<td>identifier</td>
+</tr>
+<tr>
+<td>-</td>
+<td>description</td>
+<td>no</td>
+<td>0..1</td>
+<td>string</td>
+<td>a textual description</td>
+<td>description</td>
+</tr>
+<tr>
+<td>Person</td>
+<td></td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>a person,living or dead</td>
+<td>Person</td>
+</tr>
+</tbody>
+</table>
+<p>The third element row represents a record (class) type - here, a Person</p>
 <h2 id="core-concepts">Core Concepts</h2>
 <p>The most basic schema concepts are <em>classes</em> and <em>slots</em></p>
 <ul>
@@ -359,7 +422,78 @@ the concept of a Person. The rows in the sheet describe either <em>classes</em> 
 <li>If a <em>class</em> is provided, but a <em>slot</em> is not, then the row represents a class. </li>
 <li>If a <em>slot</em> is provided, but a <em>class</em> is not, then the row represents a slot (field)</li>
 <li>If both <em>class</em> and <em>slot</em> are provided, then the row represents the <em>usage</em> of a slot in the context of a class</li>
-</ul></div>
+</ul>
+<p>Looking at the first 4 element (non-<code>&gt;</code>) rows:</p>
+<table>
+<thead>
+<tr>
+<th>record</th>
+<th>field</th>
+<th>key</th>
+<th>multiplicity</th>
+<th>range</th>
+<th>desc</th>
+<th>schema.org</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&gt;</code> class</td>
+<td>slot</td>
+<td>identifier</td>
+<td>cardinality</td>
+<td>range</td>
+<td>description</td>
+<td><code>exact_mappings: {curie_prefix: sdo}</code></td>
+</tr>
+<tr>
+<td>-</td>
+<td>id</td>
+<td>yes</td>
+<td>1</td>
+<td>string</td>
+<td>any identifier</td>
+<td>identifier</td>
+</tr>
+<tr>
+<td>-</td>
+<td>description</td>
+<td>no</td>
+<td>0..1</td>
+<td>string</td>
+<td>a textual description</td>
+<td>description</td>
+</tr>
+<tr>
+<td>Person</td>
+<td></td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>a person,living or dead</td>
+<td>Person</td>
+</tr>
+<tr>
+<td>Person</td>
+<td>id</td>
+<td>yes</td>
+<td>1</td>
+<td>string</td>
+<td>identifier for a person</td>
+<td>identifier</td>
+</tr>
+</tbody>
+</table>
+<p>The first two are slots, the third is a slot, and the fourth represents the slot <code>id</code> when used in the context of the Person class.</p>
+<p>To understand more about the concept of contextual slots, see <a href="https://linkml.io/linkml/schemas/slots.html#slot-usage">Slot Usage Docs</a> in the main LinkML guide.</p>
+<p>Other element types are:</p>
+<ul>
+<li>Enums, for enumerations</li>
+<li>Prefixes, for representing prefix maps</li>
+<li>Schemas, for schemas</li>
+<li>Types, for primitive datatypes</li>
+</ul>
+<p>See <a href="https://linkml.io/linkml/schemas/index.html">LinkML schemas</a> for more information</p></div>
             </div>
         </div>
 

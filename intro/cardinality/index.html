@@ -103,6 +103,9 @@
                             <li class="navitem">
                                 <a href="../../datamodel/" class="nav-link">Datamodel</a>
                             </li>
+                            <li class="navitem">
+                                <a href="../../faq/" class="nav-link">FAQ</a>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ml-auto">
@@ -148,15 +151,15 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-level="2"><a href="#example" class="nav-link">Example</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-level="2"><a href="#how-it-works" class="nav-link">How it works</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             <li class="nav-item" data-level="2"><a href="#cardinality-vocabulary" class="nav-link">Cardinality Vocabulary</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#examples" class="nav-link">Examples</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -170,8 +173,67 @@
 <h1 id="specifying-cardinality">Specifying cardinality</h1>
 <h2 id="about">About</h2>
 <p>Cardinality refers to how many values a particular field is required or allowed to have</p>
+<h2 id="example">Example</h2>
+<p>In the following schema, the column heading "multiplicity" is mapped to "cardinality":</p>
+<table>
+<thead>
+<tr>
+<th>record</th>
+<th>field</th>
+<th>key</th>
+<th>multiplicity</th>
+<th>range</th>
+<th>desc</th>
+<th>schema.org</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&gt;</code> class</td>
+<td>slot</td>
+<td>identifier</td>
+<td>cardinality</td>
+<td>range</td>
+<td>description</td>
+<td><code>exact_mappings: {curie_prefix: sdo}</code></td>
+</tr>
+<tr>
+<td>-</td>
+<td>id</td>
+<td>yes</td>
+<td>1</td>
+<td>string</td>
+<td>any identifier</td>
+<td>identifier</td>
+</tr>
+<tr>
+<td>-</td>
+<td>description</td>
+<td>no</td>
+<td>0..1</td>
+<td>string</td>
+<td>a textual description</td>
+<td>description</td>
+</tr>
+<tr>
+<td>Person</td>
+<td>has medical history</td>
+<td>no</td>
+<td>0..*</td>
+<td>MedicalEvent</td>
+<td>medical history</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>Here, the cardinalities state:</p>
+<ul>
+<li>there must be exactly one <code>id</code></li>
+<li>there may be a <code>description</code></li>
+<li>zero to many medical history events</li>
+</ul>
 <h2 id="how-it-works">How it works</h2>
-<p>See configschema.yaml for all possible vocabularies, these include:</p>
+<p>See <a href="https://github.com/linkml/schemasheets/blob/main/schemasheets/conf/configschema.yaml">configschema.yaml</a> for all possible vocabularies, these include:</p>
 <ul>
 <li>UML strings, e.g. '0..1'</li>
 <li>text strings matching the cardinality vocabulary, e.g. 'zero to one'</li>
@@ -185,11 +247,9 @@
 </ul>
 <h2 id="cardinality-vocabulary">Cardinality Vocabulary</h2>
 <ul>
-<li><a href="../../datamodel/Cardinality/">Cardinality vocabulary</a></li>
-<li><a href="../../datamodel/configschema.yaml">yaml</a></li>
-</ul>
-<h2 id="examples">Examples</h2>
-<p>TODO</p></div>
+<li><a href="https://linkml.io/schemasheets/datamodel/Cardinality/">Cardinality vocabulary</a></li>
+<li><a href="https://github.com/linkml/schemasheets/blob/main/schemasheets/conf/configschema.yaml">yaml</a></li>
+</ul></div>
             </div>
         </div>
 

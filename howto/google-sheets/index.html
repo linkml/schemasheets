@@ -103,6 +103,9 @@
                             <li class="navitem">
                                 <a href="../../datamodel/" class="nav-link">Datamodel</a>
                             </li>
+                            <li class="navitem">
+                                <a href="../../faq/" class="nav-link">FAQ</a>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ml-auto">
@@ -148,15 +151,11 @@
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#manual-uploaddownload" class="nav-link">Manual upload/download</a>
+            <li class="nav-item" data-level="2"><a href="#gsheets-option" class="nav-link">gsheets option</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             <li class="nav-item" data-level="2"><a href="#cogs" class="nav-link">COGS</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#example" class="nav-link">Example</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -190,17 +189,18 @@ description into different sheets:</p>
 </ul>
 <p>Currently schemasheets has no built in facilities for interacting directly with google sheets - it is up to you to both download and upload these</p>
 <p>TODO: scripts for merging/splitting sheets</p>
-<h2 id="manual-uploaddownload">Manual upload/download</h2>
-<p>Note that you can create a URL from a google sheet to the TSV download - TODO</p>
+<h2 id="gsheets-option">gsheets option</h2>
+<p>For going from sheets to linkml, you can specify <code>--gsheet-id</code>, then each argument becomes the name of a sheet. This automatically downloads each sheet and dynamically transforms.</p>
+<p>E.g.</p>
+<pre><code class="language-bash">sheets2linkml --gsheet-id 1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ personinfo types prefixes -o personinfo.yaml
+</code></pre>
 <h2 id="cogs">COGS</h2>
 <p>We recommend the COGS framework for working with google sheets</p>
 <ul>
 <li><a href="https://github.com/ontodev/cogs">cogs</a></li>
 </ul>
 <p>A common pattern is a single sheet document for a schema, with
-different sheets/tabs for different parts of the schema</p>
-<h2 id="example">Example</h2>
-<p>TODO</p></div>
+different sheets/tabs for different parts of the schema</p></div>
             </div>
         </div>
 

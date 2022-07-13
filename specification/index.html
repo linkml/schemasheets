@@ -103,6 +103,9 @@
                             <li class="navitem">
                                 <a href="../datamodel/" class="nav-link">Datamodel</a>
                             </li>
+                            <li class="navitem">
+                                <a href="../faq/" class="nav-link">FAQ</a>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ml-auto">
@@ -138,10 +141,6 @@
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#translating-sheets-to-linkml" class="nav-link">Translating sheets to LinkML</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
               </ul>
             </li>
         </ul>
@@ -152,66 +151,94 @@
 <h1 id="specification-in-progress">Specification (in progress)</h1>
 <p>The following is an outline. Please refer to the above examples for elucidation.</p>
 <h2 id="sheet-structure">Sheet Structure</h2>
-<p>A sheet is conceptualized as a collection of rows, which is an array of values (cells). Any formatting information is ignored.</p>
-<p>Any individual sheet is organized into</p>
 <ul>
-<li>A header row</li>
-<li>Zero or more column configuration rows</li>
-<li>One or more element rows</li>
+<li>A sheet is a collection of one or more tables</li>
+<li>A table is a named list of rows</li>
+<li>A row is an array of values (cells)</li>
+<li>A value is a UTF-8 string</li>
+</ul>
+<p><em>Note</em>: we follow google terminology here, with a sheet being the encompassing structure, and each containing tabs</p>
+<p>Any formatting information (color, font, etc) is ignored</p>
+<p>Any individual table is organized into</p>
+<ul>
+<li>Exactly one header row. This MUST be first.</li>
+<li>Zero or more column configuration rows. These MUST come after the header row, and must start with <code>&gt;</code></li>
+<li>Zero or more <em>element rows</em></li>
 </ul>
 <h3 id="header-line">Header line</h3>
-<p>The first row is a <strong>header</strong> row.</p>
+<p>The first row in a table is a <strong>header</strong> row.</p>
 <ul>
+<li>Each element of this row is called a column</li>
 <li>Each column must be non-null and unique</li>
-<li>In future grouping columns may be possible</li>
 <li>There is always exactly one header row</li>
 <li>The header row must be first</li>
-<li>Each value must be unique</li>
-<li>The header row provides an index into subsequent rows</li>
+<li>Each column must be unique</li>
 </ul>
+<p>The header row provides an index into subsequent rows</p>
+<p>In future, grouping columns may be possible.</p>
 <h3 id="column-configurations">Column Configurations</h3>
 <p>Any subsequent rows where the first value start with a <code>&gt;</code> character are <strong>column configurations</strong></p>
 <ul>
-<li>A column configuration can be split over multiple lines</li>
-<li>Each line must be a valid yaml string (note that a single token is valid yaml for that token)</li>
+<li>A column configuration can be split over multiple lines. Each such subsequent line must start with <code>&gt;</code></li>
+<li>The <code>&gt;</code> marks to delimit column configurations, and is subsequently ignored for parsing</li>
+<li>Each line must be a valid yaml string<ul>
+<li>note that a single token is valid yaml for that token</li>
+</ul>
+</li>
 <li>The first config line must include a <em>descriptor</em></li>
 <li>Subsequent lines are <em>settings</em> for that descriptor</li>
 <li>A descriptor can be one of:</li>
 <li>Any LinkML metamodel slot (e.g. description, comments, range, required, recommended, multivalued)</li>
-<li>The keyword <code>cardinality</code>. See <a href="../datamodel/Cardinality/">Cardinality enum</a> in datamodel</li>
-<li>An element metatype (schema, prefix, class, enum, slot, type, subset, permissible_value)</li>
-<li>Setting can be taken from configschema.yaml</li>
-<li>vmap provides a mapping used to translate column values. E.g. a custom "yes" or "no" to "true" or "false"</li>
-<li>various keys provide ways to auto-prefix or manipulate strings</li>
+<li>The keyword <code>cardinality</code>. See <a href="https://linkml.io/schemasheets/datamodel/Cardinality/">Cardinality enum</a> in datamodel</li>
+<li>An element metatype (one of: schema, prefix, class, enum, slot, type, subset, permissible_value)</li>
+<li>A YAML object whose key is a descriptor and with values representing settings</li>
+<li>Setting can be taken from <a href="https://linkml.io/schemasheets/datamodel/">the schemasheets datamodel</a></li>
+<li>vmap provides a <strong>value mapping</strong> used to translate column values. E.g. a custom "yes" or "no" to "true" or "false"</li>
+<li>curie_prefix auto-prefixes the value in the cell with a curie prefix</li>
+<li>inner_key indicates that the column represents a complex/nested object, and the cell value populates that key</li>
 </ul>
 <h3 id="element-rows">Element Rows</h3>
 <p>Remaining rows are <strong>elements</strong> of your schema</p>
 <ul>
 <li>Each element gets its own row</li>
-<li>A row can represent a class (record, table), field (column), enumeration, or other element types</li>
+<li>A row must represent a unique element, which may be a:<ul>
+<li>class (record, table)</li>
+<li>field (column)</li>
+<li>slot usage (a field in the context of a class)</li>
+<li>enumeration</li>
+<li>permissible value</li>
+<li>schema</li>
+<li>prefix</li>
+<li>type</li>
+<li>subset</li>
+</ul>
+</li>
 <li>If a <code>metatype</code> descriptor is used:<ul>
 <li>the type of the row is indicated by the metatype value (one of: class, slot, enum, type, schema)</li>
 <li>a name field must be  present, this indicates the name of the element</li>
 </ul>
 </li>
-<li>If a <code>metatype</code> descriptor is note used:<ul>
+<li>If a <code>metatype</code> descriptor is not used:<ul>
 <li>some combination of class, slot, enum, permissible value schema, type are used to determine the row type plus the name</li>
-<li>if both class and slot are populated the row is interpreted as <code>slot_usage</code></li>
+<li>if both class and slot are populated the row is interpreted as <code>slot_usage</code> (i.e a field in the context of a class)</li>
 <li>if only class is populated the row is a class element with name determined by the value of the class column</li>
 <li>if only slot is populated the row is a slot element with name determined by the value of the slot column</li>
 <li>if only type is populated the row is a type element with name determined by the value of the type column</li>
 <li>if only enum is populated the row is a enum element with name determined by the value of the enum column</li>
 <li>if both enum and permissible_value are populated the row is a permissible value element for that enum</li>
-<li>if permissible_value must not be populated without enum being populated</li>
-<li>if only schema is populated the row is a scheme element with name determined by the value of the schema column</li>
+<li>permissible_value must not be populated without enum being populated</li>
+<li>if only schema is populated the row is a schema element with name determined by the value of the schema column</li>
 <li>schema column may be populated in conjunction with any of the combination above to place the element in a schema</li>
 <li>all other combinations are forbidden</li>
 </ul>
 </li>
+<li>All other columns are interpreted according to the column configuration for that column</li>
+<li>the column configuration includes curie_prefix then the value is prefixed with this value</li>
+<li>if the column configuration specifies a vmap this is used to map the provided values</li>
+<li>a column that is mapped to <code>example</code> automatically maps to <code>example.value</code></li>
 <li>All sheets/TSVs are combined together into a single LinkML schema as YAML</li>
 <li>This LinkML schema can be translated to other formats as per the LinkML <a href="https://linkml.io/linkml/generators/index.html">generators</a></li>
-</ul>
-<h2 id="translating-sheets-to-linkml">Translating sheets to LinkML</h2></div>
+</ul></div>
             </div>
         </div>
 
