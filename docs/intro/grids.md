@@ -16,7 +16,7 @@ packages or checklists, e.g. MIxS. Here we may want a slot such as
 "soil sample depth" to be mandatory for soil samples, optional for
 other kinds of samples.
 
-For example:
+Example sheet:
 
 |term|title|desc|mi_patient|mi_mod|mi_terrestrial|mi_marine|mi_extraterrestrial|
 |---|---|---|---|---|---|---|---|

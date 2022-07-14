@@ -23,6 +23,7 @@ nav:
       - Working with Excel: howto/excel.md
   - Specification: specification
   - Datamodel: datamodel/
+  - FAQ: faq.md
 site_url: https://linkml.github.io/schemasheets/
 repo_url: https://github.com/linkml/schemasheets/
 edit_uri: blob/main/docs/

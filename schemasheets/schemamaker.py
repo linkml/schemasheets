@@ -1,7 +1,11 @@
+import codecs
+import contextlib
+import os
 import sys
 import csv
 import logging
-
+import tempfile
+from urllib.request import urlopen
 
 import click
 import yaml
@@ -18,16 +22,12 @@ from schemasheets.schemasheet_datamodel import ColumnConfig, TableConfig, get_co
     DESCRIPTOR, \
     tmap, T_CLASS, T_PV, T_SLOT, T_SUBSET, T_SCHEMA, T_ENUM, T_PREFIX, T_TYPE, SchemaSheet
 from schemasheets.conf.configschema import Cardinality
+from schemasheets.utils.google_sheets import gsheets_download_url
 from schemasheets.utils.prefixtool import guess_prefix_expansion
 
 
 class SchemaSheetRowException(Exception):
     pass
-
-
-
-
-
 
 
 @dataclass
@@ -41,6 +41,7 @@ class SchemaMaker:
     cardinality_vocabulary: str = None
     default_name: str = None
     unique_slots: bool = None
+    gsheet_id: str = None
 
     def create_schema(self, csv_files: Union[str, List[str]], **kwargs) -> SchemaDefinition:
         """
@@ -89,8 +90,9 @@ class SchemaMaker:
         :return:
         """
         logging.info(f'READING {file_name} D={delimiter}')
-        with open(file_name, newline='') as tsv_file:
-            reader = csv.DictReader(tsv_file, delimiter=delimiter)
+        #with self.ensure_file(file_name) as tsv_file:
+        #    reader = csv.DictReader(tsv_file, delimiter=delimiter)
+        with self.ensure_csvreader(file_name, delimiter=delimiter) as reader:
             schemasheet = SchemaSheet.from_dictreader(reader)
             line_num = schemasheet.start_line_number
             # TODO: check why this doesn't work
@@ -104,7 +106,6 @@ class SchemaMaker:
                     line_num += 1
                 except ValueError as e:
                     raise SchemaSheetRowException(f'Error in line {line_num}, row={row}') from e
-
 
     def add_row(self, row: Dict[str, Any], table_config: TableConfig):
         for element in self.row_focal_element(row, table_config):
@@ -503,6 +504,29 @@ class SchemaMaker:
                 schema.subsets[s] = SubsetDefinition(s)
         return schema
 
+    @contextlib.contextmanager
+    def ensure_file(self, file_name: str) -> str:
+        if self.gsheet_id:
+            url = gsheets_download_url(self.gsheet_id, file_name)
+            stream = urlopen(url)
+            yield codecs.iterdecode(stream, 'utf-8')
+        else:
+            with open(file_name) as file:
+                yield file
+
+    @contextlib.contextmanager
+    def ensure_csvreader(self, file_name: str, delimiter=None) -> str:
+        if self.gsheet_id:
+            url = gsheets_download_url(self.gsheet_id, file_name)
+            stream = urlopen(url)
+            text_stream = codecs.iterdecode(stream, 'utf-8')
+            reader = csv.DictReader(text_stream, delimiter=",")
+            yield reader
+        else:
+            with open(file_name) as file:
+                reader = csv.DictReader(file, delimiter=delimiter)
+                yield reader
+
 
 @click.command()
 @click.option('-o', '--output',
@@ -519,13 +543,24 @@ class SchemaMaker:
               default=True,
               show_default=True,
               help="Auto-repair schema")
+@click.option("--gsheet-id",
+              help="Google sheets ID. If this is specified then the arguments MUST be sheet names")
 @click.option("-v", "--verbose", count=True)
 @click.argument('tsv_files', nargs=-1)
-def convert(tsv_files, output: TextIO, name, repair, unique_slots: bool, verbose: int):
+def convert(tsv_files, gsheet_id, output: TextIO, name, repair, unique_slots: bool, verbose: int):
     """
     Convert schemasheets to a LinkML schema
 
-       sheets2linkml --output my_schema.yaml my_schema/*tsv
+    Example:
+
+       sheets2linkml my_schema/*tsv --output my_schema.yaml
+
+    If your sheets are stored as google sheets, then you can pass in --gsheet-id to give the base sheet.
+    In this case arguments should be the names of individual tabs
+
+    Example:
+
+        sheets2linkml --gsheet-id 1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ personinfo types -o my_schema.yaml
     """
     if verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)
@@ -534,6 +569,7 @@ def convert(tsv_files, output: TextIO, name, repair, unique_slots: bool, verbose
     else:
         logging.basicConfig(level=logging.WARNING)
     sm = SchemaMaker()
+    sm.gsheet_id = gsheet_id
     sm.default_name = name
     sm.unique_slots = unique_slots
     schema = sm.create_schema(list(tsv_files))
