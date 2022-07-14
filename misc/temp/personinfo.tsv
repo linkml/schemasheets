@@ -1,0 +1,20 @@
+record	field	key	multiplicity	range	parents	desc	schema.org	wikidata	belongs	status	special	special2	notes
+>class	slot	identifier	cardinality	range	is_a	description	exact_mappings	exact_mappings	in_subset	status	annotations	annotations	ignore
+	id	True		string		any identifier	identifier						
+	description			string		a textual description	description						
+	name												
+	age												
+	gender												
+	has medical history												
+Person						a person,living or dead	Person	Q215627		release			
+Person	id	True		string		identifier for a person	identifier						
+Person	name			string		full name	name						
+Person	age			decimal		age in years							
+Person	gender			decimal		age in years							
+Person	has medical history			MedicalEvent		medical history				testing			
+Organization													
+Organization	name			string		full name	name						
+Event						grouping class for events		Q1656682	a	release			
+MedicalEvent					Event	a medical encounter			b	testing			
+ForProfit					Organization								
+NonProfit					Organization			Q163740					
