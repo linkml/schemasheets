@@ -8,9 +8,15 @@ from linkml_runtime.dumpers import yaml_dumper
 
 meta_source = "https://raw.githubusercontent.com/linkml/linkml-model/main/linkml_model/model/schema/meta.yaml"
 
-meta_element = "schema_definition"
+project_source = "https://raw.githubusercontent.com/microbiomedata/nmdc-schema/main/src/schema/nmdc.yaml"
+
+meta_element = "slot_definition"
 
 meta_view = SchemaView(meta_source)
+
+project_view = SchemaView(project_source)
+
+# ---
 
 slots = meta_view.class_induced_slots(meta_element)
 
@@ -25,20 +31,20 @@ print(as_if_tsv)
 # ---
 
 template_hints = [{"name": i.name, "range": i.range, "multivalued": i.multivalued} for i in slots]
-pprint.pprint(template_hints)
+# pprint.pprint(template_hints)
 
-with open('../template_hints.csv', 'w') as csvfile:
+with open('work/output/template_hints.csv', 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=['name', 'range', 'multivalued'])
     writer.writeheader()
     writer.writerows(template_hints)
 
 # ---
 
-meta_schema = meta_view.schema
+project_schema = project_view.schema
 
-meta_yaml = yaml_dumper.dumps(meta_schema)
+project_yaml = yaml_dumper.dumps(project_schema)
 
-meta_dict = yaml.safe_load(meta_yaml)
+project_dict = yaml.safe_load(project_yaml)
 
 
 def dictionary_check(dict_in: Dict, inner_list: List = []) -> None:
@@ -69,13 +75,13 @@ def list_to_count_dict(list_in: List) -> Dict:
     return count_dict
 
 
-outer_list = dictionary_check(meta_dict)
+outer_list = dictionary_check(project_dict)
 
 key_counts = list_to_count_dict(outer_list)
 
 common_keys_lod = [{"key": k, "count": v} for k, v in key_counts.items()]
 
-with open('../key_counts.csv', 'w') as csvfile:
+with open('work/output/key_counts.csv', 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=['key', 'count'])
     writer.writeheader()
     writer.writerows(common_keys_lod)

@@ -1,0 +1,210 @@
+key,count
+name,99
+description,108
+title,1
+id,1
+version,1
+imports,1
+license,1
+prefix_prefix,12
+prefix_reference,12
+nmdc,1
+GOLD,1
+mixs,1
+wgs,1
+qud,1
+dcterms,1
+linkml,1
+MS,1
+OBI,1
+NCIT,1
+igsn,1
+img.taxon,1
+prefixes,1
+emit_prefixes,1
+default_curi_maps,1
+default_prefix,1
+default_range,1
+sample subset,1
+data object subset,1
+subsets,1
+text,52
+FT ICR-MS Analysis Results,1
+GC-MS Metabolomics Results,1
+Metaproteomics Workflow Statistics,1
+Protein Report,1
+Peptide Report,1
+Unfiltered Metaproteomics Results,1
+Read Count and RPKM,1
+QC non-rRNA R2,1
+QC non-rRNA R1,1
+Metagenome Bins,1
+CheckM Statistics,1
+GOTTCHA2 Krona Plot,1
+Kraken2 Krona Plot,1
+Centrifuge Krona Plot,1
+Kraken2 Classification Report,1
+Kraken2 Taxonomic Classification,1
+Centrifuge Classification Report,1
+Centrifuge Taxonomic Classification,1
+Structural Annotation GFF,1
+Functional Annotation GFF,1
+Annotation Amino Acid FASTA,1
+Annotation Enzyme Commission,1
+Annotation KEGG Orthology,1
+Assembly Coverage BAM,1
+Assembly AGP,1
+Assembly Scaffolds,1
+Assembly Contigs,1
+Assembly Coverage Stats,1
+Filtered Sequencing Reads,1
+QC Statistics,1
+tag,16
+value,16
+file_name_pattern,6
+annotations,16
+TIGRFam Annotation GFF,1
+Clusters of Orthologous Groups (COG) Annotation GFF,1
+CATH FunFams (Functional Families) Annotation GFF,1
+SUPERFam Annotation GFF,1
+SMART Annotation GFF,1
+Pfam Annotation GFF,1
+Direct Infusion FT ICR-MS Raw Data,1
+permissible_values,2
+file type enum,1
+comments,7
+Conceptualization,1
+Data curation,1
+Formal Analysis,1
+Funding acquisition,1
+Investigation,1
+Methodology,1
+Project administration,1
+Resources,1
+Software,1
+Supervision,1
+Validation,1
+Visualization,1
+Writing original draft,1
+Writing review and editing,1
+meaning,1
+Principal Investigator,1
+credit enum,1
+enums,1
+multivalued,25
+ess dive datasets,1
+display_hint,10
+domain,22
+slot_uri,3
+range,58
+inlined_as_list,2
+has credit associations,1
+inlined,1
+study image,1
+relevant protocols,1
+funding sources,1
+deprecated,1
+required,11
+applied role,1
+applied roles,1
+todos,3
+applies to person,1
+mixin,1
+object set,1
+mixins,16
+biosample set,1
+study set,1
+data object set,1
+genome feature set,1
+functional annotation set,1
+activity set,1
+mags activity set,1
+metabolomics analysis activity set,1
+metaproteomics analysis activity set,1
+metagenome annotation activity set,1
+metagenome assembly set,1
+metatranscriptome activity set,1
+read QC analysis activity set,1
+read based analysis activity set,1
+nom analysis activity set,1
+omics processing set,1
+examples,3
+omics type,1
+data object type,1
+compression type,1
+instrument_name,1
+is_a,13
+abstract,1
+gold_path_field,1
+see_also,6
+ecosystem,1
+ecosystem_category,1
+ecosystem_type,1
+ecosystem_subtype,1
+specific_ecosystem,1
+aliases,7
+principal investigator,1
+doi,2
+add_date,1
+mod_date,1
+ecosystem_path_id,1
+habitat,1
+location,1
+community,1
+ncbi_taxonomy_name,1
+ncbi_project_name,1
+sample_collection_site,1
+identifier,1
+sample_collection_year,1
+sample_collection_month,1
+sample_collection_day,1
+sample_collection_hour,1
+sample_collection_minute,1
+salinity_category,1
+soluble_iron_micromol,1
+host_name,1
+depth2,1
+subsurface_depth,1
+subsurface_depth2,1
+proport_woa_temperature,1
+biogas_temperature,1
+soil_annual_season_temp,1
+biogas_retention_time,1
+processing_institution,1
+omics_type,1
+completion_date,1
+slots,8
+nmdc schema version,1
+date created,1
+etl software version,1
+slot_usage,6
+tree_root,1
+database,1
+id_prefixes,3
+in_subset,4
+data object,1
+source,3
+embl.ena,3
+alt_descriptions,3
+exact_mappings,2
+lat_lon,1
+env_broad_scale,1
+env_local_scale,1
+env_medium,1
+part of,1
+biosample,1
+close_mappings,1
+broad_mappings,3
+websites,1
+notes,1
+alternative names,1
+GOLD sample identifiers,1
+INSDC bioproject identifiers,1
+study,1
+has input,2
+biosample processing,1
+omics processing,1
+class_uri,1
+credit association,1
+classes,1
+source_file,1
