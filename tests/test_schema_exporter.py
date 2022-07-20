@@ -4,9 +4,9 @@ import os
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import TypeDefinition
+from linkml_runtime.linkml_model import TypeDefinition, Annotation
 from linkml_runtime.utils.introspection import package_schemaview
-from linkml_runtime.utils.schemaview import SchemaView, SchemaDefinition, SlotDefinition
+from linkml_runtime.utils.schemaview import SchemaView, SchemaDefinition, SlotDefinition, ClassDefinition, YAMLRoot
 from schemasheets.schema_exporter import SchemaExporter
 from schemasheets.schemamaker import SchemaMaker
 from schemasheets.schemasheet_datamodel import SchemaSheet
@@ -100,11 +100,10 @@ def _roundtrip(schema: SchemaDefinition, specification: str, must_pass=True) -> 
                 continue
             raise ValueError(f"Could not find {e}")
         e2.from_schema = e.from_schema
-        #print(f"Comparing:\n - {e}\n - {e2}")
         for s, v in vars(e).items():
             v2 = getattr(e2, s, None)
             if v != v2:
-                logging.error(f"   UNEXPECTED {s}: {v} ?= {v2}")
+                logging.error(f"   UNEXPECTED {s}: {v} ?= {v2} // {type(v2)}")
             if must_pass:
                 assert v == v2
     return schema2
@@ -134,6 +133,30 @@ def test_dynamic():
     _roundtrip(schema, TEST_SPEC)
 
 
+def test_inner_key():
+    """
+    Tests the use of inner_key with annotations
+
+    See https://github.com/linkml/schemasheets/issues/59
+    """
+    sb = SchemaBuilder()
+    sf = SchemaFixer()
+    a = Annotation("display_hint", "hello")
+    s = SlotDefinition("s1")
+    c = ClassDefinition("X",
+                        slots=["s1"],
+                        slot_usage={s.name: s},
+                        annotations={a.tag: a})
+    schema = sb.schema
+    schema.classes[c.name] = c
+    c = schema.classes['X']
+    assert isinstance(c, ClassDefinition)
+    print(type(c.annotations))
+    assert isinstance(c.annotations, dict)
+    assert isinstance(c.slot_usage, dict)
+    _roundtrip(schema, os.path.join(INPUT_DIR, 'test-spec-ann.tsv'))
+
+
 def test_enums():
     """
     tests a specification that is dedicated to enums
@@ -145,7 +168,6 @@ def test_enums():
     # TODO: add this functionality to SchemaBuilder
     e = schema.enums['E']
     e.description = 'test desc'
-    #print(yaml_dumper.dumps(schema))
     _roundtrip(schema, ENUM_SPEC)
 
 
@@ -154,12 +176,10 @@ def test_types():
     tests a specification that is dedicated to types
     """
     sb = SchemaBuilder()
-    #sb.add_defaults()
     schema = sb.schema
     # TODO: add this functionality to SchemaBuilder
     t = TypeDefinition('MyString', description='my string', typeof='string')
     schema.types[t.name] = t
-    #print(yaml_dumper.dumps(schema))
     _roundtrip(schema, TYPES_SPEC)
 
 

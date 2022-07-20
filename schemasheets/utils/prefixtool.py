@@ -1,12 +1,18 @@
+from typing import Optional
+
 from bioregistry import get_iri
 
 priority = ["obofoundry", "default", "miriam", "ols", "n2t", "bioportal"]
 
-def guess_prefix_expansion(pfx) -> str:
+
+def guess_prefix_expansion(prefix: str) -> Optional[str]:
     """
     Guesses a prefix expansion using bioregistry
 
-    :param pfx:
+    :param prefix:
     :return:
     """
-    return get_iri(pfx, "", priority=priority)
+    try:
+        return get_iri(prefix, "", priority=priority)
+    except KeyError:
+        return None
