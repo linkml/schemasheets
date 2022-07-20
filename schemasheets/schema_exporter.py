@@ -8,7 +8,7 @@ from typing import Dict, Any, List, Optional, TextIO, Union
 import click
 from linkml_runtime.linkml_model import Element, SlotDefinition, SubsetDefinition, ClassDefinition, EnumDefinition, \
     PermissibleValue, \
-    TypeDefinition, Example
+    TypeDefinition, Example, Annotation
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -99,8 +99,8 @@ class SchemaExporter:
         - A PermissibleValue element *MUST* be contextualized using a parent EnumDefinition
         - A SlotDefinition element *MAY* be contextualized using a parent ClassDefinition
 
-        :param element:
-        :param parent:
+        :param element: the element to be exported, e.g an instance of SlotDefinition, ClassDefinition, ...
+        :param parent: contextual element; for slots, the parent may be a class; for permissible value, an Enum
         :param schemaview:
         :param table_config:
         :return:
@@ -140,15 +140,31 @@ class SchemaExporter:
         exported_row = {}
         for col_name, col_config in table_config.columns.items():
             settings = col_config.settings
+            # Either: (1) this column is mapped to a metamodel slot (metaslot), or
+            # (2) the column is a type designator (e.g. holds a value like "class" or "slot")
             if col_config.metaslot:
+                # Lookup the value of the element for this metaslot;
+                # e.g. if element = SlotDefinition('phone_no', range='string'), then:
+                #  - if the column has a metaslot 'name', v='phone no'
+                #  - if the column has a metaslot 'range', v='string'
                 v = getattr(element, underscore(col_config.metaslot.name), None)
                 if v is not None and v != [] and v != {}:
+                    # TODO: consider moving this to a standalone function
+                    # inner function to map an atomic value
                     def repl(v: Any) -> Optional[str]:
                         if col_config.maps_to == 'examples':
                             if isinstance(v, Example):
                                 return v.value
                             else:
                                 raise ValueError(f"Expected Example, got {type(v)} for {v}")
+                        if col_config.settings.inner_key:
+                            #print(f"LOOKING UP {col_config.settings.inner_key} in {v}")
+                            if isinstance(v, Annotation):
+                                if v.tag == col_config.settings.inner_key:
+                                    return v.value
+                                else:
+                                    return ''
+                            return getattr(v, col_config.settings.inner_key, None)
                         if settings.curie_prefix:
                             pfx = f'{settings.curie_prefix}:'
                             if v.startswith(pfx):
@@ -156,8 +172,15 @@ class SchemaExporter:
                             else:
                                 return None
                         return v
+                    # map the value (which may be a collection or an object) to a flat string
+                    # representation
                     if isinstance(v, list):
                         v = [repl(v1) for v1 in v if repl(v1) is not None]
+                        v = '|'.join(v)
+                        if v != '':
+                            exported_row[col_name] = v
+                    elif isinstance(v, dict):
+                        v = [repl(v1) for v1 in v.values() if repl(v1) is not None]
                         v = '|'.join(v)
                         if v != '':
                             exported_row[col_name] = v
@@ -166,8 +189,13 @@ class SchemaExporter:
                         if v is not None:
                             exported_row[col_name] = str(v)
             elif col_config.is_element_type:
+                # the column holds the metatype of the element;
+                # e.g if slot=SlotDefinition(...), then the value of a column
+                # 'type' that is a type designator, then the value will be 'slot'
                 if pk_col == col_name:
                     if isinstance(element, PermissibleValue):
+                        # permissible values are treated differently from other metamodel
+                        # elements, as they have no name
                         exported_row[col_name] = element.text
                         if not parent_pk_col:
                             raise ValueError(f"Cannot have floating permissible value {element.text}")
