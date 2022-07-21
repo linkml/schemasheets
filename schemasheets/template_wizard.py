@@ -1,12 +1,14 @@
 import csv
 import logging
 import os
-import pprint
-from typing import List, Dict
+from dataclasses import dataclass
+# import pprint
+from typing import List, Dict, Optional, Any
 
 import click
 import click_log
 import yaml
+# from glom import glom, S
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 
@@ -15,25 +17,76 @@ from schemasheets.schema_exporter import SchemaExporter
 logger = logging.getLogger(__name__)
 click_log.basic_config(logger)
 
-# todo: reflect the classes that use a slot on slot-only rows
+SLOT_NAME = str
+METAMODEL_SLOT_NAME = str
+PROJECT_SLOT_NAME = str
+SLOT_VALUE = str
+SLOT_USAGE_COUNT = int
+
+
+# todo test first
+
+# todo too much writing to file and reading back in
+#  also, there must be something better than LinkML->YAML->Dict
+
+
+# todo: reflect the classes that use a given slot on slot-only rows (via domain of)
 
 # todo: work on YAML-serialized columns like annotation and alt_descriptions
-# todo: style guide, esp use of external terms and consistent grammar
+#  skipping annotations and alternate descriptions for now
 
-# todo add customized first header BEFORE the unfiltered sheet is written
+# todo: write a style guide, esp use of external terms and consistent grammar
+#  NMDC Schema Style Guide
+#  https://docs.google.com/document/d/1KwO5kG79MWuS4eaRn6n9B3Tth4Hg_vo7jPQDqdv-yD4/edit#
+
+# todo add customized header BEFORE the unfiltered sheet is written
 
 # todo: group and or describe mappings
 # todo: comments, notes, todos distinctions
 
 # todo: generate third row for internal separators and annotation names
 
+# todo: clearer class and method names, docstrings, typing
+
+
+@dataclass
 class L2sTemplate:
-    def __init__(self, meta_view: SchemaView, project_view: SchemaView):
-        self.slot_attributes = None
-        self.common_keys_lod = None  # todo work on types
-        self.class_slots_slotnames = None  # todo work on types
-        self.meta_view = meta_view
-        self.project_view = project_view
+    """
+    models the intermediate states while converting the metamodel and some project schema into a bare,
+    then populated schemsheets template
+    """
+
+    meta_view: SchemaView
+    project_view: SchemaView
+
+    slot_attributes: Optional[Dict[SLOT_NAME, Dict[METAMODEL_SLOT_NAME, SLOT_VALUE]]] = None
+
+    # todo refactor this? dict with name and count had been handy for writing to CSV
+    #  but were not doing that anymore
+    proj_elem_usage: Optional[List[Dict[PROJECT_SLOT_NAME, Any]]] = None
+
+    class_slots_slotnames: Optional[List[PROJECT_SLOT_NAME]] = None
+
+    # def __init__(self, meta_view: SchemaView, project_view: SchemaView):
+    #     self.slot_attributes = None
+    #     self.common_keys_lod = None
+    #     self.class_slots_slotnames = None
+    #     self.meta_view = meta_view
+    #     self.project_view = project_view
+
+    def get_all_annotations(self) -> List:
+        """
+        iteratively collects all element annotations
+        """
+        elements = self.project_view.all_elements()
+        annotations = set()
+        for ek, ev in elements.items():
+            if ev.annotations:
+                for current_annotation in ev.annotations:
+                    annotations.add(current_annotation)
+        annotations = list(annotations)
+        annotations.sort()
+        return annotations
 
     def get_slot_names(self, element: str, selected_schema: str) -> List[str]:
         slots = []
@@ -45,7 +98,7 @@ class L2sTemplate:
         slot_names = [str(slot.alias) for slot in slots]
         return slot_names
 
-    def get_slot_attributes(self, slot_list: List[str]):
+    def return_slot_attributes(self, slot_list: List[str]):
         desired_attributes = ["multivalued", "name", "range", "recommended", "required"]
         slot_attributes = {}
         for cs_name, cs_obj in self.meta_view.all_slots().items():
@@ -56,42 +109,42 @@ class L2sTemplate:
                     slot_attributes[cs_name][current_desired] = getattr(cs_obj, current_desired)
         return slot_attributes
 
-    def build_class_slot_templ(self):
+    def get_slot_attributes(self):
         class_names = self.get_slot_names(element="class_definition", selected_schema="meta")
         slot_names = self.get_slot_names(element="slot_definition", selected_schema="meta")
         class_slots_slotnames = list(set(class_names).union(set(slot_names)))
         class_slots_slotnames.sort()
-        current_slot_attributes = self.get_slot_attributes(class_slots_slotnames)
+        current_slot_attributes = self.return_slot_attributes(class_slots_slotnames)
         self.class_slots_slotnames = class_slots_slotnames
         self.slot_attributes = current_slot_attributes
 
-    def count_proj_elem_usage(self):
+    def get_proj_elem_usage(self):
         project_yaml = yaml_dumper.dumps(self.project_view.schema)
         project_dict = yaml.safe_load(project_yaml)
 
-        outer_list = dictionary_check(project_dict)  # todo rename this
+        outer_list = traverse_and_collect_dict_keys(project_dict)  # todo rename this
 
         key_counts = list_to_count_dict(outer_list)
 
         common_keys_lod = [{"key": k, "count": v} for k, v in key_counts.items()]  # todo rename this
 
-        self.common_keys_lod = common_keys_lod
+        self.proj_elem_usage = common_keys_lod
 
     def get_frequent_elements(self, count_threshold: int):
-        meets_threshold = [i["key"] for i in self.common_keys_lod if i["count"] >= count_threshold]
+        meets_threshold = [i["key"] for i in self.proj_elem_usage if i["count"] >= count_threshold]
         return meets_threshold
 
     def whittle_columns(self):
         pass
 
 
-def dictionary_check(dict_in: Dict, inner_list: List = []) -> List:
+def traverse_and_collect_dict_keys(dict_in: Dict, inner_list: List = []) -> List:
     """
     recursively collects all keys from a dictionary
     """
     for key, value in dict_in.items():
         if isinstance(value, dict):
-            dictionary_check(value, inner_list)
+            traverse_and_collect_dict_keys(value, inner_list)
             inner_list.append(key)
         else:
             inner_list.append(key)
@@ -113,6 +166,7 @@ def list_to_count_dict(list_in: List) -> Dict:
 
 @click.command()
 @click_log.simple_verbosity_option(logger)
+# sources
 @click.option('--meta_source',
               default="https://raw.githubusercontent.com/linkml/linkml-model/main/linkml_model/model/schema/meta.yaml",
               help='HTTP or filesystem path to some version of the LinkML meta model'
@@ -121,18 +175,18 @@ def list_to_count_dict(list_in: List) -> Dict:
               help='HTTP or filesystem path to your project schema',
               required=True,
               )
+# output
 @click.option('--template_style',
               default="classes_slots",
-              help="Don't make a column for elements that appear less than N times in your project schema.",
+              help="What high-level schema elements should be included in the template?",
               required=True,
               type=click.Choice(['classes_slots']),
               )
+# filtering columns
 @click.option('--min_occurrences',
               default=2,
               help="Don't make a column for elements that appear less than N times in your project schema."
               )
-# type=click.Choice(['local', 'ftp'])
-# multiple=True
 @click.option('--initial_cols',
               type=click.Choice(['class', 'slot']),
               multiple=True,
@@ -142,6 +196,15 @@ def list_to_count_dict(list_in: List) -> Dict:
               ],
               help="Slots that should appear as the left-most columns."
               )
+@click.option('--complex_cols',
+              type=click.Choice(['annotations', 'alt_descriptions']),
+              multiple=True,
+              default=[
+                  "annotations",
+                  "alt_descriptions",
+              ],
+              help="Complex slots that shouldn't appear as direct YAML serializations."
+              )  # todo skipped because I (or schemasheets) don't have a solution for these YAML serializations yet
 @click.option('--skip_cols',
               type=click.Choice(['slots', 'slot_usage', 'name']),
               multiple=True,
@@ -149,9 +212,13 @@ def list_to_count_dict(list_in: List) -> Dict:
                   "slots",
                   "slot_usage",
                   "name",
-              ],  # todo annotations?
+              ],
               help="Slots that should not appear as columns."
               )
+# always (?) skip these columns.
+# name is ambiguous.
+# slot usage should be broken out into slot usage rows.
+# slots *might* be useful for a class-only template style
 @click.option('--col_sorting',
               type=click.Choice(['alphabetical', 'by_usage_count']),
               multiple=False,
@@ -175,7 +242,7 @@ def list_to_count_dict(list_in: List) -> Dict:
               )
 #         always_cols = []  # todo
 def cli(meta_source, project_source, template_style, min_occurrences, initial_cols, skip_cols, col_sorting,
-        template_dir, populated_dir, selected_classes) -> None:
+        template_dir, populated_dir, selected_classes, complex_cols) -> None:
     """Create a linkml2sheets template based on meta-expected and project-observed elements."""
 
     logger.info(f"creating meta view from {meta_source}")
@@ -188,28 +255,36 @@ def cli(meta_source, project_source, template_style, min_occurrences, initial_co
 
     generated_template = L2sTemplate(meta_view=meta_view, project_view=project_view)
 
+    # todo doesn't get PV annotations for better or worse since they're not "elements"
+    #  also, this list could include annotations that aren't relevant to the selected classes and their slots
+    all_annotations = generated_template.get_all_annotations()
+    print(f"all_annotations: {all_annotations}")
+
     if template_style == "classes_slots":
-        # todo  overwrite handling
+        # todo: overwrite handling
         #  bad path should be handled by click?
         template_path = os.path.join(template_dir,
                                      f"generated_{generated_template.project_view.schema.name}_{template_style}.tsv")
         populated_tsv = os.path.join(populated_dir,
                                      f"generated_{generated_template.project_view.schema.name}_{template_style}.tsv")
 
-        generated_template.build_class_slot_templ()
+        generated_template.get_slot_attributes()
+        # pprint.pprint(generated_template.slot_attributes)
 
-        generated_template.count_proj_elem_usage()
+        generated_template.get_proj_elem_usage()
+        # pprint.pprint(generated_template.proj_elem_usage)
 
         frequent_elements = generated_template.get_frequent_elements(count_threshold=min_occurrences)
+        # pprint.pprint(frequent_elements)
 
         frequent_relevant = list(set(frequent_elements).intersection(set(generated_template.class_slots_slotnames)))
-        special_cols = list(set(initial_cols).union(set(skip_cols)))
+        special_cols = list((set(initial_cols).union(set(skip_cols))).union(set(complex_cols)))
         cols_to_sort = list(set(frequent_relevant).difference(set(special_cols)))
-        # todo add sort by frequency
+
         if col_sorting == "alphabetical":
             cols_to_sort.sort()
         elif col_sorting == "by_usage_count":
-            count_sorted = sorted(generated_template.common_keys_lod, key=lambda x: x['count'], reverse=True)
+            count_sorted = sorted(generated_template.proj_elem_usage, key=lambda x: x['count'], reverse=True)
             cols_to_sort = [i['key'] for i in count_sorted if i['key'] in cols_to_sort]
         cols_to_emit = list(initial_cols) + cols_to_sort
 
@@ -254,6 +329,7 @@ def cli(meta_source, project_source, template_style, min_occurrences, initial_co
             filtered_rows = sorted(filtered_rows, key=lambda x: (x['slot'], x['class']), reverse=False)
 
             card_strings = {}
+            multi_valueds = {}
             for current_emitted in cols_to_emit:
                 card_string = current_emitted
                 with_spaces = current_emitted.replace("_", " ")
@@ -269,13 +345,18 @@ def cli(meta_source, project_source, template_style, min_occurrences, initial_co
                         min_card = "1"
                     if emitted_obj['multivalued']:
                         max_card = "*"
+                        any_multi_valueds = True
+                        multi_valueds[current_emitted] = 'internal_separator: "|"'
+                    else:
+                        multi_valueds[current_emitted] = None
                     card_string = f"{current_emitted}: {min_card}..{max_card}"
                     if emitted_obj['recommended']:
                         card_string += " (recommended)"
                     if emitted_obj['range']:
                         card_string += f" x {emitted_obj['range']}"
-                    else:
-                        card_string += f" x {generated_template.meta_view.schema.default_range}"
+                else:
+                    card_string += f" x {generated_template.meta_view.schema.default_range}"
+                    multi_valueds[current_emitted] = None
                 card_strings[current_emitted] = card_string
 
                 row1_mapping = dict(zip(cols_to_emit, row1))
@@ -285,6 +366,15 @@ def cli(meta_source, project_source, template_style, min_occurrences, initial_co
                 # tsv_writer.writeheader()
                 tsv_writer.writerow(card_strings)
                 tsv_writer.writerow(row1_mapping)
+                if any_multi_valueds:
+                    # pprint.pprint(multi_valueds)
+                    if multi_valueds[cols_to_emit[0]]:
+                        temp = multi_valueds[cols_to_emit[0]]
+                        temp = f"> {temp}"
+                    else:
+                        temp = f">"
+                    multi_valueds[cols_to_emit[0]] = temp
+                    tsv_writer.writerow(multi_valueds)
                 tsv_writer.writerows(filtered_rows)
 
 

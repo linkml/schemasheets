@@ -1,0 +1,2870 @@
+name: partial_roundtrip
+id: partial_roundtrip
+imports:
+- linkml:types
+prefixes:
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+  partial_roundtrip:
+    prefix_prefix: partial_roundtrip
+    prefix_reference: https://example.org/partial_roundtrip/
+  SIO:
+    prefix_prefix: SIO
+    prefix_reference: https://www.ebi.ac.uk/ols/ontologies/sio/terms?short_form=
+  ISA:
+    prefix_prefix: ISA
+    prefix_reference: http://example.org/ISA/
+  dcterms:
+    prefix_prefix: dcterms
+    prefix_reference: http://purl.org/dc/terms/
+  NCIT:
+    prefix_prefix: NCIT
+    prefix_reference: http://purl.obolibrary.org/obo/NCIT_
+  prov:
+    prefix_prefix: prov
+    prefix_reference: http://www.w3.org/ns/prov#
+  OBI:
+    prefix_prefix: OBI
+    prefix_reference: http://purl.obolibrary.org/obo/OBI_
+  MIXS:
+    prefix_prefix: MIXS
+    prefix_reference: http://example.org/MIXS/
+default_prefix: partial_roundtrip
+default_range: string
+subsets:
+  mixs extension:
+    name: mixs extension
+  sample subset:
+    name: sample subset
+slots:
+  EMSL_store_temp:
+    name: EMSL_store_temp
+    description: Temperature at which the sample sent to EMSL should be stored
+    comments:
+    - Enter a temperature in celsius. Numeric portion only.
+    examples:
+    - value: '-80'
+    from_schema: partial_roundtrip
+  GOLD sample identifiers:
+    name: GOLD sample identifiers
+    from_schema: partial_roundtrip
+  INSDC bioproject identifiers:
+    name: INSDC bioproject identifiers
+    from_schema: partial_roundtrip
+  abstract:
+    name: abstract
+    description: The abstract of manuscript/grant associated with the entity; i.e.,
+      a summary of the resource.
+    from_schema: partial_roundtrip
+    exact_mappings:
+    - dcterms:abstract
+    range: string
+  add_date:
+    name: add_date
+    description: The date on which the information was added to the database.
+    from_schema: partial_roundtrip
+    range: string
+  agrochem_addition:
+    name: agrochem_addition
+    description: Addition of fertilizers, pesticides, etc. - amount and time of applications
+    examples:
+    - value: roundup;5 milligram per liter;2018-06-21
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - history/agrochemical additions
+    is_a: attribute
+    slot_uri: MIXS:0000639
+    range: quantity value
+  air_temp_regm:
+    name: air_temp_regm
+    description: Information about treatment involving an exposure to varying temperatures;
+      should include the temperature, treatment regimen including how many times the
+      treatment was repeated, how long each treatment lasted, and the start and end
+      time of the entire treatment; can include different temperature regimens
+    examples:
+    - value: 25 degree Celsius;R2/2018-05-11T14:30/2018-05-11T19:30/P1H30M
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - air temperature regimen
+    is_a: attribute
+    slot_uri: MIXS:0000551
+    range: quantity value
+  al_sat:
+    name: al_sat
+    description: Aluminum saturation (esp. For tropical soils)
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - extreme_unusual_properties/Al saturation
+    is_a: attribute
+    slot_uri: MIXS:0000607
+    range: quantity value
+  al_sat_meth:
+    name: al_sat_meth
+    description: Reference or method used in determining Al saturation
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - extreme_unusual_properties/Al saturation method
+    is_a: attribute
+    slot_uri: MIXS:0000324
+    range: text value
+  alkalinity:
+    name: alkalinity
+    description: Alkalinity, the ability of a solution to neutralize acids to the
+      equivalence point of carbonate or bicarbonate
+    examples:
+    - value: 50 milligram per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - alkalinity
+    is_a: attribute
+    slot_uri: MIXS:0000421
+    range: quantity value
+  alkalinity_method:
+    name: alkalinity_method
+    description: Method used for alkalinity measurement
+    examples:
+    - value: titration
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - alkalinity method
+    is_a: attribute
+    slot_uri: MIXS:0000298
+    range: text value
+  alkyl_diethers:
+    name: alkyl_diethers
+    description: Concentration of alkyl diethers
+    examples:
+    - value: 0.005 mole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - alkyl diethers
+    is_a: attribute
+    slot_uri: MIXS:0000490
+    range: quantity value
+  alt:
+    name: alt
+    description: Altitude is a term used to identify heights of objects such as airplanes,
+      space shuttles, rockets, atmospheric balloons and heights of places such as
+      atmospheric layers and clouds. It is used to measure the height of an object
+      which is above the earth's surface. In this context, the altitude measurement
+      is the vertical distance between the earth's surface above sea level and the
+      sampled position in the air
+    examples:
+    - value: 100 meter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - altitude
+    is_a: attribute
+    slot_uri: MIXS:0000094
+    range: quantity value
+  alternative names:
+    name: alternative names
+    from_schema: partial_roundtrip
+  aminopept_act:
+    name: aminopept_act
+    description: Measurement of aminopeptidase activity
+    examples:
+    - value: 0.269 mole per liter per hour
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - aminopeptidase activity
+    is_a: attribute
+    slot_uri: MIXS:0000172
+    range: quantity value
+  ammonium:
+    name: ammonium
+    description: Concentration of ammonium in the sample
+    examples:
+    - value: 1.5 milligram per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - ammonium
+    is_a: attribute
+    slot_uri: MIXS:0000427
+    range: quantity value
+  analysis_type:
+    name: analysis_type
+    description: Select all the data types associated or available for this biosample
+    examples:
+    - value: metagenomics; metabolomics; proteomics
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:investigation_type
+    multivalued: true
+    range: analysis_type_enum
+  annual_precpt:
+    name: annual_precpt
+    description: The average of all annual precipitation values known, or an estimated
+      equivalent value derived by such methods as regional indexes or Isohyetal maps.
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - mean annual precipitation
+    is_a: attribute
+    slot_uri: MIXS:0000644
+    range: quantity value
+  annual_temp:
+    name: annual_temp
+    description: Mean annual temperature
+    examples:
+    - value: 12.5 degree Celsius
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - mean annual temperature
+    is_a: attribute
+    slot_uri: MIXS:0000642
+    range: quantity value
+  bacteria_carb_prod:
+    name: bacteria_carb_prod
+    description: Measurement of bacterial carbon production
+    examples:
+    - value: 2.53 microgram per liter per hour
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - bacterial carbon production
+    is_a: attribute
+    slot_uri: MIXS:0000173
+    range: quantity value
+  biotic_regm:
+    name: biotic_regm
+    description: Information about treatment(s) involving use of biotic factors, such
+      as bacteria, viruses or fungi.
+    examples:
+    - value: sample inoculated with Rhizobium spp. Culture
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - biotic regimen
+    is_a: attribute
+    slot_uri: MIXS:0001038
+    range: text value
+  biotic_relationship:
+    name: biotic_relationship
+    description: Description of relationship(s) between the subject organism and other
+      organism(s) it is associated with. E.g., parasite on species X; mutualist with
+      species Y. The target organism is the subject of the relationship, and the other
+      organism(s) is the object
+    examples:
+    - value: free living
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - observed biotic relationship
+    is_a: attribute
+    slot_uri: MIXS:0000028
+    range: text value
+  bishomohopanol:
+    name: bishomohopanol
+    description: Concentration of bishomohopanol
+    examples:
+    - value: 14 microgram per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - bishomohopanol
+    is_a: attribute
+    slot_uri: MIXS:0000175
+    range: quantity value
+  bromide:
+    name: bromide
+    description: Concentration of bromide
+    examples:
+    - value: 0.05 parts per million
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - bromide
+    is_a: attribute
+    slot_uri: MIXS:0000176
+    range: quantity value
+  calcium:
+    name: calcium
+    description: Concentration of calcium in the sample
+    examples:
+    - value: 0.2 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - calcium
+    is_a: attribute
+    slot_uri: MIXS:0000432
+    range: quantity value
+  carb_nitro_ratio:
+    name: carb_nitro_ratio
+    description: Ratio of amount or concentrations of carbon to nitrogen
+    examples:
+    - value: '0.417361111'
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - carbon/nitrogen ratio
+    is_a: attribute
+    slot_uri: MIXS:0000310
+    range: quantity value
+  chem_administration:
+    name: chem_administration
+    description: List of chemical compounds administered to the host or site where
+      sampling occurred, and when (e.g. Antibiotics, n fertilizer, air filter); can
+      include multiple compounds. For chemical entities of biological interest ontology
+      (chebi) (v 163), http://purl.bioontology.org/ontology/chebi
+    examples:
+    - value: agar [CHEBI:2509];2018-05-11T20:00Z
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - chemical administration
+    is_a: attribute
+    slot_uri: MIXS:0000751
+    range: controlled term value
+  chloride:
+    name: chloride
+    description: Concentration of chloride in the sample
+    examples:
+    - value: 5000 milligram per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - chloride
+    is_a: attribute
+    slot_uri: MIXS:0000429
+    range: quantity value
+  chlorophyll:
+    name: chlorophyll
+    description: Concentration of chlorophyll
+    examples:
+    - value: 5 milligram per cubic meter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - chlorophyll
+    is_a: attribute
+    slot_uri: MIXS:0000177
+    range: quantity value
+  climate_environment:
+    name: climate_environment
+    description: Treatment involving an exposure to a particular climate; treatment
+      regimen including how many times the treatment was repeated, how long each treatment
+      lasted, and the start and end time of the entire treatment; can include multiple
+      climates
+    examples:
+    - value: tropical climate;R2/2018-05-11T14:30/2018-05-11T19:30/P1H30M
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - climate environment
+    is_a: attribute
+    slot_uri: MIXS:0001040
+    range: text value
+  collection_date:
+    name: collection_date
+    description: 'The time of sampling, either as an instance (single point in time)
+      or interval. In case no exact time is available, the date/time can be right
+      truncated i.e. all of these are valid times: 2008-01-23T19:23:10+00:00; 2008-01-23T19:23:10;
+      2008-01-23; 2008-01; 2008; Except: 2008-01; 2008 all are ISO8601 compliant'
+    examples:
+    - value: 2018-05-11T10:00:00+01:00; 2018-05-11
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - collection date
+    is_a: attribute
+    slot_uri: MIXS:0000011
+    range: timestamp value
+  collection_date_inc:
+    name: collection_date_inc
+    description: Date the incubation was harvested/collected/ended. Only relevant
+      for incubation samples.
+    comments:
+    - Date should be formatted as YYYY(-MM(-DD)). Ie, 2021-04-15, 2021-04 and 2021
+      are all acceptable.
+    examples:
+    - value: 2021-04-15, 2021-04 and 2021 are all acceptable.
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:collection_date
+  collection_time:
+    name: collection_time
+    description: The time of sampling, either as an instance (single point) or interval.
+    comments:
+    - 'Time should be entered as HH:MM(:SS) in GMT. See here for a converter: https://www.worldtimebuddy.com/pst-to-gmt-converter'
+    examples:
+    - value: 13:33 or 13:33:55
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:collection_date
+  collection_time_inc:
+    name: collection_time_inc
+    description: Time the incubation was harvested/collected/ended. Only relevant
+      for incubation samples.
+    comments:
+    - 'Time should be entered as HH:MM(:SS) in GMT. See here for a converter: https://www.worldtimebuddy.com/pst-to-gmt-converter'
+    examples:
+    - value: 13:33 or 13:33:55
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:collection_date
+  community:
+    name: community
+    from_schema: partial_roundtrip
+    range: string
+  crop_rotation:
+    name: crop_rotation
+    description: Whether or not crop is rotated, and if yes, rotation schedule
+    examples:
+    - value: yes;R2/2017-01-01/2018-12-31/P6M
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - history/crop rotation
+    is_a: attribute
+    slot_uri: MIXS:0000318
+    range: text value
+  cur_land_use:
+    name: cur_land_use
+    description: Present state of sample site
+    examples:
+    - value: conifers
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - current land use
+    is_a: attribute
+    slot_uri: MIXS:0001080
+    range: text value
+  cur_vegetation:
+    name: cur_vegetation
+    description: Vegetation classification from one or more standard classification
+      systems, or agricultural crop
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - current vegetation
+    is_a: attribute
+    slot_uri: MIXS:0000312
+    range: text value
+  cur_vegetation_meth:
+    name: cur_vegetation_meth
+    description: Reference or method used in vegetation classification
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - current vegetation method
+    is_a: attribute
+    slot_uri: MIXS:0000314
+    range: text value
+  density:
+    name: density
+    description: Density of the sample, which is its mass per unit volume (aka volumetric
+      mass density)
+    examples:
+    - value: 1000 kilogram per cubic meter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - density
+    is_a: attribute
+    slot_uri: MIXS:0000435
+    range: quantity value
+  depth:
+    name: depth
+    description: The vertical distance below local surface, e.g. for sediment or soil
+      samples depth is measured from sediment or soil surface, respectively. Depth
+      can be reported as an interval for subsurface samples.
+    examples:
+    - value: 10 meter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - depth
+    is_a: attribute
+    slot_uri: MIXS:0000018
+    range: quantity value
+  depth2:
+    name: depth2
+    from_schema: partial_roundtrip
+    range: quantity value
+  description:
+    name: description
+    description: a human-readable description of a thing
+    from_schema: partial_roundtrip
+    slot_uri: dcterms:description
+    range: string
+  diss_carb_dioxide:
+    name: diss_carb_dioxide
+    description: Concentration of dissolved carbon dioxide in the sample or liquid
+      portion of the sample
+    examples:
+    - value: 5 milligram per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - dissolved carbon dioxide
+    is_a: attribute
+    slot_uri: MIXS:0000436
+    range: quantity value
+  diss_hydrogen:
+    name: diss_hydrogen
+    description: Concentration of dissolved hydrogen
+    examples:
+    - value: 0.3 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - dissolved hydrogen
+    is_a: attribute
+    slot_uri: MIXS:0000179
+    range: quantity value
+  diss_inorg_carb:
+    name: diss_inorg_carb
+    description: Dissolved inorganic carbon concentration in the sample, typically
+      measured after filtering the sample using a 0.45 micrometer filter
+    examples:
+    - value: 2059 micromole per kilogram
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - dissolved inorganic carbon
+    is_a: attribute
+    slot_uri: MIXS:0000434
+    range: quantity value
+  diss_inorg_phosp:
+    name: diss_inorg_phosp
+    description: Concentration of dissolved inorganic phosphorus in the sample
+    examples:
+    - value: 56.5 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - dissolved inorganic phosphorus
+    is_a: attribute
+    slot_uri: MIXS:0000106
+    range: quantity value
+  diss_org_carb:
+    name: diss_org_carb
+    description: Concentration of dissolved organic carbon in the sample, liquid portion
+      of the sample, or aqueous phase of the fluid
+    examples:
+    - value: 197 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - dissolved organic carbon
+    is_a: attribute
+    slot_uri: MIXS:0000433
+    range: quantity value
+  diss_org_nitro:
+    name: diss_org_nitro
+    description: Dissolved organic nitrogen concentration measured as; total dissolved
+      nitrogen - NH4 - NO3 - NO2
+    examples:
+    - value: 0.05 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - dissolved organic nitrogen
+    is_a: attribute
+    slot_uri: MIXS:0000162
+    range: quantity value
+  diss_oxygen:
+    name: diss_oxygen
+    description: Concentration of dissolved oxygen
+    examples:
+    - value: 175 micromole per kilogram
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - dissolved oxygen
+    is_a: attribute
+    slot_uri: MIXS:0000119
+    range: quantity value
+  dna_absorb1:
+    name: dna_absorb1
+    description: 260/280 measurement of DNA sample purity
+    comments:
+    - Recommended value is between 1 and 3.
+    examples:
+    - value: '2.02'
+    from_schema: partial_roundtrip
+  dna_absorb2:
+    name: dna_absorb2
+    description: 260/230 measurement of DNA sample purity
+    comments:
+    - Recommended value is between 1 and 3.
+    examples:
+    - value: '2.02'
+    from_schema: partial_roundtrip
+  dna_collect_site:
+    name: dna_collect_site
+    description: Provide information on the site your DNA sample was collected from
+    examples:
+    - value: untreated pond water
+    from_schema: partial_roundtrip
+  dna_concentration:
+    name: dna_concentration
+    comments:
+    - Units must be in ng/uL. Enter the numerical part only. Must be calculated using
+      a fluorometric method. Acceptable values are 0-2000.
+    examples:
+    - value: '100'
+    from_schema: partial_roundtrip
+  dna_cont_type:
+    name: dna_cont_type
+    description: Tube or plate (96-well)
+    examples:
+    - value: plate
+    from_schema: partial_roundtrip
+    range: dna_cont_type_enum
+  dna_cont_well:
+    name: dna_cont_well
+    comments:
+    - Required when 'plate' is selected for container type. Corner wells must be blank.
+      For partial plates, fill by columns. Leave blank if the sample will be shipped
+      in a tube.
+    examples:
+    - value: B2
+    from_schema: partial_roundtrip
+  dna_container_ID:
+    name: dna_container_ID
+    comments:
+    - Must be unique across all tubes and plates, and <20 characters. All samples
+      in a plate should have the same plate label.
+    examples:
+    - value: Pond_MT_041618
+    from_schema: partial_roundtrip
+  dna_dnase:
+    name: dna_dnase
+    comments:
+    - Note DNAse treatment is required for all RNA samples.
+    examples:
+    - value: 'no'
+    from_schema: partial_roundtrip
+    range: dna_dnase_enum
+  dna_isolate_meth:
+    name: dna_isolate_meth
+    description: Describe the method/protocol/kit used to extract DNA/RNA.
+    examples:
+    - value: phenol/chloroform extraction
+    from_schema: partial_roundtrip
+  dna_organisms:
+    name: dna_organisms
+    description: List any organisms known or suspected to grow in co-culture, as well
+      as estimated % of the organism in that culture.
+    examples:
+    - value: expected to contain microbes (59%) fungi (30%), viruses (10%), tadpoles
+        (1%)
+    from_schema: partial_roundtrip
+  dna_project_contact:
+    name: dna_project_contact
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: John Jones
+    from_schema: partial_roundtrip
+  dna_samp_ID:
+    name: dna_samp_ID
+    todos:
+    - Removed identifier = TRUE from dna_samp_ID in JGI_sample_slots, as a class can't
+      have two identifiers. How to force uniqueness? Moot because that column will
+      be prefilled?
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: '187654'
+    from_schema: partial_roundtrip
+  dna_sample_format:
+    name: dna_sample_format
+    description: Solution in which the DNA sample has been suspended
+    examples:
+    - value: Water
+    from_schema: partial_roundtrip
+    range: dna_sample_format_enum
+  dna_sample_name:
+    name: dna_sample_name
+    description: Give the DNA sample a name that is meaningful to you. Sample names
+      must be unique across all JGI projects and contain a-z, A-Z, 0-9, - and _ only.
+    examples:
+    - value: JGI_pond_041618
+    from_schema: partial_roundtrip
+  dna_seq_project:
+    name: dna_seq_project
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: '1191234'
+    from_schema: partial_roundtrip
+  dna_seq_project_PI:
+    name: dna_seq_project_PI
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: Jane Johnson
+    from_schema: partial_roundtrip
+  dna_seq_project_name:
+    name: dna_seq_project_name
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: JGI Pond metagenomics
+    from_schema: partial_roundtrip
+  dna_volume:
+    name: dna_volume
+    comments:
+    - Units must be in uL. Enter the numerical part only. Value must 0-1000. Values
+      <25 by special permission only.
+    examples:
+    - value: '25'
+    from_schema: partial_roundtrip
+  dnase_rna:
+    name: dnase_rna
+    comments:
+    - Note DNAse treatment is required for all RNA samples.
+    examples:
+    - value: 'no'
+    from_schema: partial_roundtrip
+    range: dnase_rna_enum
+  doi:
+    name: doi
+    from_schema: partial_roundtrip
+    is_a: attribute
+    range: attribute value
+  drainage_class:
+    name: drainage_class
+    description: Drainage classification from a standard system such as the USDA system
+    examples:
+    - value: well
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - drainage classification
+    is_a: attribute
+    slot_uri: MIXS:0001085
+    range: text value
+  ecosystem:
+    name: ecosystem
+    description: An ecosystem is a combination of a physical environment (abiotic
+      factors) and all the organisms (biotic factors) that interact with this environment.
+      Ecosystem is in position 1/5 in a GOLD path.
+    comments:
+    - The abiotic factors play a profound role on the type and composition of organisms
+      in a given environment. The GOLD Ecosystem at the top of the five-level classification
+      system is aimed at capturing the broader environment from which an organism
+      or environmental sample is collected. The three broad groups under Ecosystem
+      are Environmental, Host-associated, and Engineered. They represent samples collected
+      from a natural environment or from another organism or from engineered environments
+      like bioreactors respectively.
+    from_schema: partial_roundtrip
+    see_also:
+    - https://gold.jgi.doe.gov/help
+    is_a: gold_path_field
+  ecosystem_category:
+    name: ecosystem_category
+    description: Ecosystem categories represent divisions within the ecosystem based
+      on specific characteristics of the environment from where an organism or sample
+      is isolated. Ecosystem category is in position 2/5 in a GOLD path.
+    comments:
+    - The Environmental ecosystem (for example) is divided into Air, Aquatic and Terrestrial.
+      Ecosystem categories for Host-associated samples can be individual hosts or
+      phyla and for engineered samples it may be manipulated environments like bioreactors,
+      solid waste etc.
+    from_schema: partial_roundtrip
+    see_also:
+    - https://gold.jgi.doe.gov/help
+    is_a: gold_path_field
+  ecosystem_subtype:
+    name: ecosystem_subtype
+    description: Ecosystem subtypes represent further subdivision of Ecosystem types
+      into more distinct subtypes. Ecosystem subtype is in position 4/5 in a GOLD
+      path.
+    comments:
+    - Ecosystem Type Marine (Environmental -> Aquatic -> Marine) is further divided
+      (for example) into Intertidal zone, Coastal, Pelagic, Intertidal zone etc. in
+      the Ecosystem subtype category.
+    from_schema: partial_roundtrip
+    see_also:
+    - https://gold.jgi.doe.gov/help
+    is_a: gold_path_field
+  ecosystem_type:
+    name: ecosystem_type
+    description: Ecosystem types represent things having common characteristics within
+      the Ecosystem Category. These common characteristics based grouping is still
+      broad but specific to the characteristics of a given environment. Ecosystem
+      type is in position 3/5 in a GOLD path.
+    comments:
+    - The Aquatic ecosystem category (for example) may have ecosystem types like Marine
+      or Thermal springs etc. Ecosystem category Air may have Indoor air or Outdoor
+      air as different Ecosystem Types. In the case of Host-associated samples, ecosystem
+      type can represent Respiratory system, Digestive system, Roots etc.
+    from_schema: partial_roundtrip
+    see_also:
+    - https://gold.jgi.doe.gov/help
+    is_a: gold_path_field
+  elev:
+    name: elev
+    description: Elevation of the sampling site is its height above a fixed reference
+      point, most commonly the mean sea level. Elevation is mainly used when referring
+      to points on the earth's surface, while altitude is used for points above the
+      surface, such as an aircraft in flight or a spacecraft in orbit.
+    examples:
+    - value: 100 meter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - elevation
+    is_a: attribute
+    slot_uri: MIXS:0000093
+    range: quantity value
+  env_broad_scale:
+    name: env_broad_scale
+    description: 'Report the major environmental system the sample or specimen came
+      from. The system(s) identified should have a coarse spatial grain, to provide
+      the general environmental context of where the sampling was done (e.g. in the
+      desert or a rainforest). We recommend using subclasses of EnvO’s biome class:  http://purl.obolibrary.org/obo/ENVO_00000428.
+      EnvO documentation about how to use the field: https://github.com/EnvironmentOntology/envo/wiki/Using-ENVO-with-MIxS'
+    examples:
+    - value: oceanic epipelagic zone biome [ENVO:01000033] for annotating a water
+        sample from the photic zone in middle of the Atlantic Ocean
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - broad-scale environmental context
+    is_a: attribute
+    slot_uri: MIXS:0000012
+    range: controlled term value
+  env_local_scale:
+    name: env_local_scale
+    description: 'Report the entity or entities which are in the sample or specimen’s
+      local vicinity and which you believe have significant causal influences on your
+      sample or specimen. We recommend using EnvO terms which are of smaller spatial
+      grain than your entry for env_broad_scale. Terms, such as anatomical sites,
+      from other OBO Library ontologies which interoperate with EnvO (e.g. UBERON)
+      are accepted in this field. EnvO documentation about how to use the field: https://github.com/EnvironmentOntology/envo/wiki/Using-ENVO-with-MIxS.'
+    examples:
+    - value: 'litter layer [ENVO:01000338]; Annotating a pooled sample taken from
+        various vegetation layers in a forest consider: canopy [ENVO:00000047]'
+    - value: herb and fern layer [ENVO:01000337]
+    - value: litter layer [ENVO:01000338]
+    - value: understory [01000335]
+    - value: shrub layer [ENVO:01000336].
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - local environmental context
+    is_a: attribute
+    slot_uri: MIXS:0000013
+    range: controlled term value
+  env_medium:
+    name: env_medium
+    description: 'Report the environmental material(s) immediately surrounding the
+      sample or specimen at the time of sampling. We recommend using subclasses of
+      ''environmental material'' (http://purl.obolibrary.org/obo/ENVO_00010483). EnvO
+      documentation about how to use the field: https://github.com/EnvironmentOntology/envo/wiki/Using-ENVO-with-MIxS
+      . Terms from other OBO ontologies are permissible as long as they reference
+      mass/volume nouns (e.g. air, water, blood) and not discrete, countable entities
+      (e.g. a tree, a leaf, a table top).'
+    examples:
+    - value: 'soil [ENVO:00001998]; Annotating a fish swimming in the upper 100 m
+        of the Atlantic Ocean, consider: ocean water [ENVO:00002151]. Example: Annotating
+        a duck on a pond consider: pond water [ENVO:00002228]'
+    - value: air [ENVO_00002005]
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - environmental medium
+    is_a: attribute
+    slot_uri: MIXS:0000014
+    range: controlled term value
+  env_package:
+    name: env_package
+    description: MIxS extension for reporting of measurements and observations obtained
+      from one or more of the environments where the sample was obtained. All environmental
+      packages listed here are further defined in separate subtables. By giving the
+      name of the environmental package, a selection of fields can be made from the
+      subtables and can be reported
+    in_subset:
+    - mixs extension
+    from_schema: partial_roundtrip
+    source: https://microbiomedata/schema/mixs
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - environmental package
+    is_a: attribute
+    range: text value
+  experimental_factor:
+    name: experimental_factor
+    description: Experimental factors are essentially the variable aspects of an experiment
+      design which can be used to describe an experiment, or set of experiments, in
+      an increasingly detailed manner. This field accepts ontology terms from Experimental
+      Factor Ontology (EFO) and/or Ontology for Biomedical Investigations (OBI). For
+      a browser of EFO (v 2.95) terms, please see http://purl.bioontology.org/ontology/EFO;
+      for a browser of OBI (v 2018-02-12) terms please see http://purl.bioontology.org/ontology/OBI
+    examples:
+    - value: time series design [EFO:EFO_0001779]
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - experimental factor
+    is_a: attribute
+    slot_uri: MIXS:0000008
+    range: controlled term value
+  experimental_factor_other:
+    name: experimental_factor_other
+    description: Other details about your sample that you feel can't be accurately
+      represented in the available columns.
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:experimental_factor
+    - additional_info
+  extreme_event:
+    name: extreme_event
+    description: Unusual physical events that may have affected microbial populations
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - history/extreme events
+    is_a: attribute
+    slot_uri: MIXS:0000320
+    range: timestamp value
+  fao_class:
+    name: fao_class
+    description: Soil classification from the FAO World Reference Database for Soil
+      Resources. The list can be found at http://www.fao.org/nr/land/sols/soil/wrb-soil-maps/reference-groups
+    examples:
+    - value: Luvisols
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - soil_taxonomic/FAO classification
+    is_a: attribute
+    slot_uri: MIXS:0001083
+    range: text value
+  filter_method:
+    name: filter_method
+    description: Type of filter used or how the sample was filtered
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:filter_type
+  fire:
+    name: fire
+    description: Historical and/or physical evidence of fire
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - history/fire
+    is_a: attribute
+    slot_uri: MIXS:0001086
+    range: timestamp value
+  flooding:
+    name: flooding
+    description: Historical and/or physical evidence of flooding
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - history/flooding
+    is_a: attribute
+    slot_uri: MIXS:0000319
+    range: timestamp value
+  gaseous_environment:
+    name: gaseous_environment
+    description: Use of conditions with differing gaseous environments; should include
+      the name of gaseous compound, amount administered, treatment duration, interval
+      and total experimental duration; can include multiple gaseous environment regimens
+    examples:
+    - value: nitric oxide;0.5 micromole per liter;R2/2018-05-11T14:30/2018-05-11T19:30/P1H30M
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - gaseous environment
+    is_a: attribute
+    slot_uri: MIXS:0000558
+    range: quantity value
+  geo_loc_name:
+    name: geo_loc_name
+    description: The geographical origin of the sample as defined by the country or
+      sea name followed by specific region name. Country or sea names should be chosen
+      from the INSDC country list (http://insdc.org/country.html), or the GAZ ontology
+      (http://purl.bioontology.org/ontology/GAZ)
+    examples:
+    - value: 'USA: Maryland, Bethesda'
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - geographic location (country and/or sea,region)
+    is_a: attribute
+    slot_uri: MIXS:0000010
+    range: text value
+  glucosidase_act:
+    name: glucosidase_act
+    description: Measurement of glucosidase activity
+    examples:
+    - value: 5 mol per liter per hour
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - glucosidase activity
+    is_a: attribute
+    slot_uri: MIXS:0000137
+    range: quantity value
+  growth_facil:
+    name: growth_facil
+    description: 'Type of facility where the sampled plant was grown; controlled vocabulary:
+      growth chamber, open top chamber, glasshouse, experimental garden, field. Alternatively
+      use Crop Ontology (CO) terms, see http://www.cropontology.org/ontology/CO_715/Crop%20Research'
+    examples:
+    - value: Growth chamber [CO_715:0000189]
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - growth facility
+    is_a: attribute
+    slot_uri: MIXS:0001043
+    range: controlled term value
+  habitat:
+    name: habitat
+    from_schema: partial_roundtrip
+    range: string
+  heavy_metals:
+    name: heavy_metals
+    description: Heavy metals present in the sequenced sample and their concentrations.
+      For multiple heavy metals and concentrations, add multiple copies of this field.
+    examples:
+    - value: mercury;0.09 micrograms per gram
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - extreme_unusual_properties/heavy metals
+    is_a: attribute
+    slot_uri: MIXS:0000652
+    range: quantity value
+  heavy_metals_meth:
+    name: heavy_metals_meth
+    description: Reference or method used in determining heavy metals
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - extreme_unusual_properties/heavy metals method
+    is_a: attribute
+    slot_uri: MIXS:0000343
+    range: text value
+  horizon:
+    name: horizon
+    description: Specific layer in the land area which measures parallel to the soil
+      surface and possesses physical characteristics which differ from the layers
+      above and beneath
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - horizon
+    is_a: attribute
+    slot_uri: MIXS:0001082
+    range: text value
+  horizon_meth:
+    name: horizon_meth
+    description: Reference or method used in determining the horizon
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - soil horizon method
+    is_a: attribute
+    slot_uri: MIXS:0000321
+    range: text value
+  host_name:
+    name: host_name
+    from_schema: partial_roundtrip
+    range: string
+  humidity_regm:
+    name: humidity_regm
+    description: Information about treatment involving an exposure to varying degree
+      of humidity; information about treatment involving use of growth hormones; should
+      include amount of humidity administered, treatment regimen including how many
+      times the treatment was repeated, how long each treatment lasted, and the start
+      and end time of the entire treatment; can include multiple regimens
+    examples:
+    - value: 25 gram per cubic meter;R2/2018-05-11T14:30/2018-05-11T19:30/P1H30M
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - humidity regimen
+    is_a: attribute
+    slot_uri: MIXS:0000568
+    range: quantity value
+  id:
+    name: id
+    description: A unique identifier for a thing. Must be either a CURIE shorthand
+      for a URI or a complete URI
+    from_schema: partial_roundtrip
+  identifier:
+    name: identifier
+    from_schema: partial_roundtrip
+    range: string
+  isotope_exposure:
+    name: isotope_exposure
+    description: List isotope exposure or addition applied to your sample.
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:chem_administration
+  lat_lon:
+    name: lat_lon
+    description: The geographical origin of the sample as defined by latitude and
+      longitude. The values should be reported in decimal degrees and in WGS84 system
+    examples:
+    - value: 50.586825 6.408977
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - geographic location (latitude and longitude)
+    is_a: attribute
+    slot_uri: MIXS:0000009
+    range: geolocation value
+  lbc_thirty:
+    name: lbc_thirty
+    description: lime buffer capacity, determined after 30 minute incubation
+    examples:
+    - value: 543 mg/kg
+    from_schema: partial_roundtrip
+    see_also:
+    - https://secure.caes.uga.edu/extension/publications/files/pdf/C%20874_5.PDF
+    aliases:
+    - lbc_thirty
+    - lbc30
+    - lime buffer capacity (at 30 minutes)
+    is_a: attribute
+    range: quantity value
+  lbceq:
+    name: lbceq
+    description: lime buffer capacity, determined at equilibrium after 5 day incubation
+    examples:
+    - value: 1575 mg/kg
+    from_schema: partial_roundtrip
+    aliases:
+    - lbceq
+    - lime buffer capacity (at 5-day equilibrium)
+    is_a: attribute
+    range: quantity value
+  light_regm:
+    name: light_regm
+    description: Information about treatment(s) involving exposure to light, including
+      both light intensity and quality.
+    examples:
+    - value: incandescant light;10 lux;450 nanometer
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - light regimen
+    is_a: attribute
+    slot_uri: MIXS:0000569
+    range: quantity value
+  link_addit_analys:
+    name: link_addit_analys
+    description: Link to additional analysis results performed on the sample
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - links to additional analysis
+    is_a: attribute
+    slot_uri: MIXS:0000340
+    range: text value
+  link_class_info:
+    name: link_class_info
+    description: Link to digitized soil maps or other soil classification information
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - link to classification information
+    is_a: attribute
+    slot_uri: MIXS:0000329
+    range: text value
+  link_climate_info:
+    name: link_climate_info
+    description: Link to climate resource
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - link to climate information
+    is_a: attribute
+    slot_uri: MIXS:0000328
+    range: text value
+  local_class:
+    name: local_class
+    description: Soil classification based on local soil classification system
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - soil_taxonomic/local classification
+    is_a: attribute
+    slot_uri: MIXS:0000330
+    range: text value
+  local_class_meth:
+    name: local_class_meth
+    description: Reference or method used in determining the local soil classification
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - soil_taxonomic/local classification method
+    is_a: attribute
+    slot_uri: MIXS:0000331
+    range: text value
+  location:
+    name: location
+    from_schema: partial_roundtrip
+    range: string
+  magnesium:
+    name: magnesium
+    description: Concentration of magnesium in the sample
+    examples:
+    - value: 52.8 micromole per kilogram
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - magnesium
+    is_a: attribute
+    slot_uri: MIXS:0000431
+    range: quantity value
+  manganese:
+    name: manganese
+    description: Concentration of manganese in the sample
+    examples:
+    - value: 24.7 mg/kg
+    from_schema: partial_roundtrip
+    aliases:
+    - manganese
+    is_a: attribute
+    range: quantity value
+  mean_frict_vel:
+    name: mean_frict_vel
+    description: Measurement of mean friction velocity
+    examples:
+    - value: 0.5 meter per second
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - mean friction velocity
+    is_a: attribute
+    slot_uri: MIXS:0000498
+    range: quantity value
+  mean_peak_frict_vel:
+    name: mean_peak_frict_vel
+    description: Measurement of mean peak friction velocity
+    examples:
+    - value: 1 meter per second
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - mean peak friction velocity
+    is_a: attribute
+    slot_uri: MIXS:0000502
+    range: quantity value
+  micro_biomass_C_meth:
+    name: micro_biomass_C_meth
+    description: Reference or method used in determining microbial biomass
+    comments:
+    - required if "microbial_biomass_C" is provided
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:micro_biomass_meth
+  micro_biomass_N_meth:
+    name: micro_biomass_N_meth
+    description: Reference or method used in determining microbial biomass nitrogen
+    comments:
+    - required if "microbial_biomass_N" is provided
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:micro_biomass_meth
+  micro_biomass_meth:
+    name: micro_biomass_meth
+    description: Reference or method used in determining microbial biomass
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - microbial biomass method
+    is_a: core field
+    slot_uri: MIXS:0000339
+    range: string
+  microbial_biomass:
+    name: microbial_biomass
+    description: The part of the organic matter in the soil that constitutes living
+      microorganisms smaller than 5-10 micrometer. If you keep this, you would need
+      to have correction factors used for conversion to the final units
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - microbial biomass
+    is_a: attribute
+    slot_uri: MIXS:0000650
+    range: quantity value
+  microbial_biomass_C:
+    name: microbial_biomass_C
+    description: The part of the organic matter in the soil that constitutes living
+      microorganisms smaller than 5-10 micrometer. If you keep this, you would need
+      to have correction factors used for conversion to the final units
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:microbial_biomass
+  microbial_biomass_N:
+    name: microbial_biomass_N
+    description: The part of the organic matter in the soil that constitutes living
+      microorganisms smaller than 5-10 micrometer. If you keep this, you would need
+      to have correction factors used for conversion to the final units
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:microbial_biomass
+  microbial_biomass_meth:
+    name: microbial_biomass_meth
+    description: Reference or method used in determining microbial biomass
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - microbial biomass method
+    is_a: attribute
+    slot_uri: MIXS:0000339
+    range: text value
+  misc_param:
+    name: misc_param
+    description: Any other measurement performed or parameter collected, that is not
+      listed here
+    examples:
+    - value: Bicarbonate ion concentration;2075 micromole per kilogram
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - miscellaneous parameter
+    is_a: attribute
+    slot_uri: MIXS:0000752
+    range: quantity value
+  mod_date:
+    name: mod_date
+    description: The last date on which the database information was modified.
+    from_schema: partial_roundtrip
+    range: string
+  n_alkanes:
+    name: n_alkanes
+    description: Concentration of n-alkanes; can include multiple n-alkanes
+    examples:
+    - value: n-hexadecane;100 milligram per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - n-alkanes
+    is_a: attribute
+    slot_uri: MIXS:0000503
+    range: quantity value
+  name:
+    name: name
+    description: A human readable label for an entity
+    from_schema: partial_roundtrip
+    range: string
+  ncbi_taxonomy_name:
+    name: ncbi_taxonomy_name
+    from_schema: partial_roundtrip
+    range: string
+  nitrate:
+    name: nitrate
+    description: Concentration of nitrate in the sample
+    examples:
+    - value: 65 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - nitrate
+    is_a: attribute
+    slot_uri: MIXS:0000425
+    range: quantity value
+  nitrite:
+    name: nitrite
+    description: Concentration of nitrite in the sample
+    examples:
+    - value: 0.5 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - nitrite
+    is_a: attribute
+    slot_uri: MIXS:0000426
+    range: quantity value
+  non_microb_biomass:
+    name: non_microb_biomass
+    description: Amount of biomass; should include the name for the part of biomass
+      measured, e.g.insect, plant, total. Can include multiple measurements separated
+      by ;
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:biomass
+    - microbial_biomass
+  non_microb_biomass_method:
+    name: non_microb_biomass_method
+    description: Reference or method used in determining biomass
+    comments:
+    - required if "non-microbial biomass" is provided
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:microbial_biomass
+  notes:
+    name: notes
+    from_schema: partial_roundtrip
+  objective:
+    name: objective
+    description: The scientific objectives associated with the entity. It SHOULD correspond
+      to scientific norms for objectives field in a structured abstract.
+    from_schema: partial_roundtrip
+    range: string
+  org_matter:
+    name: org_matter
+    description: Concentration of organic matter
+    examples:
+    - value: 1.75 milligram per cubic meter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - organic matter
+    is_a: attribute
+    slot_uri: MIXS:0000204
+    range: quantity value
+  org_nitro:
+    name: org_nitro
+    description: Concentration of organic nitrogen
+    examples:
+    - value: 4 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - organic nitrogen
+    is_a: attribute
+    slot_uri: MIXS:0000205
+    range: quantity value
+  org_nitro_method:
+    name: org_nitro_method
+    description: Method used for obtaining organic nitrogen
+    comments:
+    - required if "org_nitro" is provided
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:org_nitro
+    - tot_nitro_cont_meth
+  organism_count:
+    name: organism_count
+    description: 'Total cell count of any organism (or group of organisms) per gram,
+      volume or area of sample, should include name of organism followed by count.
+      The method that was used for the enumeration (e.g. qPCR, atp, mpn, etc.) Should
+      also be provided. (example: total prokaryotes; 3.5e7 cells per ml; qpcr)'
+    examples:
+    - value: total prokaryotes;3.5e7 cells per milliliter;qPCR
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - organism count
+    is_a: attribute
+    slot_uri: MIXS:0000103
+    range: quantity value
+  other_treatment:
+    name: other_treatment
+    description: Other treatments applied to your samples that are not applicable
+      to the provided fields
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:additional_info
+  oxy_stat_samp:
+    name: oxy_stat_samp
+    description: Oxygenation status of sample
+    examples:
+    - value: aerobic
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - oxygenation status of sample
+    is_a: attribute
+    slot_uri: MIXS:0000753
+    range: text value
+  part of:
+    name: part of
+    from_schema: partial_roundtrip
+  part_org_carb:
+    name: part_org_carb
+    description: Concentration of particulate organic carbon
+    examples:
+    - value: 1.92 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - particulate organic carbon
+    is_a: attribute
+    slot_uri: MIXS:0000515
+    range: quantity value
+  perturbation:
+    name: perturbation
+    description: Type of perturbation, e.g. chemical administration, physical disturbance,
+      etc., coupled with perturbation regimen including how many times the perturbation
+      was repeated, how long each perturbation lasted, and the start and end time
+      of the entire perturbation period; can include multiple perturbation types
+    examples:
+    - value: antibiotic addition;R2/2018-05-11T14:30Z/2018-05-11T19:30Z/P1H30M
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - perturbation
+    is_a: attribute
+    slot_uri: MIXS:0000754
+    range: text value
+  petroleum_hydrocarb:
+    name: petroleum_hydrocarb
+    description: Concentration of petroleum hydrocarbon
+    examples:
+    - value: 0.05 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - petroleum hydrocarbon
+    is_a: attribute
+    slot_uri: MIXS:0000516
+    range: quantity value
+  ph:
+    name: ph
+    description: Ph measurement of the sample, or liquid portion of sample, or aqueous
+      phase of the fluid
+    examples:
+    - value: '7.2'
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - pH
+    is_a: attribute
+    slot_uri: MIXS:0001001
+    range: quantity value
+  ph_meth:
+    name: ph_meth
+    description: Reference or method used in determining ph
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - pH method
+    is_a: attribute
+    slot_uri: MIXS:0001106
+    range: text value
+  phaeopigments:
+    name: phaeopigments
+    description: Concentration of phaeopigments; can include multiple phaeopigments
+    examples:
+    - value: 2.5 milligram per cubic meter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - phaeopigments
+    is_a: attribute
+    slot_uri: MIXS:0000180
+    range: quantity value
+  phosphate:
+    name: phosphate
+    description: Concentration of phosphate
+    examples:
+    - value: 0.7 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - phosphate
+    is_a: attribute
+    slot_uri: MIXS:0000505
+    range: quantity value
+  phosplipid_fatt_acid:
+    name: phosplipid_fatt_acid
+    description: Concentration of phospholipid fatty acids; can include multiple values
+    examples:
+    - value: 2.98 milligram per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - phospholipid fatty acid
+    is_a: attribute
+    slot_uri: MIXS:0000181
+    range: quantity value
+  pool_dna_extracts:
+    name: pool_dna_extracts
+    description: Indicate whether multiple DNA extractions were mixed. If the answer
+      yes, the number of extracts that were pooled should be given
+    examples:
+    - value: yes;5
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - pooling of DNA extracts (if done)
+    is_a: attribute
+    slot_uri: MIXS:0000325
+    range: text value
+  potassium:
+    name: potassium
+    description: Concentration of potassium in the sample
+    examples:
+    - value: 463 milligram per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - potassium
+    is_a: attribute
+    slot_uri: MIXS:0000430
+    range: quantity value
+  pressure:
+    name: pressure
+    description: Pressure to which the sample is subject to, in atmospheres
+    examples:
+    - value: 50 atmosphere
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - pressure
+    is_a: attribute
+    slot_uri: MIXS:0000412
+    range: quantity value
+  previous_land_use:
+    name: previous_land_use
+    description: Previous land use and dates
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - history/previous land use
+    is_a: attribute
+    slot_uri: MIXS:0000315
+    range: text value
+  previous_land_use_meth:
+    name: previous_land_use_meth
+    description: Reference or method used in determining previous land use and dates
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - history/previous land use method
+    is_a: attribute
+    slot_uri: MIXS:0000316
+    range: text value
+  profile_position:
+    name: profile_position
+    description: Cross-sectional position in the hillslope where sample was collected.sample
+      area position in relation to surrounding areas
+    examples:
+    - value: summit
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - profile position
+    is_a: attribute
+    slot_uri: MIXS:0001084
+    range: text value
+  project_ID:
+    name: project_ID
+    description: Proposal IDs or names associated with dataset
+    from_schema: partial_roundtrip
+  proport_woa_temperature:
+    name: proport_woa_temperature
+    from_schema: partial_roundtrip
+    range: string
+  proposal_dna:
+    name: proposal_dna
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: '504000'
+    from_schema: partial_roundtrip
+  proposal_rna:
+    name: proposal_rna
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: '504000'
+    from_schema: partial_roundtrip
+  publications:
+    name: publications
+    description: A list of publications that are associated with the entity. The publications
+      SHOULD be given using an identifier, such as a DOI or Pubmed ID, if possible.
+    from_schema: partial_roundtrip
+    multivalued: true
+    range: string
+  redox_potential:
+    name: redox_potential
+    description: Redox potential, measured relative to a hydrogen cell, indicating
+      oxidation or reduction potential
+    examples:
+    - value: 300 millivolt
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - redox potential
+    is_a: attribute
+    slot_uri: MIXS:0000182
+    range: quantity value
+  rel_to_oxygen:
+    name: rel_to_oxygen
+    description: Is this organism an aerobe, anaerobe? Please note that aerobic and
+      anaerobic are valid descriptors for microbial environments
+    examples:
+    - value: aerobe
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - relationship to oxygen
+    is_a: attribute
+    slot_uri: MIXS:0000015
+    range: text value
+  replicate_number:
+    name: replicate_number
+    description: If sending biological replicates, indicate the rep number here.
+    comments:
+    - This will guide staff in ensuring your samples are block & randomized correctly
+    from_schema: partial_roundtrip
+  rna_absorb1:
+    name: rna_absorb1
+    description: 260/280 measurement of RNA sample purity
+    comments:
+    - Recommended value is between 1 and 3.
+    examples:
+    - value: '2.02'
+    from_schema: partial_roundtrip
+  rna_absorb2:
+    name: rna_absorb2
+    description: 260/230 measurement of RNA sample purity
+    comments:
+    - Recommended value is between 1 and 3.
+    examples:
+    - value: '2.02'
+    from_schema: partial_roundtrip
+  rna_collect_site:
+    name: rna_collect_site
+    description: Provide information on the site your RNA sample was collected from
+    examples:
+    - value: untreated pond water
+    from_schema: partial_roundtrip
+  rna_concentration:
+    name: rna_concentration
+    comments:
+    - Units must be in ng/uL. Enter the numerical part only. Must be calculated using
+      a fluorometric method. Acceptable values are 0-2000.
+    examples:
+    - value: '100'
+    from_schema: partial_roundtrip
+  rna_cont_type:
+    name: rna_cont_type
+    description: Tube or plate (96-well)
+    examples:
+    - value: plate
+    from_schema: partial_roundtrip
+    range: rna_cont_type_enum
+  rna_cont_well:
+    name: rna_cont_well
+    comments:
+    - Required when 'plate' is selected for container type. Corner wells must be blank.
+      For partial plates, fill by columns. Leave blank if the sample will be shipped
+      in a tube.
+    examples:
+    - value: B2
+    from_schema: partial_roundtrip
+  rna_container_ID:
+    name: rna_container_ID
+    comments:
+    - Must be unique across all tubes and plates, and <20 characters. All samples
+      in a plate should have the same plate label.
+    examples:
+    - value: Pond_MT_041618
+    from_schema: partial_roundtrip
+  rna_isolate_meth:
+    name: rna_isolate_meth
+    description: Describe the method/protocol/kit used to extract DNA/RNA.
+    examples:
+    - value: phenol/chloroform extraction
+    from_schema: partial_roundtrip
+  rna_organisms:
+    name: rna_organisms
+    description: List any organisms known or suspected to grow in co-culture, as well
+      as estimated % of the organism in that culture.
+    examples:
+    - value: expected to contain microbes (59%) fungi (30%), viruses (10%), tadpoles
+        (1%)
+    from_schema: partial_roundtrip
+  rna_project_contact:
+    name: rna_project_contact
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: John Jones
+    from_schema: partial_roundtrip
+  rna_samp_ID:
+    name: rna_samp_ID
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: '187654'
+    from_schema: partial_roundtrip
+  rna_sample_format:
+    name: rna_sample_format
+    description: Solution in which the RNA sample has been suspended
+    examples:
+    - value: Water
+    from_schema: partial_roundtrip
+    range: rna_sample_format_enum
+  rna_sample_name:
+    name: rna_sample_name
+    description: Give the RNA sample a name that is meaningful to you. Sample names
+      must be unique across all JGI projects and contain a-z, A-Z, 0-9, - and _ only.
+    examples:
+    - value: JGI_pond_041618
+    from_schema: partial_roundtrip
+  rna_seq_project:
+    name: rna_seq_project
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: '1191234'
+    from_schema: partial_roundtrip
+  rna_seq_project_PI:
+    name: rna_seq_project_PI
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: Jane Johnson
+    from_schema: partial_roundtrip
+  rna_seq_project_name:
+    name: rna_seq_project_name
+    comments:
+    - Do not edit these values. A template will be provided by NMDC in which these
+      values have been pre-filled.
+    examples:
+    - value: JGI Pond metatranscriptomics
+    from_schema: partial_roundtrip
+  rna_volume:
+    name: rna_volume
+    comments:
+    - Units must be in uL. Enter the numerical part only. Value must 0-1000. Values
+      <25 by special permission only.
+    examples:
+    - value: '25'
+    from_schema: partial_roundtrip
+  salinity:
+    name: salinity
+    description: The total concentration of all dissolved salts in a liquid or solid
+      sample. While salinity can be measured by a complete chemical analysis, this
+      method is difficult and time consuming. More often, it is instead derived from
+      the conductivity measurement. This is known as practical salinity. These derivations
+      compare the specific conductance of the sample to a salinity standard such as
+      seawater.
+    examples:
+    - value: 25 practical salinity unit
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - salinity
+    is_a: attribute
+    slot_uri: MIXS:0000183
+    range: quantity value
+  salinity_category:
+    name: salinity_category
+    description: 'Categorcial description of the sample''s salinity. Examples: halophile,
+      halotolerant, hypersaline, huryhaline'
+    from_schema: partial_roundtrip
+    see_also:
+    - https://github.com/microbiomedata/nmdc-metadata/pull/297
+    range: string
+  salinity_meth:
+    name: salinity_meth
+    description: Reference or method used in determining salinity
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - salinity method
+    is_a: attribute
+    slot_uri: MIXS:0000341
+    range: text value
+  samp_collec_method:
+    name: samp_collec_method
+    description: The method employed for collecting the sample.
+    examples:
+    - value: swabbing
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - sample collection method
+    is_a: nucleic acid sequence source field
+    slot_uri: MIXS:0001225
+    range: string
+  samp_collect_device:
+    name: samp_collect_device
+    description: The device used to collect an environmental sample. This field accepts
+      terms listed under environmental sampling device (http://purl.obolibrary.org/obo/ENVO).
+      This field also accepts terms listed under specimen collection device (http://purl.obolibrary.org/obo/GENEPIO_0002094).
+    examples:
+    - value: swab, biopsy, niskin bottle, push core, drag swab [GENEPIO:0002713]
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - sample collection device
+    is_a: attribute
+    slot_uri: MIXS:0000002
+    range: text value
+  samp_mat_process:
+    name: samp_mat_process
+    description: A brief description of any processing applied to the sample during
+      or after retrieving the sample from environment, or a link to the relevant protocol(s)
+      performed.
+    examples:
+    - value: filtering of seawater, storing samples in ethanol
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - sample material processing
+    is_a: attribute
+    slot_uri: MIXS:0000016
+    range: controlled term value
+  samp_size:
+    name: samp_size
+    description: The total amount or size (volume (ml), mass (g) or area (m2) ) of
+      sample collected.
+    examples:
+    - value: 5 liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - amount or size of sample collected
+    is_a: attribute
+    slot_uri: MIXS:0000001
+    range: quantity value
+  samp_store_dur:
+    name: samp_store_dur
+    description: Duration for which the sample was stored
+    examples:
+    - value: P1Y6M
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - sample storage duration
+    is_a: attribute
+    slot_uri: MIXS:0000116
+    range: text value
+  samp_store_loc:
+    name: samp_store_loc
+    description: Location at which sample was stored, usually name of a specific freezer/room
+    examples:
+    - value: Freezer no:5
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - sample storage location
+    is_a: attribute
+    slot_uri: MIXS:0000755
+    range: text value
+  samp_store_temp:
+    name: samp_store_temp
+    description: Temperature at which sample was stored, e.g. -80 degree Celsius
+    examples:
+    - value: -80 degree Celsius
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - sample storage temperature
+    is_a: attribute
+    slot_uri: MIXS:0000110
+    range: quantity value
+  samp_vol_we_dna_ext:
+    name: samp_vol_we_dna_ext
+    description: 'Volume (ml) or mass (g) of total collected sample processed for
+      DNA extraction. Note: total sample collected should be entered under the term
+      Sample Size (MIXS:0000001).'
+    examples:
+    - value: 1500 milliliter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - sample volume or weight for DNA extraction
+    is_a: attribute
+    slot_uri: MIXS:0000111
+    range: quantity value
+  sample_collection_site:
+    name: sample_collection_site
+    from_schema: partial_roundtrip
+    range: string
+  sample_link:
+    name: sample_link
+    description: A unique identifier to assign parent-child, subsample, or sibling
+      samples. This is relevant when a sample or other material was used to generate
+      the new sample.
+    comments:
+    - 'This field allows multiple entries separated by ; (Examples: Soil collected
+      from the field will link with the soil used in an incubation. The soil a plant
+      was grown in links to the plant sample. An original culture sample was transferred
+      to a new vial and generated a new sample)'
+    examples:
+    - value: IGSN:DSJ0284
+    from_schema: partial_roundtrip
+  sample_shipped:
+    name: sample_shipped
+    description: The total amount or size (volume (ml), mass (g) or area (m2) ) of
+      sample sent to EMSL
+    from_schema: partial_roundtrip
+  sample_type:
+    name: sample_type
+    description: Type of sample being submitted
+    comments:
+    - This can vary from 'environmental package' if the sample is an extraction.
+    examples:
+    - value: water extracted soil
+    from_schema: partial_roundtrip
+    range: sample_type_enum
+  season_precpt:
+    name: season_precpt
+    description: The average of all seasonal precipitation values known, or an estimated
+      equivalent value derived by such methods as regional indexes or Isohyetal maps.
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - mean seasonal precipitation
+    is_a: attribute
+    slot_uri: MIXS:0000645
+    range: quantity value
+  season_temp:
+    name: season_temp
+    description: Mean seasonal temperature
+    examples:
+    - value: 18 degree Celsius
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - mean seasonal temperature
+    is_a: attribute
+    slot_uri: MIXS:0000643
+    range: quantity value
+  sieving:
+    name: sieving
+    description: Collection design of pooled samples and/or sieve size and amount
+      of sample sieved
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - composite design/sieving
+    is_a: attribute
+    slot_uri: MIXS:0000322
+    range: quantity value
+  size_frac_low:
+    name: size_frac_low
+    description: Refers to the mesh/pore size used to pre-filter/pre-sort the sample.
+      Materials larger than the size threshold are excluded from the sample
+    examples:
+    - value: 0.2 micrometer
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - size-fraction lower threshold
+    is_a: attribute
+    slot_uri: MIXS:0000735
+    range: quantity value
+  size_frac_up:
+    name: size_frac_up
+    description: Refers to the mesh/pore size used to retain the sample. Materials
+      smaller than the size threshold are excluded from the sample
+    examples:
+    - value: 20 micrometer
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - size-fraction upper threshold
+    is_a: attribute
+    slot_uri: MIXS:0000736
+    range: quantity value
+  slope_aspect:
+    name: slope_aspect
+    description: The direction a slope faces. While looking down a slope use a compass
+      to record the direction you are facing (direction or degrees); e.g., nw or 315
+      degrees. This measure provides an indication of sun and wind exposure that will
+      influence soil temperature and evapotranspiration.
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - slope aspect
+    is_a: attribute
+    slot_uri: MIXS:0000647
+    range: quantity value
+  slope_gradient:
+    name: slope_gradient
+    description: Commonly called 'slope'. The angle between ground surface and a horizontal
+      line (in percent). This is the direction that overland water would flow. This
+      measure is usually taken with a hand level meter or clinometer
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - slope gradient
+    is_a: attribute
+    slot_uri: MIXS:0000646
+    range: quantity value
+  sodium:
+    name: sodium
+    description: Sodium concentration in the sample
+    examples:
+    - value: 10.5 milligram per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - sodium
+    is_a: attribute
+    slot_uri: MIXS:0000428
+    range: quantity value
+  soil_text_measure:
+    name: soil_text_measure
+    description: The relative proportion of different grain sizes of mineral particles
+      in a soil, as described using a standard system; express as % sand (50 um to
+      2 mm), silt (2 um to 50 um), and clay (<2 um) with textural name (e.g., silty
+      clay loam) optional.
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - soil texture measurement
+    is_a: core field
+    slot_uri: MIXS:0000335
+    range: quantity value
+  soil_texture_meth:
+    name: soil_texture_meth
+    description: Reference or method used in determining soil texture
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - soil texture method
+    is_a: core field
+    slot_uri: MIXS:0000336
+    range: string
+  soil_type:
+    name: soil_type
+    description: Description of the soil type or classification. This field accepts
+      terms under soil (http://purl.obolibrary.org/obo/ENVO_00001998).  Multiple terms
+      can be separated by pipes.
+    examples:
+    - value: plinthosol [ENVO:00002250]
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - soil type
+    is_a: attribute
+    slot_uri: MIXS:0000332
+    range: text value
+  soil_type_meth:
+    name: soil_type_meth
+    description: Reference or method used in determining soil series name or other
+      lower-level classification
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - soil type method
+    is_a: attribute
+    slot_uri: MIXS:0000334
+    range: text value
+  soluble_iron_micromol:
+    name: soluble_iron_micromol
+    from_schema: partial_roundtrip
+    range: string
+  source_mat_id:
+    name: source_mat_id
+    description: A unique identifier assigned to a material sample (as defined by
+      http://rs.tdwg.org/dwc/terms/materialSampleID, and as opposed to a particular
+      digital record of a material sample) used for extracting nucleic acids, and
+      subsequent sequencing. The identifier can refer either to the original material
+      collected or to any derived sub-samples. The INSDC qualifiers /specimen_voucher,
+      /bio_material, or /culture_collection may or may not share the same value as
+      the source_mat_id field. For instance, the /specimen_voucher qualifier and source_mat_id
+      may both contain 'UAM:Herps:14' , referring to both the specimen voucher and
+      sampled tissue with the same identifier. However, the /culture_collection qualifier
+      may refer to a value from an initial culture (e.g. ATCC:11775) while source_mat_id
+      would refer to an identifier from some derived culture from which the nucleic
+      acids were extracted (e.g. xatc123 or ark:/2154/R2).
+    examples:
+    - value: MPI012345
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - source material identifiers
+    is_a: attribute
+    slot_uri: MIXS:0000026
+    range: text value
+  specific_ecosystem:
+    name: specific_ecosystem
+    description: Specific ecosystems represent specific features of the environment
+      like aphotic zone in an ocean or gastric mucosa within a host digestive system.
+      Specific ecosystem is in position 5/5 in a GOLD path.
+    comments:
+    - Specific ecosystems help to define samples based on very specific characteristics
+      of an environment under the five-level classification system.
+    from_schema: partial_roundtrip
+    see_also:
+    - https://gold.jgi.doe.gov/help
+    is_a: gold_path_field
+  start_date_inc:
+    name: start_date_inc
+    description: Date the incubation was started. Only relevant for incubation samples.
+    comments:
+    - Date should be formatted as YYYY(-MM(-DD)). Ie, 2021-04-15, 2021-04 and 2021
+      are all acceptable.
+    examples:
+    - value: 2021-04-15, 2021-04 and 2021 are all acceptable.
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:collection_date
+  start_time_inc:
+    name: start_time_inc
+    description: Time the incubation was started. Only relevant for incubation samples.
+    comments:
+    - 'Time should be entered as HH:MM(:SS) in GMT. See here for a converter: https://www.worldtimebuddy.com/pst-to-gmt-converter'
+    examples:
+    - value: 13:33 or 13:33:55
+    from_schema: partial_roundtrip
+    see_also:
+    - MIxS:collection_date
+  store_cond:
+    name: store_cond
+    description: Explain how and for how long the soil sample was stored before DNA
+      extraction (fresh/frozen/other).
+    examples:
+    - value: -20 degree Celsius freezer;P2Y10D
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - storage conditions
+    is_a: attribute
+    slot_uri: MIXS:0000327
+    range: text value
+  subsurface_depth:
+    name: subsurface_depth
+    from_schema: partial_roundtrip
+    range: quantity value
+  subsurface_depth2:
+    name: subsurface_depth2
+    from_schema: partial_roundtrip
+    range: quantity value
+  sulfate:
+    name: sulfate
+    description: Concentration of sulfate in the sample
+    examples:
+    - value: 5 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - sulfate
+    is_a: attribute
+    slot_uri: MIXS:0000423
+    range: quantity value
+  sulfide:
+    name: sulfide
+    description: Concentration of sulfide in the sample
+    examples:
+    - value: 2 micromole per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - sulfide
+    is_a: attribute
+    slot_uri: MIXS:0000424
+    range: quantity value
+  technical_reps:
+    name: technical_reps
+    description: If sending multiple technical replicates of the same sample, indicate
+      how many replicates are being sent
+    from_schema: partial_roundtrip
+  temp:
+    name: temp
+    description: Temperature of the sample at the time of sampling.
+    examples:
+    - value: 25 degree Celsius
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - temperature
+    is_a: attribute
+    slot_uri: MIXS:0000113
+    range: quantity value
+  texture:
+    name: texture
+    description: The relative proportion of different grain sizes of mineral particles
+      in a soil, as described using a standard system; express as % sand (50 um to
+      2 mm), silt (2 um to 50 um), and clay (<2 um) with textural name (e.g., silty
+      clay loam) optional.
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - texture
+    is_a: attribute
+    slot_uri: MIXS:0000335
+    range: quantity value
+  texture_meth:
+    name: texture_meth
+    description: Reference or method used in determining soil texture.
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - texture method
+    is_a: attribute
+    slot_uri: MIXS:0000336
+    range: text value
+  tidal_stage:
+    name: tidal_stage
+    description: Stage of tide
+    examples:
+    - value: high tide
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - tidal stage
+    is_a: attribute
+    slot_uri: MIXS:0000750
+    range: text value
+  tillage:
+    name: tillage
+    description: Note method(s) used for tilling
+    examples:
+    - value: chisel
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - history/tillage
+    is_a: attribute
+    slot_uri: MIXS:0001081
+    range: text value
+  title:
+    name: title
+    description: A name given to the entity that differs from the name/label programmatically
+      assigned to it. For example, when extracting study information for GOLD, the
+      GOLD system has assigned a name/label. However, for display purposes, we may
+      also wish the capture the title of the proposal that was used to fund the study.
+    from_schema: partial_roundtrip
+    exact_mappings:
+    - dcterms:title
+    range: string
+  tot_carb:
+    name: tot_carb
+    description: Total carbon content
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - total carbon
+    is_a: attribute
+    slot_uri: MIXS:0000525
+    range: quantity value
+  tot_depth_water_col:
+    name: tot_depth_water_col
+    description: Measurement of total depth of water column
+    examples:
+    - value: 500 meter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - total depth of water column
+    is_a: attribute
+    slot_uri: MIXS:0000634
+    range: quantity value
+  tot_diss_nitro:
+    name: tot_diss_nitro
+    description: 'Total dissolved nitrogen concentration, reported as nitrogen, measured
+      by: total dissolved nitrogen = NH4 + NO3NO2 + dissolved organic nitrogen'
+    examples:
+    - value: 40 microgram per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - total dissolved nitrogen
+    is_a: attribute
+    slot_uri: MIXS:0000744
+    range: quantity value
+  tot_nitro_cont_meth:
+    name: tot_nitro_cont_meth
+    description: Reference or method used in determining the total nitrogen
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - total nitrogen content method
+    is_a: core field
+    slot_uri: MIXS:0000338
+    range: string
+  tot_nitro_content:
+    name: tot_nitro_content
+    description: Total nitrogen content of the sample
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - total nitrogen content
+    is_a: attribute
+    slot_uri: MIXS:0000530
+    range: quantity value
+  tot_org_c_meth:
+    name: tot_org_c_meth
+    description: Reference or method used in determining total organic carbon
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - total organic carbon method
+    is_a: attribute
+    slot_uri: MIXS:0000337
+    range: text value
+  tot_org_carb:
+    name: tot_org_carb
+    description: 'Definition for soil: total organic carbon content of the soil, definition
+      otherwise: total organic carbon content'
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - total organic carbon
+    is_a: attribute
+    slot_uri: MIXS:0000533
+    range: quantity value
+  tot_phosp:
+    name: tot_phosp
+    description: 'Total phosphorus concentration in the sample, calculated by: total
+      phosphorus = total dissolved phosphorus + particulate phosphorus'
+    examples:
+    - value: 0.03 milligram per liter
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - total phosphorus
+    is_a: attribute
+    slot_uri: MIXS:0000117
+    range: quantity value
+  type:
+    name: type
+    description: An optional string that specifies the type object.  This is used
+      to allow for searches for different kinds of objects.
+    examples:
+    - value: nmdc:Biosample
+    - value: nmdc:Study
+    from_schema: partial_roundtrip
+    range: string
+  water_cont_soil_meth:
+    name: water_cont_soil_meth
+    description: Reference or method used in determining the water content of soil
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - water content method
+    is_a: core field
+    slot_uri: MIXS:0000323
+    range: string
+  water_content:
+    name: water_content
+    description: Water content measurement
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - water content
+    is_a: attribute
+    slot_uri: MIXS:0000185
+    range: quantity value
+  watering_regm:
+    name: watering_regm
+    description: Information about treatment involving an exposure to watering frequencies,
+      treatment regimen including how many times the treatment was repeated, how long
+      each treatment lasted, and the start and end time of the entire treatment; can
+      include multiple regimens
+    examples:
+    - value: 1 liter;R2/2018-05-11T14:30/2018-05-11T19:30/P1H30M
+    from_schema: partial_roundtrip
+    source: http://w3id.org/mixs/terms
+    see_also:
+    - https://github.com/microbiomedata/nmdc-schema/blob/issue-291-mixs-submod/util/rebuild_mixs_yaml.py
+    aliases:
+    - watering regimen
+    is_a: attribute
+    slot_uri: MIXS:0000591
+    range: quantity value
+  websites:
+    name: websites
+    description: A list of websites that are associated with the entity.
+    from_schema: partial_roundtrip
+    multivalued: true
+    range: string
+  zinc:
+    name: zinc
+    description: Concentration of zinc in the sample
+    examples:
+    - value: 2.5 mg/kg
+    from_schema: partial_roundtrip
+    aliases:
+    - zinc
+    is_a: attribute
+    range: quantity value
+classes:
+  biosample:
+    name: biosample
+    id_prefixes:
+    - GOLD
+    description: A material sample. It may be environmental (encompassing many organisms)
+      or isolate or tissue.   An environmental sample containing genetic material
+      from multiple individuals is commonly referred to as a biosample.
+    in_subset:
+    - sample subset
+    from_schema: partial_roundtrip
+    aliases:
+    - sample
+    - material sample
+    - specimen
+    - biospecimen
+    exact_mappings:
+    - OBI:0000747
+    - NCIT:C43412
+    is_a: named thing
+    slots:
+    - env_broad_scale
+    - env_local_scale
+    - env_medium
+    - lat_lon
+    - part of
+    slot_usage:
+      env_broad_scale:
+        name: env_broad_scale
+        required: true
+      env_local_scale:
+        name: env_local_scale
+        required: true
+      env_medium:
+        name: env_medium
+        required: true
+      lat_lon:
+        name: lat_lon
+        description: This is currently a required field but it's not clear if this
+          should be required for human hosts
+      part of:
+        name: part of
+        required: true
+  study:
+    name: study
+    id_prefixes:
+    - GOLD
+    - insdc.srs
+    - mgnify
+    description: A study summarizes the overall goal of a research initiative and
+      outlines the key objective of its underlying projects.
+    todos:
+    - determine how to get data values for submitted_to_insdc, investigation_type,
+      experimental_factor
+    - project_name is redundant with name, so excluding it
+    in_subset:
+    - sample subset
+    from_schema: partial_roundtrip
+    aliases:
+    - proposal
+    - research proposal
+    - research study
+    - investigation
+    - project
+    - umbrella project
+    exact_mappings:
+    - SIO:001066
+    - NCIT:C63536
+    - OBI:0000066
+    - ISA:Study
+    broad_mappings:
+    - prov:Activity
+    is_a: named thing
+    slots:
+    - GOLD sample identifiers
+    - INSDC bioproject identifiers
+    - alternative names
+    - description
+    - doi
+    - name
+    - notes
+    - websites
+    slot_usage:
+      GOLD sample identifiers:
+        name: GOLD sample identifiers
+      INSDC bioproject identifiers:
+        name: INSDC bioproject identifiers
+      alternative names:
+        name: alternative names
+      description:
+        name: description
+      doi:
+        name: doi
+        description: The dataset citation for this study
+      name:
+        name: name
+      notes:
+        name: notes
+      websites:
+        name: websites

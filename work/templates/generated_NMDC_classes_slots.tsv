@@ -1,2 +1,2 @@
-class	slot	description	range	multivalued	domain	annotations	mixins	is_a	required	comments	aliases	see_also	in_subset	slot_uri	todos	examples	id_prefixes	source	alt_descriptions	broad_mappings	inlined_as_list	exact_mappings
-> class	slot	description	range	multivalued	domain	annotations	mixins	is_a	required	comments	aliases	see_also	in_subset	slot_uri	todos	examples	id_prefixes	source	alt_descriptions	broad_mappings	inlined_as_list	exact_mappings
+class	slot	description	from_schema	range	multivalued	domain	mixins	is_a	required	comments	aliases	see_also	in_subset	slot_uri	todos	examples	id_prefixes	source	broad_mappings	inlined_as_list	exact_mappings
+> class	slot	description	from_schema	range	multivalued	domain	mixins	is_a	required	comments	aliases	see_also	in_subset	slot_uri	todos	examples	id_prefixes	source	broad_mappings	inlined_as_list	exact_mappings

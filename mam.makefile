@@ -29,10 +29,14 @@ gen_and_pop: clean
   		--selected_classes biosample \
   		--selected_classes study
 
-#work/output/experimental_nmdc_class_slot_templ.tsv:
-#	# /Users/MAM/Documents/gitrepos/linkml-model/linkml_model/model/schema/meta.yaml
-#	# /Users/MAM/Documents/gitrepos/nmdc-schema/src/schema/nmdc.yaml
-#	poetry run linkml2sheets work/templates/experimental_nmdc_class_slot_templ.tsv \
+roundtrip: gen_and_pop
+	poetry run sheets2linkml \
+		--name partial_roundtrip \
+		work/output/generated_filtered_NMDC_classes_slots.tsv > work/output/generated_filtered_NMDC_classes_slots.yaml
+
+#just_pop:
+#	poetry run linkml2sheets \
+#		work/templates/*.tsv \
 #  		--schema /Users/MAM/Documents/gitrepos/nmdc-schema/src/schema/nmdc.yaml  \
 #  		--output-directory work/output \
 #  		--overwrite
