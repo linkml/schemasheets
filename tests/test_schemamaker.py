@@ -40,8 +40,8 @@ def test_classes_slots():
     anns = schema.slots['description'].annotations
     assert anns
     assert anns['special']
-    assert anns['special'] == 'my_val'
-    assert anns['special2'] == 'my_val2'
+    assert anns['special'].value == 'my_val'
+    assert anns['special2'].value == 'my_val2'
     assert not person_cls.slot_usage['has medical history'].required
     assert person_cls.slot_usage['has medical history'].status == 'testing'
     assert 'name' in organization_cls.slots

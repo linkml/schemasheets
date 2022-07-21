@@ -135,10 +135,14 @@ class SchemaMaker:
                         if cc.maps_to == 'examples':
                             for vi in v:
                                 actual_element.examples.append(Example(value=vi))
-                        elif cc.maps_to == 'annotations' and not cc.settings.inner_key:
-                            anns = yaml.load(v[0])
-                            for ann_key, ann_val in anns.items():
-                                actual_element.annotations[ann_key] = ann_val
+                        elif cc.maps_to == 'annotations':
+                            if cc.settings.inner_key:
+                                ann = Annotation(cc.settings.inner_key, v)
+                                actual_element.annotations[ann.tag] = ann
+                            else:
+                                anns = yaml.load(v[0])
+                                for ann_key, ann_val in anns.items():
+                                    actual_element.annotations[ann_key] = ann_val
                         elif isinstance(v, list):
                             #print(f'SETTING {k} to {v}')
                             setattr(actual_element, cc.maps_to, getattr(actual_element, cc.maps_to, []) + v)
@@ -486,9 +490,8 @@ class SchemaMaker:
                             prefixes.add(curie.split(':')[0])
         namespaces = sv.namespaces()
         for pfx in prefixes:
-            #print(f'CH: {pfx}')
             if pfx not in namespaces:
-                #print(f'GUESSING: {pfx}')
+                logging.debug(f'Guessing prefix expansion: {pfx}')
                 pfx_ref = guess_prefix_expansion(pfx)
                 if not pfx_ref:
                     pfx_ref = f'http://example.org/{pfx}/'

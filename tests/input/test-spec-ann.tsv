@@ -1,0 +1,3 @@
+record	field	display_hint
+> class	slot	annotations
+>		inner_key: display_hint
