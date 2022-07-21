@@ -163,7 +163,7 @@ class SchemaExporter:
                                 if v.tag == col_config.settings.inner_key:
                                     return v.value
                                 else:
-                                    return ''
+                                    return None
                             return getattr(v, col_config.settings.inner_key, None)
                         if settings.curie_prefix:
                             pfx = f'{settings.curie_prefix}:'
