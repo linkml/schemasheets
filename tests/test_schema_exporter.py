@@ -142,11 +142,12 @@ def test_inner_key():
     sb = SchemaBuilder()
     sf = SchemaFixer()
     a = Annotation("display_hint", "hello")
+    a2 = Annotation("more_words", "profound_words")
     s = SlotDefinition("s1")
     c = ClassDefinition("X",
                         slots=["s1"],
                         slot_usage={s.name: s},
-                        annotations={a.tag: a})
+                        annotations={a.tag: a, a2.tag: a2})
     schema = sb.schema
     schema.classes[c.name] = c
     c = schema.classes['X']
