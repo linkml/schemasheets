@@ -1,5 +1,9 @@
 .DS_Store
 
+target
+
+local
+
 examples/output
 
 bin
