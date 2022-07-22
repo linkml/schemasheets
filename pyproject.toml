@@ -16,12 +16,12 @@ linkml = "^1.2.16"
 Jinja2 = "^3.0.3"
 ontodev-cogs = "^0.3.3"
 bioregistry = "^0.4.30"
-glom = "^22.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 pytest-cov = "^2.11.1"
 mkdocs = "^1.2.3"
+black = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
