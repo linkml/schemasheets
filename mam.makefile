@@ -23,20 +23,25 @@ work/output/key_counts.csv:
 gen_and_pop: clean
 	poetry run template_wizard \
 		--project_source "https://raw.githubusercontent.com/microbiomedata/nmdc-schema/main/src/schema/nmdc.yaml" \
+		--template_style classes_slots \
 		--template_dir work/templates \
   		--populated_dir work/output \
   		--col_sorting by_usage_count \
   		--selected_classes biosample \
-  		--selected_classes study
+  		--selected_classes study \
+  		--all_slot_class_rels work/output/NMDC_schema_slot_class_rels.yaml \
+        --filtered_slot_class_rels work/output/NMDC_schema_slot_class_filtered_rels.yaml \
+        --merged_filtered_rels work/output/NMDC_schema_slot_class_merged_with_filtered_rels.tsv
+
 
 roundtrip: gen_and_pop
 	poetry run sheets2linkml \
 		--name partial_roundtrip \
 		work/output/generated_filtered_NMDC_classes_slots.tsv > work/output/generated_filtered_NMDC_classes_slots.yaml
 
-#just_pop:
-#	poetry run linkml2sheets \
-#		work/templates/*.tsv \
-#  		--schema /Users/MAM/Documents/gitrepos/nmdc-schema/src/schema/nmdc.yaml  \
-#  		--output-directory work/output \
-#  		--overwrite
+just_pop:
+	poetry run linkml2sheets \
+		work/templates/generated_NMDC_classes_slots.tsv \
+  		--schema /Users/MAM/Documents/gitrepos/nmdc-schema/src/schema/nmdc.yaml  \
+  		--output-directory work/output \
+  		--overwrite

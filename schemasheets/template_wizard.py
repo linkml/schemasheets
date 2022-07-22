@@ -1,6 +1,8 @@
 import csv
 import logging
 import os
+import pprint
+import re
 from dataclasses import dataclass
 # import pprint
 from typing import List, Dict, Optional, Any
@@ -29,28 +31,22 @@ SLOT_USAGE_COUNT = int
 # todo too much writing to file and reading back in
 #  also, there must be something better than LinkML->YAML->Dict
 
-
 # todo: reflect the classes that use a given slot on slot-only rows (via domain of)
 
-# todo: work on YAML-serialized columns like annotation and alt_descriptions
-#  skipping annotations and alternate descriptions for now
+# todo: work on YAML-serialized alt_descriptions columns
 
 # todo: write a style guide, esp use of external terms and consistent grammar
 #  NMDC Schema Style Guide
 #  https://docs.google.com/document/d/1KwO5kG79MWuS4eaRn6n9B3Tth4Hg_vo7jPQDqdv-yD4/edit#
 
-# todo add customized header BEFORE the unfiltered sheet is written
-
 # todo: group and or describe mappings
 # todo: comments, notes, todos distinctions
-
-# todo: generate third row for internal separators and annotation names
 
 # todo: clearer class and method names, docstrings, typing
 
 
 @dataclass
-class L2sTemplate:
+class TemplateWizard:
     """
     models the intermediate states while converting the metamodel and some project schema into a bare,
     then populated schemsheets template
@@ -137,6 +133,129 @@ class L2sTemplate:
     def whittle_columns(self):
         pass
 
+    def declare_multivalueds(self, column_list):
+        multivalued_indicator = 'internal_separator: "|"'
+        multivalued_declarations = []
+        for list_item in column_list:
+            emission = None
+            with_spaces = list_item.replace("_", " ")
+            # print(f"{list_item}")
+            emitted_obj = self.meta_view.get_slot(
+                list_item)  # todo better upfront name/alias handling
+            if not emitted_obj:
+                # print(f"{list_item} -> {with_spaces}")
+                emitted_obj = self.meta_view.get_slot(
+                    with_spaces)  # todo better upfront name/alias handling
+            if emitted_obj:
+                # print(yaml_dumper.dumps(emitted_obj))
+                if emitted_obj.multivalued:
+                    emission = multivalued_indicator
+                else:
+                    # print(f"{list_item} or {with_spaces} isn't multivalued, so emitting None")
+                    pass
+            else:
+                # print(f"couldn't retrieve object for {list_item} or {with_spaces} so emitting None")
+                pass
+            multivalued_declarations.append(emission)
+        return multivalued_declarations
+
+    def declare_annoations(self, r0, r1, r2, aa):
+        # print(f"column_list: {column_list}")
+        # print(f"annotation_list: {annotation_list}")
+        annotation_declarations = []
+        for idx, list_item in enumerate(r0):
+            # print(list_item)
+            if list_item in aa:
+                # print(f"{list_item} is an annotation, so emitting 'inner_key: {list_item}'")
+                annotation_declarations.append(f"inner_key: {list_item}")
+                r1[idx] = "annotations"
+            else:
+                # print(f"{list_item} is NOT an annotation so emitting 'inner_key: {r2[idx]}'")
+                annotation_declarations.append(r2[idx])
+
+        return r1, annotation_declarations
+
+    def add_card_and_range(self, r0):
+        original_to_card_and_range = {}
+        with_card_and_range = []
+        for list_item in r0:
+            with_spaces = list_item.replace("_", " ")
+            emitted_obj = self.meta_view.get_slot(
+                list_item)  # todo better upfront name/alias handling
+            if not emitted_obj:
+                emitted_obj = self.meta_view.get_slot(
+                    with_spaces)  # todo better upfront name/alias handling
+            if emitted_obj:
+                min_card = "0"
+                max_card = "1"
+                if emitted_obj['required']:
+                    min_card = "1"
+                if emitted_obj['multivalued']:
+                    max_card = "*"
+                card_string = f"{list_item}: {min_card}..{max_card}"
+                if emitted_obj['recommended']:
+                    card_string += " (recommended)"
+                if emitted_obj['range']:
+                    card_string += f" x {emitted_obj['range']}"
+                else:
+                    card_string += f" x {self.meta_view.schema.default_range}"
+            else:
+                # todo actually, the rang should be the range of the abbreviated element's name,
+                #  like class -> class_definition.name.range
+                card_string = f"{list_item}: {self.meta_view.schema.default_range}"
+            with_card_and_range.append(card_string)
+            original_to_card_and_range[list_item] = card_string
+        return with_card_and_range, original_to_card_and_range
+
+    def get_slots_to_classes(self, selected_classes=[]):
+        classes_selected = False
+        if selected_classes:
+            classes_selected = True
+
+        slots_to_classes = {}
+        classes = list(self.project_view.all_classes().keys())
+        for current_class in classes:
+            # induced_slots = self.project_view.get_slots_for_class(current_class)
+            induced_slots = self.project_view.class_induced_slots(current_class)
+            induced_slot_names = [i.name for i in induced_slots]
+            for slot_name in induced_slot_names:
+                if slot_name in slots_to_classes:
+                    if current_class in selected_classes or not classes_selected:
+                        slots_to_classes[slot_name].append(current_class)
+                elif current_class in selected_classes or not classes_selected:
+                    slots_to_classes[slot_name] = [current_class]
+        writable = []
+        for k, v in slots_to_classes.items():
+            unique_classes = list(set(v))
+            unique_classes.sort()
+            joined_classes = "|".join(unique_classes)
+            writable.append({"slot": k, "classes": joined_classes})
+
+        return writable
+
+    def prepare_merged_report(self, populated_template, lhs_header, rhs_header, slot_classes_rels):
+        relevant_classes_label = "relevant_classes"
+        # todo this shouldn't be hard-coded
+        old = 'class: string'
+        new = "overriding_class"
+        rels_direct = {i['slot']: i['classes'] for i in slot_classes_rels}
+        combined_headers = lhs_header.copy()
+        combined_rekeyed = list(map(lambda x: x.replace(old, new), combined_headers))
+        combined_rekeyed.insert(2, relevant_classes_label)
+        merged_list = []
+        for i in populated_template:
+            row_dict = i
+            row_dict[relevant_classes_label] = ""
+            current_slot = i[lhs_header[1]]
+            if current_slot:
+                if current_slot in rels_direct:
+                    row_dict[relevant_classes_label] = rels_direct[current_slot]
+            val_to_rekey = row_dict[old]
+            del row_dict[old]
+            row_dict[new] = val_to_rekey
+            merged_list.append(row_dict)
+        return merged_list, combined_rekeyed
+
 
 def traverse_and_collect_dict_keys(dict_in: Dict, inner_list: List = []) -> List:
     """
@@ -162,6 +281,15 @@ def list_to_count_dict(list_in: List) -> Dict:
         else:
             count_dict[item] = 1
     return count_dict
+
+
+def make_colspec_row(column_list):
+    colspec_row = column_list
+    if colspec_row[0]:
+        colspec_row[0] = "> " + colspec_row[0]
+    else:
+        colspec_row[0] = ">"
+    return colspec_row
 
 
 @click.command()
@@ -240,9 +368,27 @@ def list_to_count_dict(list_in: List) -> Dict:
               multiple=True,
               help="Only show knowledge about these classes and their asserted slots. Defaults to all."
               )
+@click.option('--all_slot_class_rels',
+              type=click.Path(file_okay=True, dir_okay=False),
+              required=False,
+              help="""File path for saving all exhaustive slot-class relationships""",
+              )
+@click.option('--filtered_slot_class_rels',
+              type=click.Path(file_okay=True, dir_okay=False),
+              required=False,
+              help="""File path for saving exhaustive report relating selected classes to thier slots""",
+              )
+# v@click.option("--gr", is_flag=True, show_default=True, default=False, help="Greet the world.")
+@click.option('--merged_filtered_rels',
+              type=click.Path(file_okay=True, dir_okay=False),
+              required=False,
+              help="""File path for saving classes_slots report merged with filtered slot-class relationships. 
+              Requires --template_style classes_slots --filtered_slot_class_rels""",
+              )
 #         always_cols = []  # todo
 def cli(meta_source, project_source, template_style, min_occurrences, initial_cols, skip_cols, col_sorting,
-        template_dir, populated_dir, selected_classes, complex_cols) -> None:
+        template_dir, populated_dir, selected_classes, complex_cols, all_slot_class_rels,
+        filtered_slot_class_rels, merged_filtered_rels) -> None:
     """Create a linkml2sheets template based on meta-expected and project-observed elements."""
 
     logger.info(f"creating meta view from {meta_source}")
@@ -253,129 +399,139 @@ def cli(meta_source, project_source, template_style, min_occurrences, initial_co
     project_view = SchemaView(project_source)
     logger.info(f"found schema {project_view.schema.name} in {project_source}")
 
-    generated_template = L2sTemplate(meta_view=meta_view, project_view=project_view)
+    wizard_instance = TemplateWizard(meta_view=meta_view, project_view=project_view)
 
     # todo doesn't get PV annotations for better or worse since they're not "elements"
     #  also, this list could include annotations that aren't relevant to the selected classes and their slots
-    all_annotations = generated_template.get_all_annotations()
-    print(f"all_annotations: {all_annotations}")
+    all_annotations = wizard_instance.get_all_annotations()
+    # print(f"all_annotations: {all_annotations}")
 
     if template_style == "classes_slots":
         # todo: overwrite handling
         #  bad path should be handled by click?
         template_path = os.path.join(template_dir,
-                                     f"generated_{generated_template.project_view.schema.name}_{template_style}.tsv")
+                                     f"generated_{wizard_instance.project_view.schema.name}_{template_style}.tsv")
         populated_tsv = os.path.join(populated_dir,
-                                     f"generated_{generated_template.project_view.schema.name}_{template_style}.tsv")
+                                     f"generated_{wizard_instance.project_view.schema.name}_{template_style}.tsv")
 
-        generated_template.get_slot_attributes()
-        # pprint.pprint(generated_template.slot_attributes)
+        wizard_instance.get_slot_attributes()
+        # pprint.pprint(wizard_instance.slot_attributes)
 
-        generated_template.get_proj_elem_usage()
-        # pprint.pprint(generated_template.proj_elem_usage)
+        wizard_instance.get_proj_elem_usage()
+        # pprint.pprint(wizard_instance.proj_elem_usage)
 
-        frequent_elements = generated_template.get_frequent_elements(count_threshold=min_occurrences)
+        frequent_elements = wizard_instance.get_frequent_elements(count_threshold=min_occurrences)
         # pprint.pprint(frequent_elements)
 
-        frequent_relevant = list(set(frequent_elements).intersection(set(generated_template.class_slots_slotnames)))
+        frequent_relevant = list(set(frequent_elements).intersection(set(wizard_instance.class_slots_slotnames)))
         special_cols = list((set(initial_cols).union(set(skip_cols))).union(set(complex_cols)))
         cols_to_sort = list(set(frequent_relevant).difference(set(special_cols)))
 
         if col_sorting == "alphabetical":
             cols_to_sort.sort()
         elif col_sorting == "by_usage_count":
-            count_sorted = sorted(generated_template.proj_elem_usage, key=lambda x: x['count'], reverse=True)
+            count_sorted = sorted(wizard_instance.proj_elem_usage, key=lambda lx: lx['count'], reverse=True)
             cols_to_sort = [i['key'] for i in count_sorted if i['key'] in cols_to_sort]
-        cols_to_emit = list(initial_cols) + cols_to_sort
+        cols_to_emit = list(initial_cols) + cols_to_sort + all_annotations
 
-        row0 = cols_to_emit.copy()
-        row1 = cols_to_emit.copy()
-        r1c0 = row1[0]
-        r1c0 = "> " + r1c0
-        row1[0] = r1c0
+        row0 = cols_to_emit.copy()  # intended as user friendly header
+        row1 = cols_to_emit.copy()  # meta element names
+
+        # row2 = None
+        row2 = wizard_instance.declare_multivalueds(row0)
+        row1, row2 = wizard_instance.declare_annoations(r0=row0, r1=row1, r2=row2, aa=all_annotations)
+        row1 = make_colspec_row(row1)
+        row2 = make_colspec_row(row2)
+        row0, original_to_card_and_range = wizard_instance.add_card_and_range(row0)
+        # row0 = make_colspec_row(row0)
+
+        # ---
 
         logger.info(f"writing template to {template_path}")
         with open(template_path, 'wt') as out_file:
             tsv_writer = csv.writer(out_file, delimiter='\t')
             tsv_writer.writerow(row0)
             tsv_writer.writerow(row1)
+            # if row2:
+            tsv_writer.writerow(row2)
+
+        # ---
 
         logger.info(f"populating template to {populated_tsv}")
         exporter = SchemaExporter()
-        exporter.export(generated_template.project_view, specification=template_path, to_file=populated_tsv)
+        exporter.export(wizard_instance.project_view, specification=template_path, to_file=populated_tsv)
 
         if len(selected_classes) > 0:
-            sn = generated_template.project_view.schema.name
+
+            sn = wizard_instance.project_view.schema.name
+
             filtered_populated = os.path.join(populated_dir,
                                               f"generated_filtered_{sn}_{template_style}.tsv")
             logger.info(f"writing rows relevant to {selected_classes} to {filtered_populated}")
+
             all_relevant_slots = []
             for current_selected in selected_classes:
                 logger.info(f"selected_class: {current_selected}")
-                class_relevant_slots = generated_template.get_slot_names(element=current_selected,
-                                                                         selected_schema="project")
+                class_relevant_slots = wizard_instance.get_slot_names(element=current_selected,
+                                                                      selected_schema="project")
                 class_relevant_slots.sort()
                 all_relevant_slots.extend(class_relevant_slots)
 
             with open(populated_tsv, "r") as f:
                 csv_reader = csv.DictReader(f, delimiter='\t')
                 unfiltered = list(csv_reader)
-            about_class = [i for i in unfiltered if i['class'] in selected_classes]
 
-            about_class_slots = [i for i in unfiltered if i['slot'] in all_relevant_slots and not i['class']]
+            header_rows = unfiltered[0:2]
+            filtered_rows = []
 
-            filtered_rows = about_class + about_class_slots
+            class_indicator = original_to_card_and_range['class']
+            slot_indicator = original_to_card_and_range['slot']
+            lost_track = {}
+            for u_row in unfiltered:
+                raw_to_normalized = {re.sub(r'^>\s+', '', k): v for k, v in u_row.items()}
+                if raw_to_normalized[class_indicator] in selected_classes:
+                    filtered_rows.append(u_row)
+                if raw_to_normalized[slot_indicator] in all_relevant_slots and not raw_to_normalized[class_indicator]:
+                    filtered_rows.append(u_row)
 
-            filtered_rows = sorted(filtered_rows, key=lambda x: (x['slot'], x['class']), reverse=False)
-
-            card_strings = {}
-            multi_valueds = {}
-            for current_emitted in cols_to_emit:
-                card_string = current_emitted
-                with_spaces = current_emitted.replace("_", " ")
-                emitted_obj = generated_template.meta_view.get_slot(
-                    current_emitted)  # todo better upfront name/alias handling
-                if not emitted_obj:
-                    emitted_obj = generated_template.meta_view.get_slot(
-                        with_spaces)  # todo better upfront name/alias handling
-                if emitted_obj:
-                    min_card = "0"
-                    max_card = "1"
-                    if emitted_obj['required']:
-                        min_card = "1"
-                    if emitted_obj['multivalued']:
-                        max_card = "*"
-                        any_multi_valueds = True
-                        multi_valueds[current_emitted] = 'internal_separator: "|"'
-                    else:
-                        multi_valueds[current_emitted] = None
-                    card_string = f"{current_emitted}: {min_card}..{max_card}"
-                    if emitted_obj['recommended']:
-                        card_string += " (recommended)"
-                    if emitted_obj['range']:
-                        card_string += f" x {emitted_obj['range']}"
-                else:
-                    card_string += f" x {generated_template.meta_view.schema.default_range}"
-                    multi_valueds[current_emitted] = None
-                card_strings[current_emitted] = card_string
-
-                row1_mapping = dict(zip(cols_to_emit, row1))
+            filtered_rows = sorted(filtered_rows, key=lambda x: (x[slot_indicator], x[class_indicator]), reverse=False)
+            writable_rows = header_rows + filtered_rows
 
             with open(filtered_populated, 'wt') as out_file:
-                tsv_writer = csv.DictWriter(out_file, delimiter='\t', fieldnames=cols_to_emit)
-                # tsv_writer.writeheader()
-                tsv_writer.writerow(card_strings)
-                tsv_writer.writerow(row1_mapping)
-                if any_multi_valueds:
-                    # pprint.pprint(multi_valueds)
-                    if multi_valueds[cols_to_emit[0]]:
-                        temp = multi_valueds[cols_to_emit[0]]
-                        temp = f"> {temp}"
-                    else:
-                        temp = f">"
-                    multi_valueds[cols_to_emit[0]] = temp
-                    tsv_writer.writerow(multi_valueds)
-                tsv_writer.writerows(filtered_rows)
+                tsv_writer = csv.DictWriter(out_file, delimiter='\t', fieldnames=row0)
+                tsv_writer.writeheader()
+                tsv_writer.writerows(writable_rows)
+
+        # print(wizard_instance.project_view.induced_slot(class_name='biosample', slot_name='name'))
+
+        # pprint.pprint(slots_to_classes)
+
+        rel_headers = ['slot', 'classes']
+        if filtered_slot_class_rels:
+            filtered_slots_to_classes = wizard_instance.get_slots_to_classes(selected_classes=selected_classes)
+            with open(filtered_slot_class_rels, 'wt') as out_file:
+                tsv_writer = csv.DictWriter(out_file, delimiter='\t', fieldnames=rel_headers)
+                tsv_writer.writeheader()
+                tsv_writer.writerows(filtered_slots_to_classes)
+
+        if all_slot_class_rels:
+            all_slots_to_classes = wizard_instance.get_slots_to_classes()
+            with open(all_slot_class_rels, 'wt') as out_file:
+                tsv_writer = csv.DictWriter(out_file, delimiter='\t', fieldnames=rel_headers)
+                tsv_writer.writeheader()
+                tsv_writer.writerows(all_slots_to_classes)
+
+        if template_style == "classes_slots" and filtered_slot_class_rels and merged_filtered_rels:
+            print(f"Would write merged report to {merged_filtered_rels}")
+            merged_list, combined_headers = wizard_instance.prepare_merged_report(populated_template=writable_rows,
+                                                                                  lhs_header=row0,
+                                                                                  rhs_header=rel_headers,
+                                                                                  slot_classes_rels=filtered_slots_to_classes)
+            merged_list[0]['relevant_classes'] = "ignore"
+            with open(merged_filtered_rels, 'wt') as out_file:
+                tsv_writer = csv.DictWriter(out_file, delimiter='\t', fieldnames=combined_headers)
+                tsv_writer.writeheader()
+                tsv_writer.writerows(merged_list)
 
 
 if __name__ == '__main__':
