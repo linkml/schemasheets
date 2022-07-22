@@ -139,7 +139,10 @@ class TemplateWizard:
         meets_threshold = [
             i["key"] for i in self.proj_elem_usage if i["count"] >= count_threshold
         ]
-        return meets_threshold
+        under_threshold = [
+            i["key"] for i in self.proj_elem_usage if i["count"] < count_threshold
+        ]
+        return meets_threshold, under_threshold
 
     def whittle_columns(self):
         pass
@@ -263,6 +266,16 @@ class TemplateWizard:
             merged_list.append(row_dict)
         return merged_list, combined_rekeyed
 
+    def get_meta_element_names(self):
+        meta_elements = self.meta_view.all_elements()
+        meta_element_names = [k for k, v in meta_elements.items()]
+        return meta_element_names
+
+    def get_project_element_types(self):
+        project_elements = self.project_view.all_elements()
+        project_element_types = {k: type(v) for k, v in project_elements.items()}
+        return project_element_types
+
 
 def traverse_and_collect_dict_keys(dict_in: Dict, inner_list: List = []) -> List:
     """
@@ -318,7 +331,7 @@ def make_colspec_row(column_list):
     default="classes_slots",
     help="What high-level schema elements should be included in the template?",
     required=True,
-    type=click.Choice(["classes_slots"]),
+    type=click.Choice(["classes_slots", "enums"]),
 )
 # filtering columns
 @click.option(
@@ -439,6 +452,7 @@ def cli(
     #  also, this list could include annotations that aren't relevant to the selected classes and their slots
     element_annotations = wizard_instance.get_element_annotations()
 
+    # todo break this out into a method or function
     if template_style == "classes_slots":
         # todo: overwrite handling
         #  bad path should be handled by click?
@@ -455,9 +469,19 @@ def cli(
 
         wizard_instance.get_proj_elem_usage()
 
-        frequent_elements = wizard_instance.get_frequent_elements(
+        frequent_elements, under_threshold = wizard_instance.get_frequent_elements(
             count_threshold=min_occurrences
         )
+
+        meta_element_names = wizard_instance.get_meta_element_names()
+        meta_element_names.sort()
+
+        # project_element_types = wizar get_project_element_types
+
+        under_threshold.sort()
+        print(f"under_threshold: {under_threshold}")
+        print(f"element_annotations: {element_annotations}")
+        print(f"meta_element_names: {meta_element_names}")
 
         frequent_relevant = list(
             set(frequent_elements).intersection(
@@ -600,6 +624,11 @@ def cli(
                 )
                 tsv_writer.writeheader()
                 tsv_writer.writerows(merged_list)
+    elif template_style == "enums":
+        print(f"Would process enums")
+        enums = wizard_instance.project_view.all_enums()
+        enums_names = [k for k, v in enums.items()]
+        print(f"enums: {enums_names}")
 
 
 if __name__ == "__main__":

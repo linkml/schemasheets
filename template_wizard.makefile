@@ -44,6 +44,19 @@ target/output/NMDC_schema_slot_class_merged_with_filtered_rels.yaml: target/outp
 		--name NMDC_slot_class_roundtrip \
 		$< > $@
 
+temp:
+	poetry run template_wizard \
+		--project_source "https://raw.githubusercontent.com/microbiomedata/nmdc-schema/main/src/schema/nmdc.yaml" \
+		--template_style enums \
+		--template_dir target/templates \
+  		--populated_dir target/output \
+  		--col_sorting by_usage_count \
+  		--selected_classes biosample \
+  		--selected_classes study \
+  		--all_slot_class_rels target/output/NMDC_schema_slot_class_rels.yaml \
+        --filtered_slot_class_rels target/output/NMDC_schema_slot_class_filtered_rels.yaml \
+        --merged_filtered_rels target/output/NMDC_schema_slot_class_merged_with_filtered_rels.tsv
+
 #just_pop:
 #	poetry run linkml2sheets \
 #		target/templates/generated_NMDC_classes_slots.tsv \
