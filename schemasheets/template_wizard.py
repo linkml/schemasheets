@@ -11,6 +11,7 @@ import click_log
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model import EnumDefinition, PermissibleValue
 
 from schemasheets.schema_exporter import SchemaExporter
 
@@ -122,6 +123,11 @@ class TemplateWizard:
         self.slot_attributes = current_slot_attributes
 
     def get_proj_elem_usage(self):
+        # todo I'm not convinced that this is getting all frequently used keys
+        #  didn't pick up title or notes for NMDC schema
+        #  needs merging?
+        # todo this DOES pick up keys like annotation and permissible value names, which might not be desirable
+        #  see frequent_relevant and ut_meta_elements
         project_yaml = yaml_dumper.dumps(self.project_view.schema)
         project_dict = yaml.safe_load(project_yaml)
 
@@ -273,8 +279,17 @@ class TemplateWizard:
 
     def get_project_element_types(self):
         project_elements = self.project_view.all_elements()
-        project_element_types = {k: type(v) for k, v in project_elements.items()}
+        project_element_types = {k: type(v).class_name for k, v in project_elements.items()}
         return project_element_types
+
+    def get_types_project_elements(self, project_element_types):
+        types_project_elements = {}
+        for k, v in project_element_types.items():
+            if v in types_project_elements:
+                types_project_elements[v].append(k)
+            else:
+                types_project_elements[v] = [k]
+        return types_project_elements
 
 
 def traverse_and_collect_dict_keys(dict_in: Dict, inner_list: List = []) -> List:
@@ -282,6 +297,7 @@ def traverse_and_collect_dict_keys(dict_in: Dict, inner_list: List = []) -> List
     recursively collects all keys from a dictionary
     """
     for key, value in dict_in.items():
+        print(key)
         if isinstance(value, dict):
             traverse_and_collect_dict_keys(value, inner_list)
             inner_list.append(key)
@@ -296,6 +312,7 @@ def list_to_count_dict(list_in: List) -> Dict:
     """
     count_dict = {}
     for item in list_in:
+        print(item)
         if item in count_dict:
             count_dict[item] += 1
         else:
@@ -341,13 +358,23 @@ def make_colspec_row(column_list):
 )
 @click.option(
     "--initial_cols",
-    type=click.Choice(["class", "slot"]),
+    type=click.Choice(["class", "slot", "title"]),
     multiple=True,
     default=[
         "class",
         "slot",
+        "title"
     ],
     help="Slots that should appear as the left-most columns.",
+)
+@click.option(
+    "--always_include_cols",
+    type=click.Choice(["notes"]),
+    multiple=True,
+    default=[
+        "notes"
+    ],
+    help="Slots that should always be included. Order not specified.",
 )
 @click.option(
     "--complex_cols",
@@ -411,7 +438,6 @@ def make_colspec_row(column_list):
     required=False,
     help="""File path for saving exhaustive report relating selected classes to thier slots""",
 )
-# v@click.option("--gr", is_flag=True, show_default=True, default=False, help="Greet the world.")
 @click.option(
     "--merged_filtered_rels",
     type=click.Path(file_okay=True, dir_okay=False),
@@ -426,6 +452,7 @@ def cli(
         template_style,
         min_occurrences,
         initial_cols,
+        always_include_cols,
         skip_cols,
         col_sorting,
         template_dir,
@@ -476,12 +503,16 @@ def cli(
         meta_element_names = wizard_instance.get_meta_element_names()
         meta_element_names.sort()
 
-        # project_element_types = wizar get_project_element_types
+        project_element_types = wizard_instance.get_project_element_types()
+        pprint.pprint(project_element_types)
+
+        types_project_elements = wizard_instance.get_types_project_elements(project_element_types)
+        pprint.pprint(types_project_elements)
 
         under_threshold.sort()
-        print(f"under_threshold: {under_threshold}")
-        print(f"element_annotations: {element_annotations}")
-        print(f"meta_element_names: {meta_element_names}")
+        # print(f"under_threshold: {under_threshold}")
+        # print(f"element_annotations: {element_annotations}")
+        # print(f"meta_element_names: {meta_element_names}")
 
         frequent_relevant = list(
             set(frequent_elements).intersection(
@@ -492,6 +523,7 @@ def cli(
             (set(initial_cols).union(set(skip_cols))).union(set(complex_cols))
         )
         cols_to_sort = list(set(frequent_relevant).difference(set(special_cols)))
+        cols_to_sort = list(set(cols_to_sort).union(set(always_include_cols)))
 
         if col_sorting == "alphabetical":
             cols_to_sort.sort()
@@ -624,11 +656,47 @@ def cli(
                 )
                 tsv_writer.writeheader()
                 tsv_writer.writerows(merged_list)
+
     elif template_style == "enums":
         print(f"Would process enums")
-        enums = wizard_instance.project_view.all_enums()
-        enums_names = [k for k, v in enums.items()]
-        print(f"enums: {enums_names}")
+
+        wizard_instance.get_slot_attributes()
+
+        wizard_instance.get_proj_elem_usage()
+
+        frequent_elements, under_threshold = wizard_instance.get_frequent_elements(
+            count_threshold=min_occurrences
+        )
+
+        meta_element_names = wizard_instance.get_meta_element_names()
+        meta_element_names.sort()
+
+        ut_meta_elements = list(set(under_threshold) & set(meta_element_names))
+
+        project_element_types = wizard_instance.get_project_element_types()
+
+        types_project_elements = wizard_instance.get_types_project_elements(project_element_types)
+
+        project_enums = wizard_instance.project_view.all_enums()
+
+        enums_yaml = yaml_dumper.dumps(project_enums)
+        enums_dict = yaml.safe_load(enums_yaml)
+
+        outer_list = traverse_and_collect_dict_keys(enums_dict)  # todo rename this
+
+        key_counts = list_to_count_dict(outer_list)
+
+        enum_slots = wizard_instance.meta_view.class_induced_slots("enum_definition")
+        enum_slots_names = [s.name for s in enum_slots]
+        pv_slots = wizard_instance.meta_view.class_induced_slots("permissible_value")
+        pv_slots_names = [s.name for s in pv_slots]
+        enum_and_pv_slots = list(set(enum_slots_names).union(set(pv_slots_names)))
+
+        frequent_and_relevant = [k for k, v in key_counts.items() if
+                                 k in enum_and_pv_slots and v >= min_occurrences]
+        frequent_and_relevant.sort()
+        pprint.pprint(frequent_and_relevant)
+
 
 
 if __name__ == "__main__":

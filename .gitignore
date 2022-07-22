@@ -1,12 +1,9 @@
 .DS_Store
-
-target
-
-local
-
-examples/output
-
 bin
+examples/output/
+local/
+target/
+tests/output/*tsv
 
 # open office tmp files
 *#
