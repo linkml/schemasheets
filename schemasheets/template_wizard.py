@@ -4,13 +4,11 @@ import os
 import pprint
 import re
 from dataclasses import dataclass
-# import pprint
 from typing import List, Dict, Optional, Any
 
 import click
 import click_log
 import yaml
-# from glom import glom, S
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 
@@ -139,38 +137,28 @@ class TemplateWizard:
         for list_item in column_list:
             emission = None
             with_spaces = list_item.replace("_", " ")
-            # print(f"{list_item}")
             emitted_obj = self.meta_view.get_slot(
                 list_item)  # todo better upfront name/alias handling
             if not emitted_obj:
-                # print(f"{list_item} -> {with_spaces}")
                 emitted_obj = self.meta_view.get_slot(
                     with_spaces)  # todo better upfront name/alias handling
             if emitted_obj:
-                # print(yaml_dumper.dumps(emitted_obj))
                 if emitted_obj.multivalued:
                     emission = multivalued_indicator
                 else:
-                    # print(f"{list_item} or {with_spaces} isn't multivalued, so emitting None")
                     pass
             else:
-                # print(f"couldn't retrieve object for {list_item} or {with_spaces} so emitting None")
                 pass
             multivalued_declarations.append(emission)
         return multivalued_declarations
 
     def declare_annoations(self, r0, r1, r2, aa):
-        # print(f"column_list: {column_list}")
-        # print(f"annotation_list: {annotation_list}")
         annotation_declarations = []
         for idx, list_item in enumerate(r0):
-            # print(list_item)
             if list_item in aa:
-                # print(f"{list_item} is an annotation, so emitting 'inner_key: {list_item}'")
                 annotation_declarations.append(f"inner_key: {list_item}")
                 r1[idx] = "annotations"
             else:
-                # print(f"{list_item} is NOT an annotation so emitting 'inner_key: {r2[idx]}'")
                 annotation_declarations.append(r2[idx])
 
         return r1, annotation_declarations
@@ -404,7 +392,6 @@ def cli(meta_source, project_source, template_style, min_occurrences, initial_co
     # todo doesn't get PV annotations for better or worse since they're not "elements"
     #  also, this list could include annotations that aren't relevant to the selected classes and their slots
     all_annotations = wizard_instance.get_all_annotations()
-    # print(f"all_annotations: {all_annotations}")
 
     if template_style == "classes_slots":
         # todo: overwrite handling
@@ -415,13 +402,10 @@ def cli(meta_source, project_source, template_style, min_occurrences, initial_co
                                      f"generated_{wizard_instance.project_view.schema.name}_{template_style}.tsv")
 
         wizard_instance.get_slot_attributes()
-        # pprint.pprint(wizard_instance.slot_attributes)
 
         wizard_instance.get_proj_elem_usage()
-        # pprint.pprint(wizard_instance.proj_elem_usage)
 
         frequent_elements = wizard_instance.get_frequent_elements(count_threshold=min_occurrences)
-        # pprint.pprint(frequent_elements)
 
         frequent_relevant = list(set(frequent_elements).intersection(set(wizard_instance.class_slots_slotnames)))
         special_cols = list((set(initial_cols).union(set(skip_cols))).union(set(complex_cols)))
@@ -502,10 +486,6 @@ def cli(meta_source, project_source, template_style, min_occurrences, initial_co
                 tsv_writer.writeheader()
                 tsv_writer.writerows(writable_rows)
 
-        # print(wizard_instance.project_view.induced_slot(class_name='biosample', slot_name='name'))
-
-        # pprint.pprint(slots_to_classes)
-
         rel_headers = ['slot', 'classes']
         if filtered_slot_class_rels:
             filtered_slots_to_classes = wizard_instance.get_slots_to_classes(selected_classes=selected_classes)
@@ -522,7 +502,6 @@ def cli(meta_source, project_source, template_style, min_occurrences, initial_co
                 tsv_writer.writerows(all_slots_to_classes)
 
         if template_style == "classes_slots" and filtered_slot_class_rels and merged_filtered_rels:
-            print(f"Would write merged report to {merged_filtered_rels}")
             merged_list, combined_headers = wizard_instance.prepare_merged_report(populated_template=writable_rows,
                                                                                   lhs_header=row0,
                                                                                   rhs_header=rel_headers,

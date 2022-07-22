@@ -8,6 +8,10 @@ clean:
 	rm -rf target/output/*.yaml
 	rm -rf target/templates/generated*
 	rm -rf target/output/generated*
+	mkdir -p target/input
+	mkdir -p target/templates
+	mkdir -p target/output
+
 
 target/output/slot.tsv:
 	poetry run linkml2sheets target/templates/*.tsv \
