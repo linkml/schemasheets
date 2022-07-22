@@ -30,6 +30,7 @@ SLOT_USAGE_COUNT = int
 #  also, there must be something better than LinkML->YAML->Dict
 
 # todo: reflect the classes that use a given slot on slot-only rows (via domain of)
+#  see prepare_merged_report() workarround
 
 # todo: work on YAML-serialized alt_descriptions columns
 
@@ -70,7 +71,7 @@ class TemplateWizard:
     #     self.meta_view = meta_view
     #     self.project_view = project_view
 
-    def get_all_annotations(self) -> List:
+    def get_element_annotations(self) -> List:
         """
         iteratively collects all element annotations
         """
@@ -238,7 +239,7 @@ class TemplateWizard:
         return writable
 
     def prepare_merged_report(
-        self, populated_template, lhs_header, rhs_header, slot_classes_rels
+            self, populated_template, lhs_header, slot_classes_rels
     ):
         relevant_classes_label = "relevant_classes"
         # todo this shouldn't be hard-coded
@@ -407,20 +408,20 @@ def make_colspec_row(column_list):
 )
 #         always_cols = []  # todo
 def cli(
-    meta_source,
-    project_source,
-    template_style,
-    min_occurrences,
-    initial_cols,
-    skip_cols,
-    col_sorting,
-    template_dir,
-    populated_dir,
-    selected_classes,
-    complex_cols,
-    all_slot_class_rels,
-    filtered_slot_class_rels,
-    merged_filtered_rels,
+        meta_source,
+        project_source,
+        template_style,
+        min_occurrences,
+        initial_cols,
+        skip_cols,
+        col_sorting,
+        template_dir,
+        populated_dir,
+        selected_classes,
+        complex_cols,
+        all_slot_class_rels,
+        filtered_slot_class_rels,
+        merged_filtered_rels,
 ) -> None:
     """Create a linkml2sheets template based on meta-expected and project-observed elements."""
 
@@ -436,7 +437,7 @@ def cli(
 
     # todo doesn't get PV annotations for better or worse since they're not "elements"
     #  also, this list could include annotations that aren't relevant to the selected classes and their slots
-    all_annotations = wizard_instance.get_all_annotations()
+    element_annotations = wizard_instance.get_element_annotations()
 
     if template_style == "classes_slots":
         # todo: overwrite handling
@@ -477,7 +478,7 @@ def cli(
                 reverse=True,
             )
             cols_to_sort = [i["key"] for i in count_sorted if i["key"] in cols_to_sort]
-        cols_to_emit = list(initial_cols) + cols_to_sort + all_annotations
+        cols_to_emit = list(initial_cols) + cols_to_sort + element_annotations
 
         row0 = cols_to_emit.copy()  # intended as user friendly header
         row1 = cols_to_emit.copy()  # meta element names
@@ -485,14 +486,11 @@ def cli(
         # row2 = None
         row2 = wizard_instance.declare_multivalueds(row0)
         row1, row2 = wizard_instance.declare_annoations(
-            r0=row0, r1=row1, r2=row2, aa=all_annotations
+            r0=row0, r1=row1, r2=row2, aa=element_annotations
         )
         row1 = make_colspec_row(row1)
         row2 = make_colspec_row(row2)
         row0, original_to_card_and_range = wizard_instance.add_card_and_range(row0)
-        # row0 = make_colspec_row(row0)
-
-        # ---
 
         logger.info(f"writing template to {template_path}")
         with open(template_path, "wt") as out_file:
@@ -501,8 +499,6 @@ def cli(
             tsv_writer.writerow(row1)
             # if row2:
             tsv_writer.writerow(row2)
-
-        # ---
 
         logger.info(f"populating template to {populated_tsv}")
         exporter = SchemaExporter()
@@ -541,7 +537,7 @@ def cli(
 
             class_indicator = original_to_card_and_range["class"]
             slot_indicator = original_to_card_and_range["slot"]
-            lost_track = {}
+            # lost_track = {}
             for u_row in unfiltered:
                 raw_to_normalized = {
                     re.sub(r"^>\s+", "", k): v for k, v in u_row.items()
@@ -549,8 +545,8 @@ def cli(
                 if raw_to_normalized[class_indicator] in selected_classes:
                     filtered_rows.append(u_row)
                 if (
-                    raw_to_normalized[slot_indicator] in all_relevant_slots
-                    and not raw_to_normalized[class_indicator]
+                        raw_to_normalized[slot_indicator] in all_relevant_slots
+                        and not raw_to_normalized[class_indicator]
                 ):
                     filtered_rows.append(u_row)
 
@@ -588,14 +584,13 @@ def cli(
                 tsv_writer.writerows(all_slots_to_classes)
 
         if (
-            template_style == "classes_slots"
-            and filtered_slot_class_rels
-            and merged_filtered_rels
+                template_style == "classes_slots"
+                and filtered_slot_class_rels
+                and merged_filtered_rels
         ):
             merged_list, combined_headers = wizard_instance.prepare_merged_report(
                 populated_template=writable_rows,
                 lhs_header=row0,
-                rhs_header=rel_headers,
                 slot_classes_rels=filtered_slots_to_classes,
             )
             merged_list[0]["relevant_classes"] = "ignore"
