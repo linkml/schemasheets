@@ -247,9 +247,7 @@ class TemplateWizard:
 
         return writable
 
-    def prepare_merged_report(
-            self, populated_template, lhs_header, slot_classes_rels
-    ):
+    def prepare_merged_report(self, populated_template, lhs_header, slot_classes_rels):
         relevant_classes_label = "relevant_classes"
         # todo this shouldn't be hard-coded
         old = "class: string"
@@ -279,7 +277,9 @@ class TemplateWizard:
 
     def get_project_element_types(self):
         project_elements = self.project_view.all_elements()
-        project_element_types = {k: type(v).class_name for k, v in project_elements.items()}
+        project_element_types = {
+            k: type(v).class_name for k, v in project_elements.items()
+        }
         return project_element_types
 
     def get_types_project_elements(self, project_element_types):
@@ -334,6 +334,7 @@ def make_colspec_row(column_list):
 # sources
 @click.option(
     "--meta_source",
+    show_default=True,
     default="https://raw.githubusercontent.com/linkml/linkml-model/main/linkml_model/model/schema/meta.yaml",
     help="HTTP or filesystem path to some version of the LinkML meta model",
 )
@@ -346,6 +347,7 @@ def make_colspec_row(column_list):
 @click.option(
     "--template_style",
     default="classes_slots",
+    show_default=True,
     help="What high-level schema elements should be included in the template?",
     required=True,
     type=click.Choice(["classes_slots", "enums"]),
@@ -353,6 +355,7 @@ def make_colspec_row(column_list):
 # filtering columns
 @click.option(
     "--min_occurrences",
+    show_default=True,
     default=2,
     help="Don't make a column for elements that appear less than N times in your project schema.",
 )
@@ -360,26 +363,23 @@ def make_colspec_row(column_list):
     "--initial_cols",
     type=click.Choice(["class", "slot", "title"]),
     multiple=True,
-    default=[
-        "class",
-        "slot",
-        "title"
-    ],
+    show_default=True,
+    default=["class", "slot", "title"],
     help="Slots that should appear as the left-most columns.",
 )
 @click.option(
     "--always_include_cols",
     type=click.Choice(["notes"]),
+    show_default=True,
     multiple=True,
-    default=[
-        "notes"
-    ],
+    default=["notes"],
     help="Slots that should always be included. Order not specified.",
 )
 @click.option(
     "--complex_cols",
     type=click.Choice(["annotations", "alt_descriptions"]),
     multiple=True,
+    show_default=True,
     default=[
         "annotations",
         "alt_descriptions",
@@ -390,6 +390,7 @@ def make_colspec_row(column_list):
     "--skip_cols",
     type=click.Choice(["slots", "slot_usage", "name"]),
     multiple=True,
+    show_default=True,
     default=[
         "slots",
         "slot_usage",
@@ -405,6 +406,7 @@ def make_colspec_row(column_list):
     "--col_sorting",
     type=click.Choice(["alphabetical", "by_usage_count"]),
     multiple=False,
+    show_default=True,
     default="alphabetical",
     help="""Besides initial columns,
               should the rest appear alphabetically or in order of use in project schema?""",
@@ -447,23 +449,23 @@ def make_colspec_row(column_list):
 )
 #         always_cols = []  # todo
 def cli(
-        meta_source,
-        project_source,
-        template_style,
-        min_occurrences,
-        initial_cols,
-        always_include_cols,
-        skip_cols,
-        col_sorting,
-        template_dir,
-        populated_dir,
-        selected_classes,
-        complex_cols,
-        all_slot_class_rels,
-        filtered_slot_class_rels,
-        merged_filtered_rels,
+    meta_source,
+    project_source,
+    template_style,
+    min_occurrences,
+    initial_cols,
+    always_include_cols,
+    skip_cols,
+    col_sorting,
+    template_dir,
+    populated_dir,
+    selected_classes,
+    complex_cols,
+    all_slot_class_rels,
+    filtered_slot_class_rels,
+    merged_filtered_rels,
 ) -> None:
-    """Create a linkml2sheets template based on meta-expected and project-observed elements."""
+    """Create a schemasheets template based on meta-expected and project-observed elements."""
 
     logger.info(f"creating meta view from {meta_source}")
     meta_view = SchemaView(meta_source)
@@ -506,7 +508,9 @@ def cli(
         project_element_types = wizard_instance.get_project_element_types()
         pprint.pprint(project_element_types)
 
-        types_project_elements = wizard_instance.get_types_project_elements(project_element_types)
+        types_project_elements = wizard_instance.get_types_project_elements(
+            project_element_types
+        )
         pprint.pprint(types_project_elements)
 
         under_threshold.sort()
@@ -601,8 +605,8 @@ def cli(
                 if raw_to_normalized[class_indicator] in selected_classes:
                     filtered_rows.append(u_row)
                 if (
-                        raw_to_normalized[slot_indicator] in all_relevant_slots
-                        and not raw_to_normalized[class_indicator]
+                    raw_to_normalized[slot_indicator] in all_relevant_slots
+                    and not raw_to_normalized[class_indicator]
                 ):
                     filtered_rows.append(u_row)
 
@@ -640,9 +644,9 @@ def cli(
                 tsv_writer.writerows(all_slots_to_classes)
 
         if (
-                template_style == "classes_slots"
-                and filtered_slot_class_rels
-                and merged_filtered_rels
+            template_style == "classes_slots"
+            and filtered_slot_class_rels
+            and merged_filtered_rels
         ):
             merged_list, combined_headers = wizard_instance.prepare_merged_report(
                 populated_template=writable_rows,
@@ -658,45 +662,139 @@ def cli(
                 tsv_writer.writerows(merged_list)
 
     elif template_style == "enums":
-        print(f"Would process enums")
+        print(f"Processing enums and permissible values")
 
-        wizard_instance.get_slot_attributes()
+        # trying a different approach vis a vis the classes_slots style
 
-        wizard_instance.get_proj_elem_usage()
+        initial_cols = ["enum", "permissible_value", "meaning"]
 
-        frequent_elements, under_threshold = wizard_instance.get_frequent_elements(
-            count_threshold=min_occurrences
+        # what slots are allowed for enums with induction
+        e_slots = wizard_instance.meta_view.induced_class("enum_definition").attributes
+        e_slot_keys = list(e_slots.keys())
+        e_slot_keys.sort()
+        # logger.info(f"enum slots: {e_slot_keys}")
+
+        # what slots are allowed for permissible values with induction
+        pv_slots = wizard_instance.meta_view.induced_class("enum_definition").attributes
+        pv_slot_keys = list(pv_slots.keys())
+        pv_slot_keys.sort()
+        # logger.info(f"pv slots: {pv_slot_keys}")
+
+        proj_enums = wizard_instance.project_view.all_enums()
+        enum_names = list(proj_enums.keys())
+        enum_names.sort()
+        # logger.info(f"enum names: {enum_names}")
+
+        # todo common metadata?
+        always_do = set()
+        desired_ranges = [
+            "example",
+            "integer",
+            "string",
+            "subset_definition",
+            "uri",
+            "uriorcurie",
+        ]
+        ignored_ranges = "alt_description", "structured_alias"
+        cd = wizard_instance.meta_view.induced_class("common_metadata")
+        cd_slots = cd.attributes
+        for k, v in cd_slots.items():
+            if v.range in desired_ranges:
+                always_do.add(v.alias)
+
+        # todo remember key vs name vs alias
+        # todo maybe include from_schema?
+        # todo identify and flag read only cols
+        dont_bother_with = ["name", "text"]
+
+        # todo check for requireds, multivalueds and ranges
+
+        e_allowed_and_used = set()
+        pv_allowed_and_used = set()
+        annotations_used = set()
+        for k, v in proj_enums.items():
+            e_dict = v.__dict__
+            for vk, vv in e_dict.items():
+                if vk in e_slot_keys and vk not in dont_bother_with and vv:
+                    if vk == "permissible_values":
+                        for pk, pv in vv.items():
+                            p_dict = pv.__dict__
+                            for pvk, pvv in p_dict.items():
+                                if pvk == "annotations":
+                                    if pvv:
+                                        for inner_key, inner_v in pvv.items():
+                                            # logger.info(f"annotations: {inner_key}")
+                                            annotations_used.add(inner_key)
+                                elif (
+                                    pvk in pv_slot_keys
+                                    and pvk not in dont_bother_with
+                                    and pvv
+                                ):
+                                    # logger.info(f"pv key: {pvk}")
+                                    alias_check = wizard_instance.meta_view.get_element(
+                                        pvk
+                                    )
+                                    if alias_check.alias:
+                                        # logger.info(
+                                        #     f"pv key alias: {alias_check.alias}"
+                                        # )
+                                        pv_allowed_and_used.add(alias_check.alias)
+                                    else:
+                                        # logger.info(f"pv key: {pvk}")
+                                        pv_allowed_and_used.add(pvk)
+
+                    else:
+                        # todo need underlined form not white-spaced form
+                        e_allowed_and_used.add(vk)
+
+        for_row0 = [always_do, e_allowed_and_used, pv_allowed_and_used]
+
+        row0 = list(set().union(*for_row0))
+        row0.sort()
+        au_list = list(annotations_used)
+        au_list.sort()
+        row0 = initial_cols + row0 + au_list
+
+        row1 = []
+        for i in row0:
+            if i in annotations_used:
+                row1.append("annotations")
+            else:
+                row1.append(i)
+
+        row2 = []
+        for i in row0:
+            # todo determine multivalued columns
+            # todo would be better to check in induced slots?
+
+            i_obj = wizard_instance.meta_view.get_slot(i)
+            i_multivalued = False
+            if i_obj and i_obj.multivalued:
+                i_multivalued = True
+
+            with_spaces = i.replace("_", " ")
+            ws_multivalued = False
+            ws_obj = wizard_instance.meta_view.get_slot(with_spaces)
+            if ws_obj and ws_obj.multivalued:
+                ws_multivalued = True
+
+            if i_multivalued or ws_multivalued:
+                row2.append('internal_separator: "|"')
+            elif i in annotations_used:
+                row2.append(f"inner_key: {i}")
+            else:
+                row2.append("")
+
+        row1_decorated = make_colspec_row(row1)
+        row2_decorated = make_colspec_row(row2)
+
+        enum_template_file = os.path.join(
+            template_dir,
+            f"generated_{wizard_instance.project_view.schema.name}_{template_style}.tsv",
         )
-
-        meta_element_names = wizard_instance.get_meta_element_names()
-        meta_element_names.sort()
-
-        ut_meta_elements = list(set(under_threshold) & set(meta_element_names))
-
-        project_element_types = wizard_instance.get_project_element_types()
-
-        types_project_elements = wizard_instance.get_types_project_elements(project_element_types)
-
-        project_enums = wizard_instance.project_view.all_enums()
-
-        enums_yaml = yaml_dumper.dumps(project_enums)
-        enums_dict = yaml.safe_load(enums_yaml)
-
-        outer_list = traverse_and_collect_dict_keys(enums_dict)  # todo rename this
-
-        key_counts = list_to_count_dict(outer_list)
-
-        enum_slots = wizard_instance.meta_view.class_induced_slots("enum_definition")
-        enum_slots_names = [s.name for s in enum_slots]
-        pv_slots = wizard_instance.meta_view.class_induced_slots("permissible_value")
-        pv_slots_names = [s.name for s in pv_slots]
-        enum_and_pv_slots = list(set(enum_slots_names).union(set(pv_slots_names)))
-
-        frequent_and_relevant = [k for k, v in key_counts.items() if
-                                 k in enum_and_pv_slots and v >= min_occurrences]
-        frequent_and_relevant.sort()
-        pprint.pprint(frequent_and_relevant)
-
+        with open(enum_template_file, "w") as f:
+            writer = csv.writer(f, delimiter="\t")
+            writer.writerows([row0, row1_decorated, row2_decorated])
 
 
 if __name__ == "__main__":
