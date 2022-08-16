@@ -25,7 +25,9 @@ template_wizard_clean:
 target/output/key_counts.csv:
 	poetry run python schemasheets/list_element_slots.py
 
-target/output/NMDC_schema_slot_class_merged_with_filtered_rels.tsv: template_wizard_clean
+# template_wizard_clean
+
+target/output/NMDC_schema_slot_class_merged_with_filtered_rels.tsv:
 	poetry run template_wizard \
 		--project_source "https://raw.githubusercontent.com/microbiomedata/nmdc-schema/main/src/schema/nmdc.yaml" \
 		--template_style classes_slots \
@@ -44,22 +46,48 @@ target/output/NMDC_schema_slot_class_merged_with_filtered_rels.yaml: target/outp
 		--name NMDC_slot_class_roundtrip \
 		$< > $@
 
-temp:
+# not used for enums template yet:
+#  col_sorting (always alphabetical), selected_classes, populated_dir, all_slot_class_rels, filtered_slot_class_rels, merged_filtered_rels
+# todo make subcommands
+target/templates/generated_NMDC_enums.tsv: template_wizard_clean
 	poetry run template_wizard \
 		--project_source "https://raw.githubusercontent.com/microbiomedata/nmdc-schema/main/src/schema/nmdc.yaml" \
 		--template_style enums \
 		--template_dir target/templates \
   		--populated_dir target/output \
-  		--col_sorting by_usage_count \
-  		--selected_classes biosample \
-  		--selected_classes study \
-  		--all_slot_class_rels target/output/NMDC_schema_slot_class_rels.yaml \
-        --filtered_slot_class_rels target/output/NMDC_schema_slot_class_filtered_rels.yaml \
-        --merged_filtered_rels target/output/NMDC_schema_slot_class_merged_with_filtered_rels.tsv
 
-just_pop:
+
+target/output/generated_NMDC_enums.tsv: target/templates/generated_NMDC_enums.tsv
 	poetry run linkml2sheets \
-		enum_template.tsv \
+		$< \
   		--schema /Users/MAM/Documents/gitrepos/nmdc-schema/src/schema/nmdc.yaml  \
+  		--output-directory target/output \
+  		--overwrite
+
+# target/output/generated_NMDC_enums.tsv
+target/output/generated_NMDC_enums.yaml:
+	poetry run sheets2linkml \
+		--name NMDC_enums_roundtrip \
+		target/templates/generated_NMDC_enums.tsv > $@
+
+target/output/include_schema_slot_class.tsv: template_wizard_clean
+	poetry run template_wizard \
+		--project_source "https://raw.githubusercontent.com/include-dcc/include-linkml/main/src/linkml/include_linkml.yaml" \
+		--template_style classes_slots \
+		--template_dir target/templates \
+  		--populated_dir target/output \
+  		--col_sorting alphabetical
+
+target/templates/generated_IncludePortalV1_enums.tsv: template_wizard_clean
+	poetry run template_wizard \
+		--project_source "https://raw.githubusercontent.com/include-dcc/include-linkml/main/src/linkml/include_linkml.yaml" \
+		--template_style enums \
+		--template_dir target/templates \
+  		--populated_dir target/output
+
+target/output/include_schema_enums.tsv: target/templates/generated_IncludePortalV1_enums.tsv
+	poetry run linkml2sheets \
+		$< \
+  		--schema /Users/MAM/Documents/gitrepos/include-linkml/src/linkml/include_linkml.yaml \
   		--output-directory target/output \
   		--overwrite
