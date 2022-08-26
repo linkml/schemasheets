@@ -152,7 +152,16 @@ class SchemaMaker:
                                 curr_dict[v_k] = v_v
                         else:
                             if cc.settings.inner_key:
-                                curr_val = getattr(actual_element, cc.maps_to).get(cc.settings.inner_key, None)
+                                # inner keys settings allow for a flat value to map to an internal part of an
+                                # element, such as an annotation value or structured value syntax
+                                curr_obj = getattr(actual_element, cc.maps_to)
+                                if curr_obj is None:
+                                    # for some slots such as structured_pattern, there is no default
+                                    # object set; create an empty one here as dict.
+                                    # will later be converted to a metamodel object
+                                    curr_obj = {}
+                                    setattr(actual_element, cc.maps_to, curr_obj)
+                                curr_val = curr_obj.get(cc.settings.inner_key, None)
                             else:
                                 curr_val = getattr(actual_element, cc.maps_to)
                             if curr_val and curr_val != 'TEMP' and curr_val != v and \
@@ -403,7 +412,6 @@ class SchemaMaker:
                     else:
                         v = [v]
         return v
-
 
     def set_cardinality(self, element: SlotDefinition, card: str) -> None:
         """
