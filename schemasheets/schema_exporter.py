@@ -158,13 +158,13 @@ class SchemaExporter:
                             else:
                                 raise ValueError(f"Expected Example, got {type(v)} for {v}")
                         if col_config.settings.inner_key:
-                            #print(f"LOOKING UP {col_config.settings.inner_key} in {v}")
                             if isinstance(v, Annotation):
                                 if v.tag == col_config.settings.inner_key:
                                     return v.value
                                 else:
                                     return None
-                            return getattr(v, col_config.settings.inner_key, None)
+                            else:
+                                return getattr(v, col_config.settings.inner_key, None)
                         if settings.curie_prefix:
                             pfx = f'{settings.curie_prefix}:'
                             if v.startswith(pfx):

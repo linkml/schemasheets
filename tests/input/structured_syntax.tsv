@@ -1,0 +1,3 @@
+record	field	key	multiplicity	range	parents	desc	schema.org	wikidata	belongs	status	special	structured_pattern	notes
+> class	slot	identifier	cardinality	range	is_a	description	exact_mappings: {curie_prefix: sdo}	exact_mappings: {curie_prefix: wikidata}	in_subset	status	annotations	structured_pattern	ignore
+>								curie_prefix: wikidata		vmap: {T: testing, R: release}	inner_key: special	inner_key: syntax	
