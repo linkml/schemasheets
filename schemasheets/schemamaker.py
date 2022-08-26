@@ -144,7 +144,6 @@ class SchemaMaker:
                                 for ann_key, ann_val in anns.items():
                                     actual_element.annotations[ann_key] = ann_val
                         elif isinstance(v, list):
-                            #print(f'SETTING {k} to {v}')
                             setattr(actual_element, cc.maps_to, getattr(actual_element, cc.maps_to, []) + v)
                         elif isinstance(v, dict):
                             for v_k, v_v in v.items():

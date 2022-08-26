@@ -95,7 +95,11 @@ class ColumnConfig:
             snmap = mm.slot_name_mappings()
             # TODO: use alias
             snmap['uri'] = snmap['type_uri']
-            if self.maps_to in snmap:
+            if self.maps_to.startswith("metaslot."):
+                maps_to = self.maps_to.replace("metaslot.", "")
+                self.metaslot = snmap[maps_to]
+                self.maps_to = maps_to
+            elif self.maps_to in snmap and self.maps_to != 'type':
                 self.metaslot = snmap[self.maps_to]
             else:
                 if self.maps_to not in tmap and self.maps_to not in Shortcuts:
