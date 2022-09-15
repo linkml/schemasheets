@@ -8,13 +8,13 @@ from typing import Dict, Any, List, Optional, TextIO, Union
 import click
 from linkml_runtime.linkml_model import Element, SlotDefinition, SubsetDefinition, ClassDefinition, EnumDefinition, \
     PermissibleValue, \
-    TypeDefinition, Example, Annotation, Prefix
+    TypeDefinition, Example, Annotation, Prefix, SchemaDefinition
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 from schemasheets.schemamaker import SchemaMaker
 from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet, T_ENUM, T_PV, T_TYPE, \
-    T_SUBSET, T_PREFIX
+    T_SUBSET, T_PREFIX, T_SCHEMA
 
 ROW = Dict[str, Any]
 
@@ -136,6 +136,9 @@ class SchemaExporter:
                     pk_col = col_name
                 elif t == T_PREFIX and isinstance(element, Prefix):
                     pk_col = col_name
+                elif t == T_SCHEMA:
+                    pk_col = col_name
+                    print(pk_col)
                 else:
                     logging.warning(f"Not implemented: {t}")
         if not pk_col:

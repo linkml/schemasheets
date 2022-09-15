@@ -21,12 +21,13 @@ TEST_SPEC = os.path.join(INPUT_DIR, 'test-spec.tsv')
 ENUM_SPEC = os.path.join(INPUT_DIR, 'enums.tsv')
 TYPES_SPEC = os.path.join(INPUT_DIR, 'types.tsv')
 PREFIXES_SPEC = os.path.join(INPUT_DIR, 'prefixes.tsv')
+SCHEMA_METADATA_SPEC = os.path.join(INPUT_DIR, 'schema_metadata.tsv')
 SLOT_SPEC = os.path.join(INPUT_DIR, 'slot-spec.tsv')
 
 EXPECTED = [
     {
         'field': 'id',
-        'key': 'True',   ## TODO: should be mapped to 'Yes'
+        'key': 'True',  ## TODO: should be mapped to 'Yes'
         'range': 'string',
         'desc': 'any identifier',
         'schema.org': 'identifier',
@@ -48,12 +49,12 @@ EXPECTED = [
     },
     # tests curie contraction
     {
-         'record': 'Person',
-         'field': 'id',
-         'key': 'True',
-         'range': 'string',
-         'desc': 'identifier for a person',
-         'schema.org': 'identifier'
+        'record': 'Person',
+        'field': 'id',
+        'key': 'True',
+        'range': 'string',
+        'desc': 'identifier for a person',
+        'schema.org': 'identifier'
     },
 ]
 
@@ -90,7 +91,7 @@ def _roundtrip(schema: SchemaDefinition, specification: str, must_pass=True) -> 
     exporter = SchemaExporter(schemamaker=sm)
     sv = SchemaView(schema)
     exporter.export(schemaview=sv, specification=specification, to_file=MINISHEET)
-    #for row in exporter.rows:
+    # for row in exporter.rows:
     #    print(row)
     schema2 = sm.create_schema(MINISHEET)
     sv2 = SchemaView(schema2)
@@ -187,6 +188,25 @@ def test_prefixes():
     assert "linkml" in schema_recapitulated.prefixes
 
 
+def test_schema_metadata():
+    """
+    tests a specification that is dedicated to the metadata about a schema
+    """
+    sb = SchemaBuilder()
+
+    sb.add_defaults()
+    schema = sb.schema
+
+    schema_title = "Test Schema"
+
+    schema.title = schema_title
+    schema.name = "TestSchema"
+
+    schema_recapitulated = _roundtrip(schema, SCHEMA_METADATA_SPEC)
+
+    assert schema_recapitulated.title == schema_title
+
+
 def test_types():
     """
     tests a specification that is dedicated to types
@@ -230,6 +250,3 @@ def test_export_metamodel_slots():
     # of this will change
     examples = s['examples']
     assert 'bibo:draft' == examples
-
-
-
