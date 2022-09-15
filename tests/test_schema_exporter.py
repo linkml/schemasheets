@@ -20,6 +20,7 @@ MINISHEET = os.path.join(OUTPUT_DIR, 'mini.tsv')
 TEST_SPEC = os.path.join(INPUT_DIR, 'test-spec.tsv')
 ENUM_SPEC = os.path.join(INPUT_DIR, 'enums.tsv')
 TYPES_SPEC = os.path.join(INPUT_DIR, 'types.tsv')
+PREFIXES_SPEC = os.path.join(INPUT_DIR, 'prefixes.tsv')
 SLOT_SPEC = os.path.join(INPUT_DIR, 'slot-spec.tsv')
 
 EXPECTED = [
@@ -170,6 +171,20 @@ def test_enums():
     e = schema.enums['E']
     e.description = 'test desc'
     _roundtrip(schema, ENUM_SPEC)
+
+
+def test_prefixes():
+    """
+    tests a specification that is dedicated to prefixes
+    """
+    sb = SchemaBuilder()
+    sb.add_prefix("ex", "https://example.org/")
+    sb.add_defaults()
+    schema = sb.schema
+    schema_recapitulated = _roundtrip(schema, PREFIXES_SPEC)
+    assert "ex" in schema_recapitulated.prefixes
+    assert schema_recapitulated.prefixes["ex"].prefix_reference == "https://example.org/"
+    assert "linkml" in schema_recapitulated.prefixes
 
 
 def test_types():
