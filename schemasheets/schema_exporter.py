@@ -8,12 +8,13 @@ from typing import Dict, Any, List, Optional, TextIO, Union
 import click
 from linkml_runtime.linkml_model import Element, SlotDefinition, SubsetDefinition, ClassDefinition, EnumDefinition, \
     PermissibleValue, \
-    TypeDefinition, Example, Annotation
+    TypeDefinition, Example, Annotation, Prefix
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 from schemasheets.schemamaker import SchemaMaker
-from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet, T_ENUM, T_PV, T_TYPE, T_SUBSET
+from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet, T_ENUM, T_PV, T_TYPE, \
+    T_SUBSET, T_PREFIX
 
 ROW = Dict[str, Any]
 
@@ -54,6 +55,8 @@ class SchemaExporter:
             logging.info(f'Remaining rows={len(schemasheet.rows)}')
         if specification is None and table_config is None:
             raise ValueError("Must specify EITHER specification OR table_config")
+        for prefix in schemaview.schema.prefixes.values():
+            self.export_element(prefix, None, schemaview, table_config)
         for slot in schemaview.all_slots().values():
             self.export_element(slot, None, schemaview, table_config)
         if _configuration_has_primary_keys_for(table_config, T_CLASS):
@@ -131,8 +134,10 @@ class SchemaExporter:
                         parent_pk_col = col_name
                 elif t == T_PV and isinstance(element, PermissibleValue):
                     pk_col = col_name
+                elif t == T_PREFIX and isinstance(element, Prefix):
+                    pk_col = col_name
                 else:
-                    pass
+                    logging.warning(f"Not implemented: {t}")
         if not pk_col:
             logging.info(f"Skipping element: {element}, no PK")
             return
@@ -199,6 +204,8 @@ class SchemaExporter:
                         exported_row[col_name] = element.text
                         if not parent_pk_col:
                             raise ValueError(f"Cannot have floating permissible value {element.text}")
+                    elif isinstance(element, Prefix):
+                        exported_row[col_name] = element.prefix_prefix
                     else:
                         exported_row[col_name] = element.name
                 elif parent_pk_col == col_name:
