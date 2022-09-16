@@ -136,9 +136,9 @@ class SchemaExporter:
                     pk_col = col_name
                 elif t == T_PREFIX and isinstance(element, Prefix):
                     pk_col = col_name
-                elif t == T_SCHEMA:
+                elif t == T_SCHEMA and isinstance(element, SchemaDefinition):
                     pk_col = col_name
-                    print(pk_col)
+                    # print(pk_col)
                 else:
                     logging.warning(f"Not implemented: {t}")
         if not pk_col:
