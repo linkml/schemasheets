@@ -29,6 +29,7 @@ classes:
       full:
         structured_pattern:
           syntax: "{token} {token}"
+          interpolated: true
 """
 
 
@@ -44,4 +45,5 @@ def test_structured_syntax():
     schema2 = sm.create_schema(out_path)
     print(yaml_dumper.dumps(schema2))
     assert schema2.slots["full"].structured_pattern.syntax == "{token} {token}"
+    # assert schema2.slots["full"].structured_pattern.interpolated
 
