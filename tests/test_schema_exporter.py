@@ -26,7 +26,7 @@ SLOT_SPEC = os.path.join(INPUT_DIR, 'slot-spec.tsv')
 EXPECTED = [
     {
         'field': 'id',
-        'key': 'True',   ## TODO: should be mapped to 'Yes'
+        'key': 'true',  # https://github.com/linkml/schemasheets/issues/67
         'range': 'string',
         'desc': 'any identifier',
         'schema.org': 'identifier',
@@ -50,7 +50,7 @@ EXPECTED = [
     {
          'record': 'Person',
          'field': 'id',
-         'key': 'True',
+         'key': 'true',
          'range': 'string',
          'desc': 'identifier for a person',
          'schema.org': 'identifier'

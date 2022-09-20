@@ -169,13 +169,18 @@ class SchemaExporter:
                                 else:
                                     return None
                             else:
-                                return getattr(v, col_config.settings.inner_key, None)
+                                v = getattr(v, col_config.settings.inner_key, None)
+                                if isinstance(v, bool):
+                                    v = str(v).lower()
+                                return v
                         if settings.curie_prefix:
                             pfx = f'{settings.curie_prefix}:'
                             if v.startswith(pfx):
                                 return v.replace(pfx, '')
                             else:
                                 return None
+                        if isinstance(v, bool):
+                            return str(v).lower()
                         return v
                     # map the value (which may be a collection or an object) to a flat string
                     # representation

@@ -160,7 +160,11 @@ class SchemaMaker:
                                     # will later be converted to a metamodel object
                                     curr_obj = {}
                                     setattr(actual_element, cc.maps_to, curr_obj)
-                                curr_val = curr_obj.get(cc.settings.inner_key, None)
+                                if isinstance(curr_obj, dict):
+                                    curr_val = curr_obj.get(cc.settings.inner_key, None)
+                                else:
+                                    # https://github.com/linkml/linkml/issues/971
+                                    curr_val = getattr(curr_obj, cc.settings.inner_key, None)
                             else:
                                 curr_val = getattr(actual_element, cc.maps_to)
                             if curr_val and curr_val != 'TEMP' and curr_val != v and \
@@ -183,7 +187,25 @@ class SchemaMaker:
 
     def get_current_element(self, elt: Element) -> Union[Element, PermissibleValue]:
         """
-        Look up an element in the current schema
+        Look up an element in the current schema using a stub element as key
+
+        If an element cannot be found, then the stub is added to the schema
+
+        For example, the first time this is called:
+
+        > el = sm.get_current_element(ClassDefinition("foo"))
+
+        A class "foo" will be added to the schema, and the input will be returned as
+        the output.
+
+        This object may then later be adorned with other elements coming from a schemasheet row;
+        description, slots, ...
+
+        subsequently, the method may be called again:
+
+        > el = sm.get_current_element(ClassDefinition("foo"))
+
+        This time the existing "foo" class from the schema, with its adornments, will be returned
 
         :param elt: proxy for element to look up
         :return:
@@ -208,19 +230,25 @@ class SchemaMaker:
             else:
                 raise ValueError(f'TODO: implement for type {type(elt)} in {elt}')
             if elt.name not in ix:
+                logging.debug(f"Adding {elt.name} to schema")
                 ix[elt.name] = elt
             return ix[elt.name]
 
     def row_focal_element(self, row: Dict[str, Any], table_config: TableConfig,
                           column: COL_NAME = None) -> Generator[None, Element, None]:
         """
-        Each row must have a single focal element, i.e the row is about a class, a slot, an enum, ...
+        For a given row, yield one or more metamodel elements
+
+        Typically a row will have a single focal element; i.e. the row represents a class, or
+        a slot, or a type, or a prefix...
+
+        But rows can also double-up
 
         :param row:
         :param table_config:
         :return:
         """
-        vmap = {}
+        vmap: Dict[str, List[Element]] = {}
         main_elt = None
         if table_config.metatype_column:
             tc = table_config.metatype_column
@@ -280,7 +308,10 @@ class SchemaMaker:
                 raise ValueError(f'Cardinality of slot field must be 1; got {vmap[T_SLOT]}')
             main_elt = vmap[T_SLOT][0]
             if T_CLASS in vmap:
-                # TODO: attributes
+                # The sheet does double duty representing a class and a slot;
+                # Here *both* the "class" and "slot" columns are populated, so
+                # this translated to slot_usage;
+                # TODO: add option to allow to instead represent these as attributes
                 c: ClassDefinition
                 for c in vmap[T_CLASS]:
                     #c: ClassDefinition = vmap[T_CLASS]
@@ -295,6 +326,9 @@ class SchemaMaker:
             else:
                 yield main_elt
         elif T_CLASS in vmap:
+            # This row represents a class element
+            # (note if the sheet does double duty for classes and slots, this particular
+            #  row is *only* about the slot)
             check_excess([T_CLASS])
             for main_elt in vmap[T_CLASS]:
                 yield main_elt
@@ -390,12 +424,14 @@ class SchemaMaker:
                     logging.warning(f'No mapping for {v}, passing through')
         if metaslot and metaslot.range:
             rng = metaslot.range
+            if column_config.inner_key_metaslot:
+                rng = column_config.inner_key_metaslot.range
             if rng == 'boolean':
                 bmap = {
                     'yes': True,
                     'no': False,
                     'true': True,
-                    'false': False
+                    'false': False,
                 }
                 if v and v.lower() in bmap:
                     v = bmap[v.lower()]
@@ -489,9 +525,7 @@ class SchemaMaker:
             # TODO: this does not include slot_usage
             map_ix = sv.get_mappings(e.name)
             for t, curies in map_ix.items():
-                #print(f'xxx: {e.name} {t} N = {len(curies)} ex={e.exact_mappings}')
                 if curies:
-                    #print(f'REPAIRING: {e.name} N = {curies}')
                     for curie in curies:
                         if ':' in curie:
                             prefixes.add(curie.split(':')[0])
