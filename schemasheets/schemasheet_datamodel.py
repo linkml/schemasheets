@@ -50,6 +50,7 @@ class ColumnConfig:
     maps_to: DESCRIPTOR = None
     settings: ColumnSettings = None
     metaslot: SlotDefinition = None
+    inner_key_metaslot: SlotDefinition = None
     is_element_type: bool = None
 
     def merge_settings(self, settings: ColumnSettings) -> None:
@@ -107,6 +108,11 @@ class ColumnConfig:
         else:
             settings = ColumnSettings(**info)
             self.merge_settings(settings)
+            if settings.inner_key:
+                snmap = get_metamodel().slot_name_mappings()
+                if settings.inner_key in snmap:
+                    self.inner_key_metaslot = snmap[settings.inner_key]
+
 
 
 @dataclass

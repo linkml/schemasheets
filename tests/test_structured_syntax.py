@@ -37,13 +37,13 @@ def test_structured_syntax():
     sm = ss.SchemaMaker()
     sheet_path = str(INPUT_DIR / "structured_syntax.tsv")
     out_path = str(OUTPUT_DIR / "structured_syntax-roundtrip.tsv")
-    #schema = sm.create_schema(INPUT_DIR / "structured_syntax.tsv")
     exporter = SchemaExporter(schemamaker=sm)
     sv = SchemaView(SCHEMA)
-    #print(yaml_dumper.dumps(sv.schema))
     exporter.export(sv, specification=sheet_path, to_file=out_path)
     schema2 = sm.create_schema(out_path)
-    print(yaml_dumper.dumps(schema2))
+    #print(yaml_dumper.dumps(schema2))
     assert schema2.slots["full"].structured_pattern.syntax == "{token} {token}"
-    # assert schema2.slots["full"].structured_pattern.interpolated
+    assert schema2.slots["full"].structured_pattern.interpolated
+    # test for https://github.com/linkml/schemasheets/issues/67
+    assert isinstance(schema2.slots["full"].structured_pattern.interpolated, bool)
 
