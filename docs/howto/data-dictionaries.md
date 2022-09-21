@@ -34,7 +34,53 @@ File Name | Variable Name | Variable Label | Variable Ontology ID or RDFtype | V
 
 ## Adding a descriptor row
 
+Our first task is to add a descriptor row that describes how each column heading maps to a LinkML metamodel element.
 
+Here we will tackle this incrementally, starting with the first 3 columns, we will map to:
+
+- [class][https://w3id.org/linkml/ClassDefinition]
+- [slot][https://w3id.org/linkml/SlotDefinition]
+- [title][https://w3id.org/linkml/title]
+
+The table now looks like this:
+
+|File Name|Variable Name|Variable Label|
+|---|---|---|
+|`>` class|slot|title|
+|1_Subjects.txt|SUBJECT_ID|Subject number|
+|1_Subjects.txt|SPECIES|Species name|
+|1_Subjects.txt|STRAIN|Strain|
+|1_Subjects.txt|AGE|Age at study initiation|
+|1_Subjects.txt|AGE_UNIT|Age unit|
+|1_Subjects.txt|SEX|Sex|
+|1_Subjects.txt|SOMEDATE|Date of acquiring subject|
+|1_Subjects.txt|HEMOGLOBIN|Hematology: Hemoglobin|
+|1_Subjects.txt|HEMOGLOBIN_UNIT|Hemoglobin unit|
+|1_Subjects.txt|HEIGHT|Body size|
+|1_Subjects.txt|HEIGHT_UNIT|Body size unit|
+|1_Subjects.txt|WEIGHT|Body weight|
+|1_Subjects.txt|WEIGHT_UNIT|Body weight unit|
+|1_Subjects.txt|BMI|Body mass index|
+|1_Subjects.txt|LAB|Laboratory|
+|2_Samples.txt|SAMPLE_ID|Sample ID|
+|2_Samples.txt|SAMPLE_SITE|Sample collection site|
+|2_Samples.txt|ANALYTE_TYPE|Type of analysis|
+|2_Samples.txt|GENOTYPING_CENTER|GENOTYPING_CENTER|
+|2_Samples.txt|SEQUENCING_CENTER|SEQUENCING_CENTER|
+|3_SampleMapping.txt|SUBJECT_ID|Subject number|
+|3_SampleMapping.txt|SAMPLE_ID|Sample ID|
+
+Our choice of how to map the first column is a bit odd, and reflects a slight mismatch between
+schemasheets/LinkML, which aims to describe a data model that can be used for *multiple instantiations of the same format* and a data dictionary that is oriented around describing *a single distribution*.
+
+Here we are implicitly creating classes/records like "1_Subjects.txt" which doesn't really conform to standard
+class naming conventions in LinkML. Later we will explore rewriting these with names like "Subject", "Sample", and "SampleMapping"
+
+TODO
+
+For the second column, the choice of ALL-CAPS for slot name also goes against standard naming conventions, but
+this doesn't really matter so much, and the title (col 3) is the string that should be used in user-facing applications
+like Data Harmonizer.
 
 
 
