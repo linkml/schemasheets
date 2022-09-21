@@ -75,6 +75,7 @@ class ColumnConfig:
         :param info: configuration
         :return:
         """
+        logging.debug(f"Adding info to {self.name}: {info}")
         if self.maps_to is None:
             # The first descriptor row describes what the column maps to
             self.settings = ColumnSettings()
@@ -195,6 +196,7 @@ class SchemaSheet:
         line_num = 1
         table_config_rows = []
         for row in reader:
+            logging.debug(f"ROW: {row}")
             # google sheets
             if "" in row:
                 del row[""]
