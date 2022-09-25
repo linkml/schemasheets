@@ -10,7 +10,7 @@ description: |-
   Two controlled vocabularies are specified here:
 
   - [Cardinality](Cardinality) - terms and abbreviations that can be used for cardinality
-  - [Shortcuts](Shortcuts) - species column configurations
+  - [Shortcuts](Shortcuts) - specifies column configurations
   
 prefixes:
   linkml: https://w3id.org/linkml/
