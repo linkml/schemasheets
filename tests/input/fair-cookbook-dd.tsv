@@ -1,0 +1,24 @@
+File Name	Variable Name	Variable Label	Variable Ontology ID or RDFtype	Variable ID Source	Variable Statistical Type	Variable Data Type	Variable Size	Max Allowed Value	Min Allowed Value	Regex	Allowed Value Shorthands	Allowed Value Descriptions	Computed Value	Unique (alone)	Unique (Combined with)	Required	Collection Form Name	Comments
+> class	slot	title	slot_uri	source	ignore	range	ignore	maximum_value	minimum_value	ignore	ignore	ignore	ignore	identifier	ignore	required	ignore	comments
+1_Subjects.txt	SUBJECT_ID	Subject number	https://schema.org/identifier	https://schema.org	categorical variable	integer								Y		Y	FORM 1	
+1_Subjects.txt	SPECIES	Species name	https://schema.org/name	https://schema.org	categorical variable	string											FORM 1	
+1_Subjects.txt	STRAIN	Strain	TODO substitute broken link https://bioschemas.org/profiles/Taxon/0.6-RELEASE/identifier	https://schemas.org/	categorical variable	string						http://purl.obolibrary.org/obo/NCBITaxon_40674					FORM 1	
+1_Subjects.txt	AGE	Age at study initiation	https://bioschemas.org/types/BioSample/0.1-RELEASE-2019_06_19	https://bioschemas.org/	continuous variable	integer										Y	FORM 1	
+1_Subjects.txt	AGE_UNIT	Age unit	http://purl.obolibrary.org/obo/UO_0000003	http://purl.obolibrary.org/obo/uo	categorial variable	string										Y	FORM 1	
+1_Subjects.txt	SEX	Sex	https://schema.org/gender	https://schema.org	categorical variable	enum					M;F	M=male;F=female					FORM 1	
+1_Subjects.txt	SOMEDATE	Date of acquiring subject	https://schema.org/dateCreated	https://schema.org	ordinal variable	date				YYYY-MM-DD							FORM 1	
+1_Subjects.txt	HEMOGLOBIN	Hematology: Hemoglobin	http://www.ebi.ac.uk/efo/EFO_0004509	http://www.ebi.ac.uk/efo	continuous variable	float	2.5	15	4								FORM 1	Field size denotes “places, decimal places”
+1_Subjects.txt	HEMOGLOBIN_UNIT	Hemoglobin unit	http://purl.obolibrary.org/obo/UO_0000003	http://www.ebi.ac.uk/efo	categorical variable	string											FORM 1	Field size denotes “places, decimal places”
+1_Subjects.txt	HEIGHT	Body size	https://schema.org/height	https://schema.org	continuous variable	float		2.5	0.5									
+1_Subjects.txt	HEIGHT_UNIT	Body size unit	http://purl.obolibrary.org/obo/UO_0000003	https://schema.org	categorical variable	string												
+1_Subjects.txt	WEIGHT	Body weight	https://schema.org/weight	https://schema.org	continuous variable	float		300	25									
+1_Subjects.txt	WEIGHT_UNIT	Body weight unit	http://purl.obolibrary.org/obo/UO_0000003	https://schema.org	categorical variable	string												
+1_Subjects.txt	BMI	Body mass index	http://www.ebi.ac.uk/efo/EFO_0004340	http://www.ebi.ac.uk/efo	continuous variable	float		100	10				WEIGHT/(HEIGHT*HEIGHT)					
+1_Subjects.txt	LAB	Laboratory	https://schema.org/identifier	https://schema.org	categorical variable	integer					1;2;3	1=LabA;2=UniversityB;3=CompanyC					FORM 1	
+2_Samples.txt	SAMPLE_ID	Sample ID	https://schema.org/identifier	https://schema.org	categorical variable	string								Y		Y	FORM 2	
+2_Samples.txt	SAMPLE_SITE	Sample collection site	https://bioschemas.org/types/BioSample/0.1-RELEASE-2019_06_19	https://bioschemas.org/	categorical variable	string										Y	FORM 2	
+2_Samples.txt	ANALYTE_TYPE	Type of analysis	http://edamontology.org/operation_2945	http://edamontology.org	categorical variable	string						http://edamontology.org/operation_2945				Y	FORM 2	
+2_Samples.txt	GENOTYPING_CENTER	GENOTYPING_CENTER	https://schema.org/identifier	https://schema.org	categorical variable	string											FORM 2	
+2_Samples.txt	SEQUENCING_CENTER	SEQUENCING_CENTER	https://schema.org/identifier	https://schema.org	categorical variable	string											FORM 2	
+3_SampleMapping.txt	SUBJECT_ID	Subject number	https://schema.org/identifier	https://schema.org	ordinal variable	integer									SAMPLE_ID	Y	FORM 3	
+3_SampleMapping.txt	SAMPLE_ID	Sample ID	https://schema.org/identifier	https://schema.org														
