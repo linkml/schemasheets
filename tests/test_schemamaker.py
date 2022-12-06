@@ -247,3 +247,38 @@ def test_problem_cases():
             raised = True
         assert raised
 
+def test_load_table_config():
+    """
+    tests loading of table configuration
+
+    Same as personinfo test, but we provide a separate config
+    :return:
+    """
+    sm = SchemaMaker(table_config_path=os.path.join(INPUT_DIR, 'personinfo-descriptors.yaml'))
+    schema = sm.create_schema(os.path.join(INPUT_DIR, 'personinfo-no-descriptors.tsv'))
+    yaml_dumper.dump(schema, to_file=os.path.join(OUTPUT_DIR, 'personinfo.yaml'))
+    yaml = yaml_dumper.dumps(schema)
+    logging.info(yaml)
+    print(yaml)
+    person_cls = schema.classes['Person']
+    organization_cls = schema.classes['Organization']
+    for s in ['id', 'name', 'age', 'gender', 'has medical history']:
+        assert s in schema.slots
+        assert s in person_cls.slots
+    assert schema.slots['id'].identifier
+    assert schema.slots['id'].exact_mappings == ['sdo:identifier']
+    assert person_cls.slot_usage['id'].identifier
+    assert person_cls.slot_usage['has medical history'].multivalued
+    assert person_cls.status == 'release'
+    anns = schema.slots['description'].annotations
+    assert anns
+    assert anns['special']
+    assert anns['special'].value == 'my_val'
+    assert anns['special2'].value == 'my_val2'
+    assert not person_cls.slot_usage['has medical history'].required
+    assert person_cls.slot_usage['has medical history'].status == 'testing'
+    assert 'name' in organization_cls.slots
+    assert len(person_cls.exact_mappings) == 2
+    assert 'wikidata:Q215627' in person_cls.exact_mappings
+    assert 'sdo:Person' in person_cls.exact_mappings
+

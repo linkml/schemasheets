@@ -2,7 +2,7 @@ import csv
 from dataclasses import dataclass
 from typing import Union, Dict, List, Any
 import pkgutil
-from pathlib import PurePath
+from pathlib import PurePath, Path
 from functools import lru_cache
 import logging
 import yaml
@@ -221,6 +221,24 @@ class SchemaSheet:
                            table_config_rows=table_config_rows,
                            rows=rows,
                            start_line_number=line_num)
+
+    def load_table_config(self, config: Union[dict, str, Path]) -> None:
+        """
+        Loads a table configuration from a file or dict
+
+        :param config:
+        :return:
+        """
+        if not isinstance(config, dict):
+            with open(config) as f:
+                config = yaml.safe_load(f)
+                return self.load_table_config(config)
+        for k, v in config.items():
+            if isinstance(v, list):
+                for v1 in v:
+                    self.table_config.add_info(k, v1)
+            else:
+                self.table_config.add_info(k, v)
 
 @lru_cache()
 def get_metamodel() -> SchemaView:

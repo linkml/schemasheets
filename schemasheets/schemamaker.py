@@ -16,6 +16,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import Annotation, Example
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, Prefix, \
     SlotDefinition, EnumDefinition, PermissibleValue, SubsetDefinition, TypeDefinition, Element
+from linkml_runtime.utils.schema_as_dict import schema_as_dict
 from linkml_runtime.utils.schemaview import SchemaView, re
 
 from schemasheets.schemasheet_datamodel import ColumnConfig, TableConfig, get_configmodel, get_metamodel, COL_NAME, \
@@ -39,9 +40,11 @@ class SchemaMaker:
     element_map: Dict[Tuple[str, str], Element] = None
     metamodel: SchemaView = None
     cardinality_vocabulary: str = None
+    use_attributes: bool = None
     default_name: str = None
     unique_slots: bool = None
     gsheet_id: str = None
+    table_config_path: str = None
 
     def create_schema(self, csv_files: Union[str, List[str]], **kwargs) -> SchemaDefinition:
         """
@@ -94,6 +97,8 @@ class SchemaMaker:
         #    reader = csv.DictReader(tsv_file, delimiter=delimiter)
         with self.ensure_csvreader(file_name, delimiter=delimiter) as reader:
             schemasheet = SchemaSheet.from_dictreader(reader)
+            if self.table_config_path:
+                schemasheet.load_table_config(self.table_config_path)
             line_num = schemasheet.start_line_number
             # TODO: check why this doesn't work
             #while rows and all(x for x in rows[-1] if not x):
@@ -140,7 +145,7 @@ class SchemaMaker:
                                 ann = Annotation(cc.settings.inner_key, v)
                                 actual_element.annotations[ann.tag] = ann
                             else:
-                                anns = yaml.load(v[0])
+                                anns = yaml.safe_load(v[0])
                                 for ann_key, ann_val in anns.items():
                                     actual_element.annotations[ann_key] = ann_val
                         elif isinstance(v, list):
@@ -314,15 +319,22 @@ class SchemaMaker:
                 # TODO: add option to allow to instead represent these as attributes
                 c: ClassDefinition
                 for c in vmap[T_CLASS]:
-                    #c: ClassDefinition = vmap[T_CLASS]
-                    if main_elt.name not in c.slots:
-                        c.slots.append(main_elt.name)
-                    if self.unique_slots:
-                        yield main_elt
+                    if self.use_attributes:
+                        # slots always belong to a class;
+                        # no seperate top level slots
+                        a = SlotDefinition(main_elt.name)
+                        c.attributes[main_elt.name] = a
+                        yield a
                     else:
-                        c.slot_usage[main_elt.name] = SlotDefinition(main_elt.name)
-                        main_elt = c.slot_usage[main_elt.name]
-                        yield main_elt
+                        # add top level slot if not present
+                        if main_elt.name not in c.slots:
+                            c.slots.append(main_elt.name)
+                        if self.unique_slots:
+                            yield main_elt
+                        else:
+                            c.slot_usage[main_elt.name] = SlotDefinition(main_elt.name)
+                            main_elt = c.slot_usage[main_elt.name]
+                            yield main_elt
             else:
                 yield main_elt
         elif T_CLASS in vmap:
@@ -515,6 +527,15 @@ class SchemaMaker:
                 raise ValueError(f'Cannot parse cardinality: {card} // {pvs.keys()}')
 
     def repair_schema(self, schema: SchemaDefinition) -> SchemaDefinition:
+        """
+        Performs repair on schema in place
+
+        - adds default prefixes
+        - repairs subsets
+
+        :param schema:
+        :return:
+        """
         sv = SchemaView(schema)
         #pfx = schema.default_prefix
         #if pfx not in schema.prefixes:
@@ -579,10 +600,17 @@ class SchemaMaker:
               help="output file")
 @click.option("-n", "--name",
               help="name of the schema")
+@click.option("-C", "--table-config-path",
+              help="YAML file with header mappings")
 @click.option("--unique-slots/--no-unique-slots",
               default=False,
               show_default=True,
               help="All slots are treated as unique and top level and do not belong to the specified class")
+@click.option("--use-attributes/--no-use-attributes",
+              "-A", "--no-A",
+              default=False,
+              show_default=True,
+              help="All slots specified in conjunction with a class are attributes of that class")
 @click.option("--repair/--no-repair",
               default=True,
               show_default=True,
@@ -591,7 +619,7 @@ class SchemaMaker:
               help="Google sheets ID. If this is specified then the arguments MUST be sheet names")
 @click.option("-v", "--verbose", count=True)
 @click.argument('tsv_files', nargs=-1)
-def convert(tsv_files, gsheet_id, output: TextIO, name, repair, unique_slots: bool, verbose: int):
+def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_path: str, use_attributes: bool, unique_slots: bool, verbose: int):
     """
     Convert schemasheets to a LinkML schema
 
@@ -612,14 +640,17 @@ def convert(tsv_files, gsheet_id, output: TextIO, name, repair, unique_slots: bo
         logging.basicConfig(level=logging.INFO)
     else:
         logging.basicConfig(level=logging.WARNING)
-    sm = SchemaMaker()
-    sm.gsheet_id = gsheet_id
-    sm.default_name = name
-    sm.unique_slots = unique_slots
+    sm = SchemaMaker(use_attributes=use_attributes,
+                     unique_slots=unique_slots,
+                     gsheet_id=gsheet_id,
+                     default_name=name,
+                     table_config_path=table_config_path)
     schema = sm.create_schema(list(tsv_files))
     if repair:
         schema = sm.repair_schema(schema)
-    output.write(yaml_dumper.dumps(schema))
+    schema_dict = schema_as_dict(schema)
+    output.write(yaml.dump(schema_dict))
+    #output.write(yaml_dumper.dumps(schema))
 
 
 if __name__ == '__main__':
