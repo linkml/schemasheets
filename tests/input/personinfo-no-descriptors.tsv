@@ -1,0 +1,13 @@
+record	field	key	multiplicity	range	parents	desc	schema.org	wikidata	belongs	status	special	special2	notes
+	id	yes	1	string		any identifier	identifier						
+	description	no	0..1	string		a textual description	description				my_val	my_val2	
+Person		n/a	n/a	n/a		a person,living or dead	Person	Q215627		R			
+Person	id	yes	1	string		identifier for a person	identifier						
+Person|Organization	name	no	1	string		full name	name				my_val		
+Person	age	no	0..1	decimal		age in years							
+Person	gender	no	0..1	decimal		age in years							
+Person	has medical history	no	0..*	MedicalEvent		medical history				T			
+Event						grouping class for events		Q1656682	a	R			
+MedicalEvent		n/a	n/a	n/a	Event	a medical encounter			b	T			
+ForProfit					Organization								
+NonProfit					Organization			Q163740					foo
