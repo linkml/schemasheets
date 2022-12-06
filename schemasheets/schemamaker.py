@@ -44,6 +44,7 @@ class SchemaMaker:
     default_name: str = None
     unique_slots: bool = None
     gsheet_id: str = None
+    table_config_path: str = None
 
     def create_schema(self, csv_files: Union[str, List[str]], **kwargs) -> SchemaDefinition:
         """
@@ -96,6 +97,8 @@ class SchemaMaker:
         #    reader = csv.DictReader(tsv_file, delimiter=delimiter)
         with self.ensure_csvreader(file_name, delimiter=delimiter) as reader:
             schemasheet = SchemaSheet.from_dictreader(reader)
+            if self.table_config_path:
+                schemasheet.load_table_config(self.table_config_path)
             line_num = schemasheet.start_line_number
             # TODO: check why this doesn't work
             #while rows and all(x for x in rows[-1] if not x):
@@ -142,7 +145,7 @@ class SchemaMaker:
                                 ann = Annotation(cc.settings.inner_key, v)
                                 actual_element.annotations[ann.tag] = ann
                             else:
-                                anns = yaml.load(v[0])
+                                anns = yaml.safe_load(v[0])
                                 for ann_key, ann_val in anns.items():
                                     actual_element.annotations[ann_key] = ann_val
                         elif isinstance(v, list):
@@ -597,6 +600,8 @@ class SchemaMaker:
               help="output file")
 @click.option("-n", "--name",
               help="name of the schema")
+@click.option("-C", "--table-config-path",
+              help="YAML file with header mappings")
 @click.option("--unique-slots/--no-unique-slots",
               default=False,
               show_default=True,
@@ -614,7 +619,7 @@ class SchemaMaker:
               help="Google sheets ID. If this is specified then the arguments MUST be sheet names")
 @click.option("-v", "--verbose", count=True)
 @click.argument('tsv_files', nargs=-1)
-def convert(tsv_files, gsheet_id, output: TextIO, name, repair, use_attributes: bool, unique_slots: bool, verbose: int):
+def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_path: str, use_attributes: bool, unique_slots: bool, verbose: int):
     """
     Convert schemasheets to a LinkML schema
 
@@ -638,7 +643,8 @@ def convert(tsv_files, gsheet_id, output: TextIO, name, repair, use_attributes: 
     sm = SchemaMaker(use_attributes=use_attributes,
                      unique_slots=unique_slots,
                      gsheet_id=gsheet_id,
-                     default_name=name)
+                     default_name=name,
+                     table_config_path=table_config_path)
     schema = sm.create_schema(list(tsv_files))
     if repair:
         schema = sm.repair_schema(schema)

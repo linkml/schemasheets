@@ -1,0 +1,23 @@
+record: class
+field: slot
+key: identifier
+multiplicity: cardinality
+range: range
+parents: is_a
+desc: description
+schema.org:
+  exact_mappings: {curie_prefix: sdo}
+wikidata:
+  - {exact_mappings: {curie_prefix: wikidata}}
+  - {curie_prefix: wikidata}
+belongs: in_subset
+status:
+  - status
+  - {vmap: {T: testing, R: release}}
+special:
+  - annotations
+  - {inner_key: special}
+special2:
+  - annotations
+  - {inner_key: special2}
+notes: ignore
