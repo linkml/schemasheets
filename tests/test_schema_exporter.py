@@ -131,14 +131,8 @@ def test_dynamic():
     #   when adding classes that use them
     #   after having switched from LinkML 1.3 to 1.5
 
-    # sb.add_slot(s1)
-    # sb.add_slot(s2)
-    # sb.add_slot(s3)
-
     sb.add_defaults()
     schema = sb.schema
-
-    print(yaml_dumper.dumps(schema))
 
     _roundtrip(schema, TEST_SPEC)
 
