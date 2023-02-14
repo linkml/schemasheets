@@ -2,342 +2,342 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://linkml.github.io/schemasheets/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/faq/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/install/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/specification/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/Cardinality/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/ColumnSettings/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/Shortcuts/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/ValueMap/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/columnSettings__applies_to_class/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/columnSettings__applies_to_slot/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/columnSettings__curie_prefix/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/columnSettings__prefix/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/columnSettings__suffix/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/columnSettings__tag/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/columnSettings__template/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/columnSettings__vmap/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/map_key/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/map_value/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/A/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/B/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/Event/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/ForProfit/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/MedicalEvent/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/NonProfit/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/Organization/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/Organization_name/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/Person/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/Person_age/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/Person_gender/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/Person_has_medical_history/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/Person_id/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/Person_name/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/age/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/description/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/gender/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/has_medical_history/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/id/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/name/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/docs/schema/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Boolean/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Date/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Datetime/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Decimal/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Double/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/ElementReference/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Float/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Integer/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Ncname/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Nodeidentifier/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Objectidentifier/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/String/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Time/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Uri/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/datamodel/types/Uriorcurie/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/howto/data-dictionaries/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/howto/excel/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/howto/google-sheets/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/howto/sqlite/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/intro/basics/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/intro/cardinality/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/intro/converting/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/intro/enums/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/intro/export/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/intro/grids/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/intro/mixed-sheets/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/intro/prefixes/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://linkml.github.io/schemasheets/intro/schema-metadata/</loc>
-         <lastmod>2022-12-06</lastmod>
+         <lastmod>2023-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
