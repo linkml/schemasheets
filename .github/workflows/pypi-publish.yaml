@@ -20,14 +20,14 @@ jobs:
       with:
         python-version: 3.9
 
-    #----------------------------------------------
-    #          install & configure poetry         
-    #----------------------------------------------
-    - name: Install Poetry
-      uses: snok/install-poetry@v1.1.6
-      with:
-        virtualenvs-create: true
-        virtualenvs-in-project: true
+      #----------------------------------------------
+      #          install & configure poetry         
+      #----------------------------------------------
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.3
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
 
     #----------------------------------------------
     #            install dependencies
