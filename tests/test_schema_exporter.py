@@ -48,12 +48,12 @@ EXPECTED = [
     },
     # tests curie contraction
     {
-         'record': 'Person',
-         'field': 'id',
-         'key': 'true',
-         'range': 'string',
-         'desc': 'identifier for a person',
-         'schema.org': 'identifier'
+        'record': 'Person',
+        'field': 'id',
+        'key': 'true',
+        'range': 'string',
+        'desc': 'identifier for a person',
+        'schema.org': 'identifier'
     },
 ]
 
@@ -90,7 +90,7 @@ def _roundtrip(schema: SchemaDefinition, specification: str, must_pass=True) -> 
     exporter = SchemaExporter(schemamaker=sm)
     sv = SchemaView(schema)
     exporter.export(schemaview=sv, specification=specification, to_file=MINISHEET)
-    #for row in exporter.rows:
+    # for row in exporter.rows:
     #    print(row)
     schema2 = sm.create_schema(MINISHEET)
     sv2 = SchemaView(schema2)
@@ -126,11 +126,20 @@ def test_dynamic():
     sb.add_class('X', ['s1', 's2'], slot_usage={'s2': s2X},
                  description='d1', is_a="A", mixins=["M1"])
     sb.add_class('Y', ['s2', 's3'], description='d2', is_a="A", mixins=["M1", "M2"])
-    sb.add_slot(s1)
-    sb.add_slot(s2)
-    sb.add_slot(s3)
+
+    # adding these give a "slot already present' error. it appears that they are implicitly added
+    #   when adding classes that use them
+    #   after having switched from LinkML 1.3 to 1.5
+
+    # sb.add_slot(s1)
+    # sb.add_slot(s2)
+    # sb.add_slot(s3)
+
     sb.add_defaults()
     schema = sb.schema
+
+    print(yaml_dumper.dumps(schema))
+
     _roundtrip(schema, TEST_SPEC)
 
 
@@ -230,6 +239,3 @@ def test_export_metamodel_slots():
     # of this will change
     examples = s['examples']
     assert 'bibo:draft' == examples
-
-
-
