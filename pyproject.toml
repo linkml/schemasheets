@@ -18,7 +18,10 @@ linkml = "^1.5.0"
 
 Jinja2 = "^3.0.3"
 ontodev-cogs = "^0.3.3"
-bioregistry = "~0.5"
+
+#bioregistry = "~0.5"
+#bioregistry = "0.7.5"
+bioregistry = "0.6.99"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2"
