@@ -12,7 +12,9 @@ documentation = "https://github.com/linkml/schemasheets"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-linkml = "^1.4"
+
+linkml = "^1.5.0"
+
 Jinja2 = "^3.0.3"
 ontodev-cogs = "^0.3.3"
 bioregistry = "~0.5"
