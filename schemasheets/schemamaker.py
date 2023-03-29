@@ -598,6 +598,9 @@ class SchemaMaker:
               type=click.File(mode="w"),
               default=sys.stdout,
               help="output file")
+@click.option('-s', '--sort-keys',
+              default=False,
+              help="Sort keys in schema output? For example permissible values in an enumeration? Defaults to False.")
 @click.option("-n", "--name",
               help="name of the schema")
 @click.option("-C", "--table-config-path",
@@ -619,7 +622,7 @@ class SchemaMaker:
               help="Google sheets ID. If this is specified then the arguments MUST be sheet names")
 @click.option("-v", "--verbose", count=True)
 @click.argument('tsv_files', nargs=-1)
-def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_path: str, use_attributes: bool, unique_slots: bool, verbose: int):
+def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_path: str, use_attributes: bool, unique_slots: bool, verbose: int, sort_keys: bool):
     """
     Convert schemasheets to a LinkML schema
 
@@ -649,7 +652,7 @@ def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_pat
     if repair:
         schema = sm.repair_schema(schema)
     schema_dict = schema_as_dict(schema)
-    output.write(yaml.dump(schema_dict))
+    output.write(yaml.dump(schema_dict, sort_keys=sort_keys))
     #output.write(yaml_dumper.dumps(schema))
 
 
