@@ -45,11 +45,12 @@ CASES = [
          {DATATYPE: "> type", INFO: " description"},
      ]
      ),
-    (6,
-     [
-         {DATATYPE: "> metaslot.type", INFO: " description"},
-     ]
-     ),
+    # unnecessary/incompatible with the latest meta-model
+    # (6,
+    #  [
+    #      {DATATYPE: "> metaslot.type", INFO: " description"},
+    #  ]
+    #  ),
 ]
 
 def test_parse_header():

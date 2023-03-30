@@ -12,11 +12,11 @@ documentation = "https://github.com/linkml/schemasheets"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-linkml = "1.4.11"
-linkml-runtime = "1.4.10"
+linkml = "^1.4"
+linkml-runtime = "^1.4"
 Jinja2 = "^3.0.3"
 ontodev-cogs = "^0.3.3"
-bioregistry = "0.6.99"
+bioregistry = ">0.5.0, <0.7.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2"
