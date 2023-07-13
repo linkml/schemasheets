@@ -31,7 +31,7 @@ class SchemaExporter:
     """
     Exports a schema to Schema Sheets TSV format
     """
-    schemamaker: SchemaMaker = field(default_factory= lambda: SchemaMaker())
+    schemamaker: SchemaMaker = field(default_factory=lambda: SchemaMaker())
     delimiter = '\t'
     rows: List[ROW] = field(default_factory=lambda: [])
 
@@ -92,7 +92,8 @@ class SchemaExporter:
             for row in self.rows:
                 writer.writerow(row)
 
-    def export_element(self, element: Element, parent: Optional[Element], schemaview: SchemaView, table_config: TableConfig):
+    def export_element(self, element: Element, parent: Optional[Element], schemaview: SchemaView,
+                       table_config: TableConfig):
         """
         Translates an individual schema element to a row
 
@@ -136,6 +137,8 @@ class SchemaExporter:
                     pk_col = col_name
                 elif t == T_PREFIX and isinstance(element, Prefix):
                     pk_col = col_name
+                elif t == 'slot':
+                    pass  # TODO we should discover the aliases that might appear in here. We don't want to report that a t of slot isn't implemented
                 else:
                     logging.warning(f"Not implemented: {t}")
         if not pk_col:
@@ -182,6 +185,7 @@ class SchemaExporter:
                         if isinstance(v, bool):
                             return str(v).lower()
                         return v
+
                     # map the value (which may be a collection or an object) to a flat string
                     # representation
                     if isinstance(v, list):
@@ -311,5 +315,3 @@ def export_schema(tsv_files, output_directory, output: TextIO, overwrite: bool, 
 
 if __name__ == '__main__':
     export_schema()
-
-
