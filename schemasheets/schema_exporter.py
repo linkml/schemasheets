@@ -31,7 +31,7 @@ class SchemaExporter:
     """
     Exports a schema to Schema Sheets TSV format
     """
-    schemamaker: SchemaMaker = field(default_factory= lambda: SchemaMaker())
+    schemamaker: SchemaMaker = field(default_factory=lambda: SchemaMaker())
     delimiter = '\t'
     rows: List[ROW] = field(default_factory=lambda: [])
 
@@ -92,7 +92,8 @@ class SchemaExporter:
             for row in self.rows:
                 writer.writerow(row)
 
-    def export_element(self, element: Element, parent: Optional[Element], schemaview: SchemaView, table_config: TableConfig):
+    def export_element(self, element: Element, parent: Optional[Element], schemaview: SchemaView,
+                       table_config: TableConfig):
         """
         Translates an individual schema element to a row
 
@@ -120,24 +121,39 @@ class SchemaExporter:
                         pk_col = col_name
                     if isinstance(parent, ClassDefinition):
                         parent_pk_col = col_name
-                elif t == T_SLOT and isinstance(element, SlotDefinition):
-                    pk_col = col_name
-                elif t == T_TYPE and isinstance(element, TypeDefinition):
-                    pk_col = col_name
-                elif t == T_SUBSET and isinstance(element, SubsetDefinition):
-                    pk_col = col_name
+                elif t == T_SLOT:
+                    if isinstance(element, SlotDefinition):
+                        pk_col = col_name
+                    else:
+                        continue
+                elif t == T_TYPE:
+                    if isinstance(element, TypeDefinition):
+                        pk_col = col_name
+                    else:
+                        continue
+                elif t == T_SUBSET:
+                    if isinstance(element, SubsetDefinition):
+                        pk_col = col_name
+                    else:
+                        continue
                 elif t == T_ENUM:
                     # permissible values MUST be contextualized by enums
                     if isinstance(element, EnumDefinition):
                         pk_col = col_name
                     if isinstance(parent, EnumDefinition):
                         parent_pk_col = col_name
-                elif t == T_PV and isinstance(element, PermissibleValue):
-                    pk_col = col_name
-                elif t == T_PREFIX and isinstance(element, Prefix):
-                    pk_col = col_name
+                elif t == T_PV:
+                    if isinstance(element, PermissibleValue):
+                        pk_col = col_name
+                    else:
+                        continue
+                elif t == T_PREFIX:
+                    if isinstance(element, Prefix):
+                        pk_col = col_name
+                    else:
+                        continue
                 else:
-                    logging.warning(f"Not implemented: {t}")
+                    raise AssertionError(f"Unexpected type: {t}")
         if not pk_col:
             logging.info(f"Skipping element: {element}, no PK")
             return
@@ -182,6 +198,7 @@ class SchemaExporter:
                         if isinstance(v, bool):
                             return str(v).lower()
                         return v
+
                     # map the value (which may be a collection or an object) to a flat string
                     # representation
                     if isinstance(v, list):
@@ -311,5 +328,3 @@ def export_schema(tsv_files, output_directory, output: TextIO, overwrite: bool, 
 
 if __name__ == '__main__':
     export_schema()
-
-
