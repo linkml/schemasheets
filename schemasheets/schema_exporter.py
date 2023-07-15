@@ -104,7 +104,6 @@ class SchemaExporter:
         :param specification:
         :param to_file:
         :param table_config:
-        :param descriptor_rows:
         :return:
         """
 
@@ -114,8 +113,6 @@ class SchemaExporter:
             descriptor_rows = schemasheet.table_config_rows
             logging.info(f'Remaining rows={len(schemasheet.rows)}')
         elif table_config is not None:
-            # temp = infer_descriptor_rows(self, table_config)
-            # logging.warning(temp)
             descriptor_rows = infer_descriptor_rows(self, table_config)
         else:
             raise ValueError("Must specify EITHER specification OR table_config")
