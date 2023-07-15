@@ -12,6 +12,7 @@ from linkml_runtime.linkml_model import Element, SlotDefinition, SubsetDefinitio
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
+from schemasheets.conf.configschema import ColumnSettings
 from schemasheets.schemamaker import SchemaMaker
 from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet, T_ENUM, T_PV, T_TYPE, \
     T_SUBSET, T_PREFIX
@@ -26,6 +27,62 @@ def _configuration_has_primary_keys_for(table_config: TableConfig, metatype: str
     return False
 
 
+def get_fields(cls):
+    """
+    Get the fields in a class.
+
+    Args:
+        cls (type): The class to get the fields from.
+
+    Returns:
+        list: A list of the fields in the class.
+    """
+
+    fields: list[str] = []
+    for attribute in cls.__dict__:
+        if not attribute.startswith('_'):
+            fields.append(attribute)
+
+    return fields
+
+
+def infer_descriptor_rows(self, table_config: TableConfig) -> List[ROW]:
+    cs_fields = get_fields(ColumnSettings)
+    cs_fields.sort()
+
+    handled_attributes = ["header"] + cs_fields
+
+    descriptor_rows: list[dict[str, str]] = []
+
+    for ha in handled_attributes:
+        index = 0
+        temp_dict = {}
+        i_s_count = 0
+        for tcck, tccv in table_config.columns.items():
+            prefix = ''
+            if index == 0:
+                prefix = '>'
+            if ha == "header":
+                temp_dict[tcck] = f"{prefix}{tcck}"
+            elif ha == "internal_separator":
+
+                i_s = tccv.settings.internal_separator
+                if i_s:
+                    temp_dict[tcck] = f'{prefix}internal_separator:"{i_s}"'
+                    i_s_count += 1
+                else:
+                    temp_dict[tcck] = f'{prefix}'
+            index += 1
+
+        if ha == "internal_separator" and i_s_count == 0:
+            temp_dict = {}
+
+        if temp_dict:
+            descriptor_rows.append(temp_dict)
+
+    return descriptor_rows
+
+
 @dataclass
 class SchemaExporter:
     """
@@ -35,25 +92,32 @@ class SchemaExporter:
     delimiter = '\t'
     rows: List[ROW] = field(default_factory=lambda: [])
 
-    def export(self, schemaview: SchemaView, specification: str = None,
-               to_file: Union[str, Path] = None, table_config: TableConfig = None):
+    def export(self, schemaview: SchemaView, to_file: Union[str, Path], specification: str = None,
+               table_config: TableConfig = None):
         """
         Exports a schema to a schemasheets TSV
 
-        EITHER a specification OR a table_config must be passed. This informs
-        how schema elements are mapped to rows
+        EITHER a specification OR (a table_config and descriptor_rows) must be passed.
+        This informs how schema elements are mapped to rows
 
         :param schemaview:
         :param specification:
         :param to_file:
         :param table_config:
+        :param descriptor_rows:
         :return:
         """
+
         if specification is not None:
             schemasheet = SchemaSheet.from_csv(specification, delimiter=self.delimiter)
             table_config = schemasheet.table_config
+            descriptor_rows = schemasheet.table_config_rows
             logging.info(f'Remaining rows={len(schemasheet.rows)}')
-        if specification is None and table_config is None:
+        elif table_config is not None:
+            # temp = infer_descriptor_rows(self, table_config)
+            # logging.warning(temp)
+            descriptor_rows = infer_descriptor_rows(self, table_config)
+        else:
             raise ValueError("Must specify EITHER specification OR table_config")
         for prefix in schemaview.schema.prefixes.values():
             self.export_element(prefix, None, schemaview, table_config)
@@ -74,21 +138,17 @@ class SchemaExporter:
             self.export_element(typ, None, schemaview, table_config)
         for subset in schemaview.all_subsets().values():
             self.export_element(subset, None, schemaview, table_config)
-        if to_file:
-            if isinstance(to_file, str) or isinstance(to_file, Path):
-                stream = open(to_file, 'w', encoding='utf-8')
-            else:
-                stream = to_file
+
+        with open(to_file, 'w', encoding='utf-8') as stream:
             writer = csv.DictWriter(
                 stream,
                 delimiter=self.delimiter,
                 fieldnames=table_config.columns.keys())
             writer.writeheader()
-            descriptor_rows = schemasheet.table_config_rows
-            col0 = list(table_config.columns.keys())[0]
+
             for row in descriptor_rows:
-                row[col0] = row[col0]
                 writer.writerow(row)
+
             for row in self.rows:
                 writer.writerow(row)
 
