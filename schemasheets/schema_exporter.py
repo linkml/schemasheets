@@ -46,11 +46,11 @@ def get_fields(cls):
     return fields
 
 
-def infer_descriptor_rows(self, table_config: TableConfig) -> List[ROW]:
+def infer_descriptor_rows(table_config: TableConfig) -> List[ROW]:
     cs_fields = get_fields(ColumnSettings)
     cs_fields.sort()
 
-    handled_attributes = ["header"] + cs_fields
+    handled_attributes = ["header", ] + cs_fields
 
     descriptor_rows: list[dict[str, str]] = []
 
@@ -58,23 +58,38 @@ def infer_descriptor_rows(self, table_config: TableConfig) -> List[ROW]:
         index = 0
         temp_dict = {}
         i_s_count = 0
+        i_k_count = 0
         for tcck, tccv in table_config.columns.items():
             prefix = ''
             if index == 0:
                 prefix = '>'
-            if ha == "header":
-                temp_dict[tcck] = f"{prefix}{tcck}"
-            elif ha == "internal_separator":
 
+            # todo differentiate between a verbatim header and a slugged element_name
+            if ha == "header":
+                temp_dict[tcck] = f"{prefix}{tccv.name}"
+
+            elif ha == "internal_separator":
                 i_s = tccv.settings.internal_separator
                 if i_s:
-                    temp_dict[tcck] = f'{prefix}internal_separator:"{i_s}"'
+                    temp_dict[tcck] = f'{prefix}internal_separator: "{i_s}"'
                     i_s_count += 1
                 else:
                     temp_dict[tcck] = f'{prefix}'
+
+            elif ha == "inner_key":
+                i_k = tccv.settings.inner_key
+                if i_k:
+                    temp_dict[tcck] = f'{prefix}inner_key: "{i_k}"'
+                    i_k_count += 1
+                else:
+                    temp_dict[tcck] = f'{prefix}'
+
             index += 1
 
         if ha == "internal_separator" and i_s_count == 0:
+            temp_dict = {}
+
+        if ha == "inner_key" and i_k_count == 0:
             temp_dict = {}
 
         if temp_dict:
@@ -113,7 +128,7 @@ class SchemaExporter:
             descriptor_rows = schemasheet.table_config_rows
             logging.info(f'Remaining rows={len(schemasheet.rows)}')
         elif table_config is not None:
-            descriptor_rows = infer_descriptor_rows(self, table_config)
+            descriptor_rows = infer_descriptor_rows(table_config)
         else:
             raise ValueError("Must specify EITHER specification OR table_config")
         for prefix in schemaview.schema.prefixes.values():
