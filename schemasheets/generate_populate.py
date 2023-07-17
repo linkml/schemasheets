@@ -10,8 +10,6 @@ import pkg_resources
 
 # todo write tests
 
-# todo get the metamodel from the package, not from a URL or file
-
 # todo: include read only slots?
 
 # todo: check metamodel if element is deprecated
@@ -22,7 +20,8 @@ import pkg_resources
 
 # todo support generating an exhaustive and concise report in the same run
 
-# todo slots which might require multiple columns for multiple inner keys
+# todo: support slots which might require multiple columns for multiple inner keys,
+#  like examples (values and description)
 
 root_classes = ['slot_definition', "class_definition"]  # hard coding the intention to do a class slot usage report
 
