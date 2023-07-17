@@ -1,12 +1,16 @@
+import logging
+from typing import List
+
+import pkg_resources
 import yaml
 from click import command, option, Choice
 from jsonasobj2 import as_dict
 from linkml_runtime import SchemaView
+
 from schemasheets.conf.configschema import ColumnSettings
 from schemasheets.schema_exporter import SchemaExporter
 from schemasheets.schemasheet_datamodel import TableConfig, ColumnConfig
-import logging
-import pkg_resources
+from typing import List, Dict
 
 # todo write tests
 
@@ -75,21 +79,18 @@ def setup_logging(log_file=None, log_level=logging.INFO):
     )
 
 
-def tabulate_unique_values(list_):
+def tabulate_unique_values(value_list):
     """
     tabulate the number of appearances of each unique values in a list
 
-    Args:
-        list_ (list): The list to tabulate.
-
-    Returns:
-        dict: A dict mapping each unique value to the number of times it appears in the list.
+    :param value_list: The list to tabulate, potentially with repeat occurrences of list items.
+    :returns: A dict mapping each unique value to the number of times it appears in the list.
     """
 
-    unique_values = set(list_)
+    unique_values = set(value_list)
     value_counts = {}
     for value in unique_values:
-        count = list_.count(value)
+        count = value_list.count(value)
         value_counts[value] = count
 
     sorted_value_counts = sorted(value_counts.items(), key=lambda x: x[1], reverse=True)
@@ -97,7 +98,14 @@ def tabulate_unique_values(list_):
     return sorted_value_counts
 
 
-def discover_source_usage(source_view):
+def discover_source_usage(source_view: SchemaView) -> tuple[List[str], List[str]]:
+    """
+    Discover the meta slots and annotations used in the source code.
+
+    :param source_view: A SchemaView of the source schema.
+    :returns: A tuple of the meta slots and annotations that were discovered as used in the source schema.
+    """
+
     discovered_meta_slots = []
     discovered_annotations = []
     source_classes = source_view.all_classes()
@@ -125,9 +133,27 @@ def discover_source_usage(source_view):
     return discovered_meta_slots, discovered_annotations
 
 
-def do_usage_report(style, meta_view, meta_type_names, meta_enum_names, discovered_annotations,
-                    discovered_source_slots, logger):
-    logger.warning(style)
+def do_usage_report(
+        style: str,
+        meta_view: SchemaView,
+        meta_type_names: List[str],
+        meta_enum_names: List[str],
+        discovered_annotations: List[str],
+        discovered_source_slots: List[str],
+        logger: logging.Logger,
+) -> tuple[TableConfig, Dict[str, Dict[str, str]]]:
+    """
+    Perform a usage report on the metamodel.
+
+    :param style: The style of the usage report.
+    :param meta_view: The metamodel to analyze.
+    :param meta_type_names: The list of types discovered in the metamodel.
+    :param meta_enum_names: The list of enums discovered in the metamodel.
+    :param discovered_annotations: The list of annotations discovered in the source schema.
+    :param discovered_source_slots: The list of metaslots used in the source 's SLotDefinitions and ClassDefinitions.
+    :param logger: The logger to use.
+    :returns: A tuple of the table config and the untemplateable metaslots.
+    """
 
     columns_dict = {}
 
@@ -154,7 +180,11 @@ def do_usage_report(style, meta_view, meta_type_names, meta_enum_names, discover
         current_induced_slots = meta_view.class_induced_slots(current_root)
         for cis in current_induced_slots:
 
-            temp_dict = {"range": cis.range, "multivalued": cis.multivalued, "type_range": cis.range in meta_type_names}
+            temp_dict = {
+                "range": cis.range,
+                "multivalued": cis.multivalued,
+                "type_range": cis.range in meta_type_names,
+            }
             if style == "exhaustive" or cis.name in discovered_source_slots:
                 if cis.name not in slot_scan_results:
                     slot_scan_results[cis.name] = temp_dict
@@ -274,6 +304,13 @@ def do_usage_report(style, meta_view, meta_type_names, meta_enum_names, discover
 def cli(source_path, output_path, debug_report_path, verbose, log_file, report_style):
     """
     A CLI tool to generate a slot usage schemasheet from the LinkML metamodel and a source schema.
+
+    :param source_path: A filesystem or URL path to the schema that should be analysed and reported
+    :param output_path: The filesystem path where the generated schemasheet will be written.
+    :param debug_report_path: An optional filesystem path where a YAML report of excluded metaslots will be saved.
+    :param verbose: If true, DEBUG logging will be used.
+    :param log_file: An optional filesystem path where log messages will be saved.
+    :param report_style: exhaustive means that all non-excluded metaslots will be included. concise means that only those metaslots used by the source schema will be included.
     """
 
     # in some cases it will be better to get this from a local filesystem, not a URL...

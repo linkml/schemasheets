@@ -32,4 +32,5 @@ build-backend = "poetry.core.masonry.api"
 sheets2linkml = "schemasheets.schemamaker:convert"
 linkml2sheets = "schemasheets.schema_exporter:export_schema"
 sheets2project = "schemasheets.sheets_to_project:multigen"
-generate-populate = 'schemasheets.generate_populate:cli'
+
+linkml2schemasheets-template = 'schemasheets.generate_populate:cli'

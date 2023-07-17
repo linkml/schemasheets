@@ -10,7 +10,7 @@ scripts-clean:
 	rm -rf populated-with-generated-spec.tsv
 
 populated-with-generated-spec.tsv: schemasheets/conf/configschema.yaml
-	$(RUN) generate-populate \
+	$(RUN) linkml2schemasheets-template \
 		--debug-report-path populated-generated-debug-report.yaml \
 		--log-file populated-with-generated-spec-log.txt \
 		--output-path $@ \

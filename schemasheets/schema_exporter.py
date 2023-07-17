@@ -27,15 +27,12 @@ def _configuration_has_primary_keys_for(table_config: TableConfig, metatype: str
     return False
 
 
-def get_fields(cls):
+def get_fields(cls: type) -> List[str]:
     """
     Get the fields in a class.
 
-    Args:
-        cls (type): The class to get the fields from.
-
-    Returns:
-        list: A list of the fields in the class.
+    :param cls: The class to get the fields from.
+    :returns: fields present in the inputs class, as a list of strings
     """
 
     fields: list[str] = []
@@ -47,14 +44,21 @@ def get_fields(cls):
 
 
 def infer_descriptor_rows(table_config: TableConfig) -> List[ROW]:
+    """
+    Infers SchemaSheet descriptor rows, as required by SchemaExporter, for a given TableConfig.
+
+    :param table_config: The TableConfig to infer the descriptor rows for.
+    :returns: A list of descriptor rows.
+    """
+
     cs_fields = get_fields(ColumnSettings)
     cs_fields.sort()
 
-    handled_attributes = ["header", ] + cs_fields
+    desired_schemasheets_columns = ["header", ] + cs_fields
 
     descriptor_rows: list[dict[str, str]] = []
 
-    for ha in handled_attributes:
+    for schemasheet_col in desired_schemasheets_columns:
         index = 0
         temp_dict = {}
         i_s_count = 0
@@ -65,10 +69,10 @@ def infer_descriptor_rows(table_config: TableConfig) -> List[ROW]:
                 prefix = '>'
 
             # todo differentiate between a verbatim header and a slugged element_name
-            if ha == "header":
+            if schemasheet_col == "header":
                 temp_dict[tcck] = f"{prefix}{tccv.name}"
 
-            elif ha == "internal_separator":
+            elif schemasheet_col == "internal_separator":
                 i_s = tccv.settings.internal_separator
                 if i_s:
                     temp_dict[tcck] = f'{prefix}internal_separator: "{i_s}"'
@@ -76,7 +80,7 @@ def infer_descriptor_rows(table_config: TableConfig) -> List[ROW]:
                 else:
                     temp_dict[tcck] = f'{prefix}'
 
-            elif ha == "inner_key":
+            elif schemasheet_col == "inner_key":
                 i_k = tccv.settings.inner_key
                 if i_k:
                     temp_dict[tcck] = f'{prefix}inner_key: "{i_k}"'
@@ -86,10 +90,10 @@ def infer_descriptor_rows(table_config: TableConfig) -> List[ROW]:
 
             index += 1
 
-        if ha == "internal_separator" and i_s_count == 0:
+        if schemasheet_col == "internal_separator" and i_s_count == 0:
             temp_dict = {}
 
-        if ha == "inner_key" and i_k_count == 0:
+        if schemasheet_col == "inner_key" and i_k_count == 0:
             temp_dict = {}
 
         if temp_dict:
@@ -181,6 +185,7 @@ class SchemaExporter:
         :param table_config:
         :return:
         """
+
         # Step 1: determine both primary key (pk) column, a pk of any parent
         pk_col = None
         parent_pk_col = None
