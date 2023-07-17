@@ -34,6 +34,9 @@ classes:
 
 
 def test_structured_syntax():
+    """
+    Test that structured syntax is roundtripped
+    """
     sm = ss.SchemaMaker()
     sheet_path = str(INPUT_DIR / "structured_syntax.tsv")
     out_path = str(OUTPUT_DIR / "structured_syntax-roundtrip.tsv")

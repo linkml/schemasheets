@@ -1,3 +1,4 @@
+"""Core data model for a SchemaSheet."""
 import csv
 from dataclasses import dataclass
 from typing import Union, Dict, List, Any
@@ -16,8 +17,7 @@ COL_NAME = str
 DESCRIPTOR = str
 ROW = Dict[str, Any]
 
-
-#c = ClassDefinition
+# Vocabulary for types
 T_SCHEMA = 'schema'
 T_CLASS = 'class'
 T_SLOT = 'slot'
@@ -95,6 +95,9 @@ class ColumnConfig:
                 self.maps_to = info
             mm = get_metamodel()
             snmap = mm.slot_name_mappings()
+            for k, v in snmap.items():
+                if k != v.name:
+                    print(k,v.name)
             # TODO: use alias
             snmap['uri'] = snmap['type_uri']
             if self.maps_to.startswith("metaslot."):
