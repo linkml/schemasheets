@@ -105,3 +105,5 @@ docker-publish: docker-build
 
 docker-run:
 	@docker run  -v $(PWD):/work -w /work -ti $(IM):$(VERSION) 
+
+include scripts.makefile
