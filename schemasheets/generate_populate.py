@@ -1,13 +1,16 @@
-# import os
-import pprint
-
-from click import command, option
+import yaml
+from click import command, option, Choice
 from jsonasobj2 import as_dict
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper
 from schemasheets.conf.configschema import ColumnSettings
 from schemasheets.schema_exporter import SchemaExporter
 from schemasheets.schemasheet_datamodel import TableConfig, ColumnConfig
+import logging
+import pkg_resources
+
+# todo write tests
+
+# todo get the metamodel from the package, not from a URL or file
 
 # todo: include read only slots?
 
@@ -17,8 +20,7 @@ from schemasheets.schemasheet_datamodel import TableConfig, ColumnConfig
 
 # todo check for inlining in addition to checking if a range class has a identifier slot?
 
-# todo offer a concise report based on the slots that are actually used
-#  in the SlotDefinitions and ClassDefinitions in the source schema
+# todo support generating an exhaustive and concise report in the same run
 
 # todo slots which might require multiple columns for multiple inner keys
 
@@ -28,9 +30,15 @@ root_classes = ['slot_definition', "class_definition"]  # hard coding the intent
 boilerplate_cols = ['slot', 'class']
 
 # these a slots whose ranges are classes with identifier slots, but they still can't be included in the report
-blacklist = ['attributes', 'slot_usage', 'name', 'instantiates', 'slots', ]
+blacklist = [
+    'attributes',
+    'instantiates',
+    'name',
+    'slot_usage',
+    'slots',
+]
 
-# this salves these slots (by name) from untemplateables
+# this salvages these slots (by name) from untemplateables
 requires_column_settings = {
     "examples values": {
         "name": "examples",
@@ -55,6 +63,18 @@ requires_column_settings = {
     },
 }
 
+debug_report = {
+    "blacklist_skipped": []
+}
+
+
+def setup_logging(log_file=None, log_level=logging.INFO):
+    logging.basicConfig(
+        level=log_level,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        filename=log_file,
+    )
+
 
 def tabulate_unique_values(list_):
     """
@@ -78,7 +98,6 @@ def tabulate_unique_values(list_):
     return sorted_value_counts
 
 
-# todo add annotations discovery
 def discover_source_usage(source_view):
     discovered_meta_slots = []
     discovered_annotations = []
@@ -107,21 +126,9 @@ def discover_source_usage(source_view):
     return discovered_meta_slots, discovered_annotations
 
 
-@command()
-@option("--meta-path", "-m", default="https://w3id.org/linkml/meta",
-        help="A filesystem or URL path to the LinkML metamodel schema.")
-@option("--meta-staging-path", "-s", default="meta_merged.yaml",
-        help="A filesystem path for saving the merged  LinkML metamodel locally.")
-@option("--source-path", "-i", required=True,
-        help="A filesystem or URL path to the schema that should be reported on.")
-@option("--output-path", "-o", default="populated_with_generated_spec.tsv")
-def cli(meta_path, source_path, output_path, meta_staging_path):
-    """
-    A CLI tool to generate a slot usage schemasheet from the LinkML metamodel and a source schema.
-    """
-
-    print(meta_path)
-    print(source_path)
+def do_usage_report(style, meta_view, meta_type_names, meta_enum_names, discovered_annotations,
+                    discovered_source_slots, logger):
+    logger.warning(style)
 
     columns_dict = {}
 
@@ -136,51 +143,28 @@ def cli(meta_path, source_path, output_path, meta_staging_path):
     discovered_cols = []
     slot_ranges = []
 
-    # in some cases it will be better to get this from a local filesystem, not a URL...
-    # todo: add script/targets for downloading and merging
-
-    meta_view = SchemaView(meta_path, merge_imports=True)
-
-    # not really necessary
-    yaml_dumper.dump(meta_view.schema, meta_staging_path)
-
-    source_view = SchemaView(source_path, merge_imports=True)
-
-    (discovered_source_slots, discovered_annotations) = discover_source_usage(source_view)
-    discovered_source_slots = list(set(discovered_source_slots))
-    discovered_source_slots.sort()
-
     discovered_annotations = list(set(discovered_annotations))
-    discovered_annotations.sort()
 
     discovered_source_slots = list(set(discovered_source_slots) - set(blacklist))
+    discovered_source_slots = list(set(discovered_source_slots))
     discovered_source_slots.sort()
-    discovered_source_slots = boilerplate_cols + discovered_source_slots
-    pprint.pprint(discovered_source_slots)
+    discovered_annotations.sort()
+    discovered_source_slots.sort()
 
-    root_classes.sort()
-
-    meta_types = meta_view.schema.types
-    meta_type_names = list(meta_types.keys())
-
-    meta_enum_names = list(meta_view.all_enums().keys())
-    meta_enum_names.sort()
-
-    print("\n")
     for current_root in root_classes:
         current_induced_slots = meta_view.class_induced_slots(current_root)
         for cis in current_induced_slots:
 
             temp_dict = {"range": cis.range, "multivalued": cis.multivalued, "type_range": cis.range in meta_type_names}
-            if cis.name not in slot_scan_results:
-                slot_scan_results[cis.name] = temp_dict
+            if style == "exhaustive" or cis.name in discovered_source_slots:
+                if cis.name not in slot_scan_results:
+                    slot_scan_results[cis.name] = temp_dict
 
-            # # todo make this a debug logger message
-            # else:
-            #     if slot_scan_results[cis.name] == temp_dict:
-            #         continue
-            #     else:
-            #         print(f"Redefining {cis.name} from {slot_scan_results[cis.name]} to {temp_dict}")
+                else:
+                    if slot_scan_results[cis.name] == temp_dict:
+                        continue
+                    else:
+                        logger.warning(f"Redefining {cis.name} from {slot_scan_results[cis.name]} to {temp_dict}")
 
     for c in boilerplate_cols:
         columns_dict[c] = ColumnConfig(name=c,
@@ -190,20 +174,21 @@ def cli(meta_path, source_path, output_path, meta_staging_path):
                                        )
 
     for rcs_k, rcs_v in requires_column_settings.items():
-        temp_settings = ColumnSettings()
-        if "internal_separator" in rcs_v:
-            temp_settings.internal_separator = rcs_v["internal_separator"]
-        if "ikm_class" in rcs_v and "ikm_slot" in rcs_v:
-            temp_settings.inner_key = rcs_v["ikm_slot"]
-        columns_dict[rcs_k] = ColumnConfig(
-            name=rcs_v["name"],
-            is_element_type=False,
-            maps_to=rcs_v["name"],
-            metaslot=meta_view.get_slot(rcs_v["name"]),
-            settings=temp_settings
-        )
-        if "ikm_class" in rcs_v and "ikm_slot" in rcs_v:
-            columns_dict[rcs_k].inner_key_metaslot = meta_view.induced_slot(rcs_v["ikm_slot"], rcs_v["ikm_class"])
+        if style == "exhaustive" or rcs_v['name'] in discovered_source_slots:
+            temp_settings = ColumnSettings()
+            if "internal_separator" in rcs_v:
+                temp_settings.internal_separator = rcs_v["internal_separator"]
+            if "ikm_class" in rcs_v and "ikm_slot" in rcs_v:
+                temp_settings.inner_key = rcs_v["ikm_slot"]
+            columns_dict[rcs_k] = ColumnConfig(
+                name=rcs_v["name"],
+                is_element_type=False,
+                maps_to=rcs_v["name"],
+                metaslot=meta_view.get_slot(rcs_v["name"]),
+                settings=temp_settings
+            )
+            if "ikm_class" in rcs_v and "ikm_slot" in rcs_v:
+                columns_dict[rcs_k].inner_key_metaslot = meta_view.induced_slot(rcs_v["ikm_slot"], rcs_v["ikm_class"])
 
     for ssk, ssv in slot_scan_results.items():
         if ssv["range"] not in meta_type_names and ssv["range"] not in meta_enum_names:
@@ -226,16 +211,18 @@ def cli(meta_path, source_path, output_path, meta_staging_path):
     for rcs_k, rcs_v in requires_column_settings.items():
         requires_column_settings_names.append(rcs_v["name"])
 
+    silenced = requires_column_settings_names + ["annotations"]
+
     for ssrk, ssrv in slot_scan_results.items():
         current_range = ssrv["range"]
         if current_range in meta_type_names or current_range in meta_enum_names:
             discovered_cols.append(ssrk)
         elif current_range in identifiables:
             if ssrk in blacklist:
-                print(f"Skipping {ssrk} because it is in the blacklist")
+                debug_report['blacklist_skipped'].append(ssrk)
             else:
                 discovered_cols.append(ssrk)
-        elif ssrk in requires_column_settings_names:
+        elif ssrk in silenced:
             continue
         else:
             untemplateables[ssrk] = ssrv
@@ -248,8 +235,6 @@ def cli(meta_path, source_path, output_path, meta_staging_path):
             metaslot=meta_view.get_slot("annotations"),
             settings=ColumnSettings(inner_key=da),
         )
-
-    pprint.pprint(untemplateables)
 
     discovered_cols.sort()
 
@@ -276,12 +261,83 @@ def cli(meta_path, source_path, output_path, meta_staging_path):
         columns=columns_dict
     )
 
+    return new_tc, untemplateables
+
+
+@command()
+@option("--verbose", is_flag=True, help="Enable verbose logging.")
+@option("--source-path", "-i", required=True,
+        help="A filesystem or URL path to the schema that should be analysed and reported.")
+@option("--output-path", "-o", required=True)
+@option("--debug-report-path", "-d")
+@option("--log-file", "-l")
+@option("--report-style", "-s", type=Choice(['exhaustive', 'concise']), required=True)
+def cli(source_path, output_path, debug_report_path, verbose, log_file, report_style):
+    """
+    A CLI tool to generate a slot usage schemasheet from the LinkML metamodel and a source schema.
+    """
+
+    # in some cases it will be better to get this from a local filesystem, not a URL...
+    # todo: add script/targets for downloading and merging
+
+    if verbose:
+        setup_logging(log_file, logging.DEBUG)
+    else:
+        setup_logging(log_file)
+
+    logger = logging.getLogger(__name__)
+
+    meta_yaml_path = pkg_resources.resource_filename(
+        'linkml_runtime',
+        'linkml_model/model/schema/meta.yaml'
+    )  # todo proper platform agnostic path
+
+    meta_view = SchemaView(meta_yaml_path, merge_imports=True)
+
+    source_view = SchemaView(source_path, merge_imports=True)
+
+    (discovered_source_slots, discovered_annotations) = discover_source_usage(source_view)
+
+    root_classes.sort()
+
+    meta_types = meta_view.schema.types
+    meta_type_names = list(meta_types.keys())
+
+    meta_enum_names = list(meta_view.all_enums().keys())
+    meta_enum_names.sort()
+
+    new_tc, untemplateables = do_usage_report(
+        discovered_annotations=discovered_annotations,
+        discovered_source_slots=discovered_source_slots,
+        logger=logger,
+        meta_enum_names=meta_enum_names,
+        meta_type_names=meta_type_names,
+        meta_view=meta_view,
+        style=report_style,
+    )
+
     current_exporter = SchemaExporter()
     current_exporter.export(
         schemaview=source_view,
         table_config=new_tc,
         to_file=output_path,
     )
+
+    untemplateable_report = {}
+    for uk, uv in untemplateables.items():
+        untemplateable_report[uk] = uv["range"]
+
+    debug_report['blacklist'] = blacklist
+    debug_report['untemplateables'] = untemplateable_report
+    debug_report['untemplateable_skipped'] = list(set(untemplateables).intersection(set(discovered_source_slots)))
+
+    if debug_report_path:
+        try:
+            with open(debug_report_path, 'w') as yaml_file:
+                yaml.safe_dump(debug_report, yaml_file)
+            logger.warning(f"Successfully dumped the debug_report to '{debug_report_path}'.")
+        except Exception as e:
+            logger.warning(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
