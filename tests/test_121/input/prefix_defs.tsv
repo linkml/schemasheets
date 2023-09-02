@@ -1,0 +1,6 @@
+prefix	URI
+> prefix	prefix_reference
+some_schema	http://example.com/some_schema_path/
+data_prefix_1	http://example.com/data_prefix_1/
+data_prefix_2	http://example.com/data_prefix_2/
+non_data_prefix	http://example.com/non_data_prefix/
