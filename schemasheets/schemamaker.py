@@ -15,13 +15,13 @@ from typing import List, Union, Any, Dict, Tuple, Generator, TextIO
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import Annotation, Example
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, Prefix, \
-    SlotDefinition, EnumDefinition, PermissibleValue, SubsetDefinition, TypeDefinition, Element
+    SlotDefinition, EnumDefinition, PermissibleValue, SubsetDefinition, TypeDefinition, Element, Setting
 from linkml_runtime.utils.schema_as_dict import schema_as_dict
 from linkml_runtime.utils.schemaview import SchemaView, re
 
 from schemasheets.schemasheet_datamodel import ColumnConfig, TableConfig, get_configmodel, get_metamodel, COL_NAME, \
     DESCRIPTOR, \
-    tmap, T_CLASS, T_PV, T_SLOT, T_SUBSET, T_SCHEMA, T_ENUM, T_PREFIX, T_TYPE, SchemaSheet
+    tmap, T_CLASS, T_PV, T_SLOT, T_SUBSET, T_SCHEMA, T_ENUM, T_PREFIX, T_TYPE, SchemaSheet, T_SETTING
 from schemasheets.conf.configschema import Cardinality
 from schemasheets.utils.google_sheets import gsheets_download_url
 from schemasheets.utils.prefixtool import guess_prefix_expansion
@@ -83,7 +83,6 @@ class SchemaMaker:
                 c.slots.remove(sn)
                 del c.slot_usage[sn]
 
-
     def merge_sheet(self, file_name: str, delimiter='\t') -> None:
         """
         Merge information from the given schema sheet into the current schema
@@ -93,7 +92,7 @@ class SchemaMaker:
         :return:
         """
         logging.info(f'READING {file_name} D={delimiter}')
-        #with self.ensure_file(file_name) as tsv_file:
+        # with self.ensure_file(file_name) as tsv_file:
         #    reader = csv.DictReader(tsv_file, delimiter=delimiter)
         with self.ensure_csvreader(file_name, delimiter=delimiter) as reader:
             schemasheet = SchemaSheet.from_dictreader(reader)
@@ -101,7 +100,7 @@ class SchemaMaker:
                 schemasheet.load_table_config(self.table_config_path)
             line_num = schemasheet.start_line_number
             # TODO: check why this doesn't work
-            #while rows and all(x for x in rows[-1] if not x):
+            # while rows and all(x for x in rows[-1] if not x):
             #    print(f'TRIMMING: {rows[-1]}')
             #    rows.pop()
             logging.info(f'ROWS={len(schemasheet.rows)}')
@@ -118,21 +117,29 @@ class SchemaMaker:
                 name = element.prefix_prefix
             elif isinstance(element, PermissibleValue):
                 name = element.text
+            elif isinstance(element, Setting):
+                # print(f"\n{element = }")
+                name = element.setting_key
             else:
                 logging.debug(f'EL={element} in {row}')
                 name = element.name
             logging.debug(f'ADDING: {row} // {name}')
             for k, v in row.items():
+                # print(f"\n{k = }")
                 if k not in table_config.columns:
                     raise ValueError(f'Expected to find {k} in {table_config.columns.keys()}')
                 cc = table_config.columns[k]
+                # print(f"{cc = }")
                 v = self.normalize_value(v, cc)
                 if v:
+                    # print(f"{v = }")
                     # special case: class-context provided by settings
                     if cc.settings.applies_to_class:
                         actual_element = list(self.row_focal_element(row, table_config, column=k))[0]
                     else:
                         actual_element = element
+                    # print(f"{cc.maps_to = }")
+                    # print(f"{cc = }")
                     logging.debug(f'SETTING {name} {cc.maps_to} = {v}')
                     if cc.maps_to == 'cardinality':
                         self.set_cardinality(actual_element, v)
@@ -172,9 +179,13 @@ class SchemaMaker:
                                     curr_val = getattr(curr_obj, cc.settings.inner_key, None)
                             else:
                                 curr_val = getattr(actual_element, cc.maps_to)
+                            # print(f"{curr_val = }")
+                            # print(f"{v = }")
+
                             if curr_val and curr_val != 'TEMP' and curr_val != v and \
                                     not isinstance(actual_element, SchemaDefinition) and \
-                                    not isinstance(actual_element, Prefix):
+                                    not isinstance(actual_element, Prefix) and \
+                                    not isinstance(actual_element, Setting):
                                 logging.warning(f'Overwriting value for {k}, was {curr_val}, now {v}')
                                 raise ValueError(f'Cannot reset value for {k}, was {curr_val}, now {v}')
                             if cc.settings.inner_key:
@@ -288,6 +299,12 @@ class SchemaMaker:
                             pfx = Prefix(vs[0], 'TODO')
                             self.schema.prefixes[pfx.prefix_prefix] = pfx
                             vmap[k] = [pfx]
+                        elif elt_cls == Setting:
+                            if len(vs) != 1:
+                                raise ValueError(f'Cardinality of setting col must be 1; got: {vs}')
+                            stg = Setting(vs[0], 'TODO')
+                            self.schema.settings[stg.setting_key] = stg
+                            vmap[k] = [stg]
                         elif elt_cls == SchemaDefinition:
                             if len(vs) != 1:
                                 raise ValueError(f'Cardinality of schema col must be 1; got: {vs}')
@@ -295,10 +312,12 @@ class SchemaMaker:
                             vmap[k] = [self.schema]
                         else:
                             vmap[k] = [self.get_current_element(elt_cls(v)) for v in vs]
+
         def check_excess(descriptors):
             diff = set(vmap.keys()) - set(descriptors + [T_SCHEMA])
             if len(diff) > 0:
                 raise ValueError(f'Excess slots: {diff}')
+
         if column:
             cc = table_config.columns[column]
             if cc.settings.applies_to_class:
@@ -351,7 +370,7 @@ class SchemaMaker:
             this_enum: EnumDefinition = vmap[T_ENUM][0]
             if T_PV in vmap:
                 for pv in vmap[T_PV]:
-                    #pv = PermissibleValue(text=v)
+                    # pv = PermissibleValue(text=v)
                     this_enum.permissible_values[pv.text] = pv
                     yield pv
             else:
@@ -367,6 +386,9 @@ class SchemaMaker:
                 yield main_elt
         elif T_SCHEMA in vmap:
             for main_elt in vmap[T_SCHEMA]:
+                yield main_elt
+        elif T_SETTING in vmap:
+            for main_elt in vmap[T_SETTING]:
                 yield main_elt
         else:
             raise ValueError(f'Could not find a focal element for {row}')
@@ -419,7 +441,8 @@ class SchemaMaker:
                     v = None
             if column_config.settings.curie_prefix:
                 if ':' in v:
-                    logging.warning(f'Will not prefix {v} with {column_config.settings.curie_prefix} as it is already prefixed')
+                    logging.warning(
+                        f'Will not prefix {v} with {column_config.settings.curie_prefix} as it is already prefixed')
                 else:
                     v = f'{column_config.settings.curie_prefix}:{v}'
             if column_config.settings.prefix:
@@ -537,8 +560,8 @@ class SchemaMaker:
         :return:
         """
         sv = SchemaView(schema)
-        #pfx = schema.default_prefix
-        #if pfx not in schema.prefixes:
+        # pfx = schema.default_prefix
+        # if pfx not in schema.prefixes:
         #    schema.prefixes[pfx] = Prefix(pfx, f'http://example.org/{pfx}/')
         #    logging.info(f'Set default prefix: {schema.prefixes[pfx]}')
         prefixes = set()
@@ -622,7 +645,8 @@ class SchemaMaker:
               help="Google sheets ID. If this is specified then the arguments MUST be sheet names")
 @click.option("-v", "--verbose", count=True)
 @click.argument('tsv_files', nargs=-1)
-def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_path: str, use_attributes: bool, unique_slots: bool, verbose: int, sort_keys: bool):
+def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_path: str, use_attributes: bool,
+            unique_slots: bool, verbose: int, sort_keys: bool):
     """
     Convert schemasheets to a LinkML schema
 
@@ -653,14 +677,8 @@ def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_pat
         schema = sm.repair_schema(schema)
     schema_dict = schema_as_dict(schema)
     output.write(yaml.dump(schema_dict, sort_keys=sort_keys))
-    #output.write(yaml_dumper.dumps(schema))
+    # output.write(yaml_dumper.dumps(schema))
 
 
 if __name__ == '__main__':
     convert()
-
-
-
-
-            
-
