@@ -30,9 +30,12 @@ OUTPUT_DIR = os.path.join(ROOT, 'output')
 
 # PROBLEM_DIR = os.path.join(INPUT_DIR, 'problem_cases')
 
+CLASS_DEFS_TSV = os.path.join(INPUT_DIR, 'class_defs.tsv')
 PREFIX_DEFS_TSV = os.path.join(INPUT_DIR, 'prefix_defs.tsv')
 SCHEMA_DEF_TSV = os.path.join(INPUT_DIR, 'schema_def.tsv')
 SETTING_DEFS_TSV = os.path.join(INPUT_DIR, 'setting_defs.tsv')
+SLOT_CLASS_ASSIGNMENTS_TSV = os.path.join(INPUT_DIR, 'slot_class_assignments.tsv')
+SLOT_DEFS_TSV = os.path.join(INPUT_DIR, 'slot_defs.tsv')
 SUBSET_DEFS_TSV = os.path.join(INPUT_DIR, 'subset_defs.tsv')
 
 SCHEMA_YAML = os.path.join(OUTPUT_DIR, f"{SCHEMA_NAME}.yaml")
@@ -43,9 +46,12 @@ def test_mixs_generation():
                      unique_slots=True,
                      )
     schema = sm.create_schema([
+        CLASS_DEFS_TSV,
         PREFIX_DEFS_TSV,
         SCHEMA_DEF_TSV,
         SETTING_DEFS_TSV,
+        SLOT_CLASS_ASSIGNMENTS_TSV,
+        SLOT_DEFS_TSV,
         SUBSET_DEFS_TSV,
     ])
     schema = sm.repair_schema(schema)
