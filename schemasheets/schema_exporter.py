@@ -280,12 +280,12 @@ class SchemaExporter:
                     # representation
                     if isinstance(v, list):
                         v = [repl(v1) for v1 in v if repl(v1) is not None]
-                        v = '|'.join(v)
+                        v = '|'.join([str(i) for i in v])
                         if v != '':
                             exported_row[col_name] = v
                     elif isinstance(v, dict):
                         v = [repl(v1) for v1 in v.values() if repl(v1) is not None]
-                        v = '|'.join(v)
+                        v = '|'.join([str(i) for i in v])
                         if v != '':
                             exported_row[col_name] = v
                     else:
