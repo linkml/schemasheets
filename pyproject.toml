@@ -34,3 +34,9 @@ linkml2sheets = "schemasheets.schema_exporter:export_schema"
 sheets2project = "schemasheets.sheets_to_project:multigen"
 
 linkml2schemasheets-template = 'schemasheets.generate_populate:cli'
+[tool.codespell]
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = '.git,*.lock'
+check-hidden = true
+ignore-regex = '\bOTU\b'
+# ignore-words-list = ''
