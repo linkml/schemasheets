@@ -217,7 +217,7 @@ class SchemaMaker:
         """
         sc = self.schema
         if isinstance(elt, SchemaDefinition):
-            # TODO: consider multiple shemas per sheet
+            # TODO: consider multiple schemas per sheet
             return sc
         elif isinstance(elt, PermissibleValue):
             return elt
@@ -321,7 +321,7 @@ class SchemaMaker:
                 for c in vmap[T_CLASS]:
                     if self.use_attributes:
                         # slots always belong to a class;
-                        # no seperate top level slots
+                        # no separate top level slots
                         a = SlotDefinition(main_elt.name)
                         c.attributes[main_elt.name] = a
                         yield a
