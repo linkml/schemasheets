@@ -84,7 +84,7 @@ this guards against accidental overwrites.
 
 schemasheets allows *custom* sheet formats that map to the LinkML standard.
 
-you can use the combination of sheets2linkml and linkml2sheets to convert betweeen two sheet specifications.
+you can use the combination of sheets2linkml and linkml2sheets to convert between two sheet specifications.
 
 For example, let's say for schema1.tsv, you use a spreadsheet with the following headers:
 
