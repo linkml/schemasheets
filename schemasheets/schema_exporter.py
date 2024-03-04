@@ -12,6 +12,7 @@ from linkml_runtime.linkml_model import Element, SlotDefinition, SubsetDefinitio
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
+from schemasheets.conf.configschema import ColumnSettings
 from schemasheets.schemamaker import SchemaMaker
 from schemasheets.schemasheet_datamodel import TableConfig, T_CLASS, T_SLOT, SchemaSheet, T_ENUM, T_PV, T_TYPE, \
     T_SUBSET, T_PREFIX
@@ -26,6 +27,81 @@ def _configuration_has_primary_keys_for(table_config: TableConfig, metatype: str
     return False
 
 
+def get_fields(cls: type) -> List[str]:
+    """
+    Get the fields in a class.
+
+    :param cls: The class to get the fields from.
+    :returns: fields present in the inputs class, as a list of strings
+    """
+
+    fields: list[str] = []
+    for attribute in cls.__dict__:
+        if not attribute.startswith('_'):
+            fields.append(attribute)
+
+    return fields
+
+
+def infer_descriptor_rows(table_config: TableConfig) -> List[ROW]:
+    """
+    Infers SchemaSheet descriptor rows, as required by SchemaExporter, for a given TableConfig.
+
+    :param table_config: The TableConfig to infer the descriptor rows for.
+    :returns: A list of descriptor rows.
+    """
+
+    cs_fields = get_fields(ColumnSettings)
+    cs_fields.sort()
+
+    desired_schemasheets_columns = ["header", ] + cs_fields
+
+    descriptor_rows: list[dict[str, str]] = []
+
+    for schemasheet_col in desired_schemasheets_columns:
+        index = 0
+        temp_dict = {}
+        i_s_count = 0
+        i_k_count = 0
+        for tcck, tccv in table_config.columns.items():
+            prefix = ''
+            if index == 0:
+                prefix = '>'
+
+            # todo differentiate between a verbatim header and a slugged element_name
+            if schemasheet_col == "header":
+                temp_dict[tcck] = f"{prefix}{tccv.name}"
+
+            elif schemasheet_col == "internal_separator":
+                i_s = tccv.settings.internal_separator
+                if i_s:
+                    temp_dict[tcck] = f'{prefix}internal_separator: "{i_s}"'
+                    i_s_count += 1
+                else:
+                    temp_dict[tcck] = f'{prefix}'
+
+            elif schemasheet_col == "inner_key":
+                i_k = tccv.settings.inner_key
+                if i_k:
+                    temp_dict[tcck] = f'{prefix}inner_key: "{i_k}"'
+                    i_k_count += 1
+                else:
+                    temp_dict[tcck] = f'{prefix}'
+
+            index += 1
+
+        if schemasheet_col == "internal_separator" and i_s_count == 0:
+            temp_dict = {}
+
+        if schemasheet_col == "inner_key" and i_k_count == 0:
+            temp_dict = {}
+
+        if temp_dict:
+            descriptor_rows.append(temp_dict)
+
+    return descriptor_rows
+
+
 @dataclass
 class SchemaExporter:
     """
@@ -35,13 +111,13 @@ class SchemaExporter:
     delimiter = '\t'
     rows: List[ROW] = field(default_factory=lambda: [])
 
-    def export(self, schemaview: SchemaView, specification: str = None,
-               to_file: Union[str, Path] = None, table_config: TableConfig = None):
+    def export(self, schemaview: SchemaView, to_file: Union[str, Path], specification: str = None,
+               table_config: TableConfig = None):
         """
         Exports a schema to a schemasheets TSV
 
-        EITHER a specification OR a table_config must be passed. This informs
-        how schema elements are mapped to rows
+        EITHER a specification OR (a table_config and descriptor_rows) must be passed.
+        This informs how schema elements are mapped to rows
 
         :param schemaview:
         :param specification:
@@ -49,11 +125,15 @@ class SchemaExporter:
         :param table_config:
         :return:
         """
+
         if specification is not None:
             schemasheet = SchemaSheet.from_csv(specification, delimiter=self.delimiter)
             table_config = schemasheet.table_config
+            descriptor_rows = schemasheet.table_config_rows
             logging.info(f'Remaining rows={len(schemasheet.rows)}')
-        if specification is None and table_config is None:
+        elif table_config is not None:
+            descriptor_rows = infer_descriptor_rows(table_config)
+        else:
             raise ValueError("Must specify EITHER specification OR table_config")
         for prefix in schemaview.schema.prefixes.values():
             self.export_element(prefix, None, schemaview, table_config)
@@ -74,21 +154,17 @@ class SchemaExporter:
             self.export_element(typ, None, schemaview, table_config)
         for subset in schemaview.all_subsets().values():
             self.export_element(subset, None, schemaview, table_config)
-        if to_file:
-            if isinstance(to_file, str) or isinstance(to_file, Path):
-                stream = open(to_file, 'w', encoding='utf-8')
-            else:
-                stream = to_file
+
+        with open(to_file, 'w', encoding='utf-8') as stream:
             writer = csv.DictWriter(
                 stream,
                 delimiter=self.delimiter,
                 fieldnames=table_config.columns.keys())
             writer.writeheader()
-            descriptor_rows = schemasheet.table_config_rows
-            col0 = list(table_config.columns.keys())[0]
+
             for row in descriptor_rows:
-                row[col0] = row[col0]
                 writer.writerow(row)
+
             for row in self.rows:
                 writer.writerow(row)
 
@@ -109,6 +185,7 @@ class SchemaExporter:
         :param table_config:
         :return:
         """
+
         # Step 1: determine both primary key (pk) column, a pk of any parent
         pk_col = None
         parent_pk_col = None
@@ -203,12 +280,12 @@ class SchemaExporter:
                     # representation
                     if isinstance(v, list):
                         v = [repl(v1) for v1 in v if repl(v1) is not None]
-                        v = '|'.join(v)
+                        v = '|'.join([str(i) for i in v])
                         if v != '':
                             exported_row[col_name] = v
                     elif isinstance(v, dict):
                         v = [repl(v1) for v1 in v.values() if repl(v1) is not None]
-                        v = '|'.join(v)
+                        v = '|'.join([str(i) for i in v])
                         if v != '':
                             exported_row[col_name] = v
                     else:

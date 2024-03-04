@@ -9,6 +9,8 @@ import logging
 import yaml
 from linkml_runtime.linkml_model import SlotDefinition, ClassDefinition, SchemaDefinition, \
     PermissibleValue, EnumDefinition, TypeDefinition, SubsetDefinition, Prefix
+from linkml_runtime.linkml_model.meta import Setting
+
 from linkml_runtime.utils.schemaview import SchemaView
 
 from schemasheets.conf.configschema import ColumnSettings, Shortcuts
@@ -26,6 +28,7 @@ T_PV = 'permissible_value'
 T_TYPE = 'type'
 T_SUBSET = 'subset'
 T_PREFIX = 'prefix'
+T_SETTING = 'setting'
 
 tmap = {
     T_SCHEMA: SchemaDefinition,
@@ -35,7 +38,8 @@ tmap = {
     T_PV: PermissibleValue,
     T_TYPE: TypeDefinition,
     T_SUBSET: SubsetDefinition,
-    T_PREFIX: Prefix
+    T_PREFIX: Prefix,
+    T_SETTING: Setting,
 }
 
 
