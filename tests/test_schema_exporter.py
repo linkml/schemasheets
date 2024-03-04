@@ -60,7 +60,7 @@ EXPECTED = [
 
 def test_roundtrip_schema():
     """
-    Tests linkml2sheets by roundtripping from the standard personinfo schema in YAML
+    Tests linkml2sheets by round-tripping from the standard personinfo schema in YAML
     """
     sm = SchemaMaker()
     # sheets2linkml, from SHEET
