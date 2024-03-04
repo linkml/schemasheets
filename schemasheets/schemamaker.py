@@ -6,6 +6,7 @@ import csv
 import logging
 import tempfile
 from urllib.request import urlopen
+from copy import copy
 
 import click
 import yaml
@@ -236,7 +237,10 @@ class SchemaMaker:
             if isinstance(elt, ClassDefinition):
                 ix = sc.classes
             elif isinstance(elt, SlotDefinition):
-                ix = sc.slots
+                if self.use_attributes:
+                    ix = copy(sc.slots)
+                else:
+                    ix = sc.slots
             elif isinstance(elt, EnumDefinition):
                 ix = sc.enums
             elif isinstance(elt, TypeDefinition):
