@@ -23,4 +23,4 @@ For example:
 |C|ForProfit|||||Organization|||||||
 |C|NonProfit|||||Organization|||Q163740|||foo|
 
- * [personinfo with tyoes](https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=509198484)
+ * [personinfo with types](https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=509198484)

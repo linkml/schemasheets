@@ -1,0 +1,3 @@
+setting name	setting expansion
+>setting	setting_value
+vowels	[aeiouAEIOU]+

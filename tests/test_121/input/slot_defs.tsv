@@ -1,0 +1,4 @@
+slot	description
+>slot	description
+exterior_color	the primary color, using crayola names, of the exterior of the vehicle
+max_passengers	That maximum number of human passengers that can be safely transported by the vehicle

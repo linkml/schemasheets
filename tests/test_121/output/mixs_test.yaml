@@ -1,0 +1,79 @@
+name: some schema
+conforms_to: LinkML
+implements:
+- some_schema:1
+- some_schema:2
+description: A schema that tests as many elements as possible. For use in testing
+  YAML <-> sheets
+alt_descriptions:
+  text: An outline or image universally applicable to a general conception, under
+    which it is likely to be presented to the mind
+title: See description
+deprecated: we all feel deprecated some times
+todos:
+- text1
+- text2
+notes:
+- text1
+- text2
+comments:
+- text1
+- text2
+source: some_schema:1
+in_language: English
+see_also:
+- some_schema:1
+- some_schema:2
+deprecated_element_has_exact_replacement: some_schema:1
+deprecated_element_has_possible_replacement: some_schema:1
+aliases:
+- text1
+- text2
+mappings:
+- some_schema:1
+- some_schema:2
+exact_mappings:
+- some_schema:1
+- some_schema:2
+close_mappings:
+- some_schema:1
+- some_schema:2
+related_mappings:
+- some_schema:1
+- some_schema:2
+narrow_mappings:
+- some_schema:1
+- some_schema:2
+broad_mappings:
+- some_schema:1
+- some_schema:2
+created_by: some_schema:1
+created_on: '2023-01-01'
+last_updated_on: '2023-01-01'
+modified_by: some_schema:1
+status: some_schema:1
+rank: '3'
+id: http://example.com/some_schema
+version: v0.0.1
+imports:
+- linkml:types
+license: MIT
+prefixes:
+  some_schema:
+    prefix_prefix: some_schema
+    prefix_reference: http://example.com/some_schema_path/
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+default_prefix: some_schema
+default_range: float
+slot_names_unique: true
+categories:
+- some_schema:1
+- some_schema:2
+keywords:
+- text1
+- text2
+contributors:
+- some_schema:1
+- some_schema:2
