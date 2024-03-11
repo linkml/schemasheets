@@ -23,6 +23,7 @@ ROW = Dict[str, Any]
 T_SCHEMA = 'schema'
 T_CLASS = 'class'
 T_SLOT = 'slot'
+T_ATTRIBUTE = 'attribute'
 T_ENUM = 'enum'
 T_PV = 'permissible_value'
 T_TYPE = 'type'
@@ -34,6 +35,7 @@ tmap = {
     T_SCHEMA: SchemaDefinition,
     T_CLASS: ClassDefinition,
     T_SLOT: SlotDefinition,
+    T_ATTRIBUTE: SlotDefinition,
     T_ENUM: EnumDefinition,
     T_PV: PermissibleValue,
     T_TYPE: TypeDefinition,

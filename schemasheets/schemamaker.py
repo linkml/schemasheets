@@ -22,7 +22,7 @@ from linkml_runtime.utils.schemaview import SchemaView, re
 
 from schemasheets.schemasheet_datamodel import ColumnConfig, TableConfig, get_configmodel, get_metamodel, COL_NAME, \
     DESCRIPTOR, \
-    tmap, T_CLASS, T_PV, T_SLOT, T_SUBSET, T_SCHEMA, T_ENUM, T_PREFIX, T_TYPE, SchemaSheet, T_SETTING
+    tmap, T_CLASS, T_PV, T_SLOT, T_ATTRIBUTE, T_SUBSET, T_SCHEMA, T_ENUM, T_PREFIX, T_TYPE, SchemaSheet, T_SETTING
 from schemasheets.conf.configschema import Cardinality
 from schemasheets.utils.google_sheets import gsheets_download_url
 from schemasheets.utils.prefixtool import guess_prefix_expansion
@@ -202,7 +202,7 @@ class SchemaMaker:
                     else:
                         raise ValueError(f'No mapping for {k}; cc={cc}')
 
-    def get_current_element(self, elt: Element) -> Union[Element, PermissibleValue]:
+    def get_current_element(self, elt: Element, is_attr=False) -> Union[Element, PermissibleValue]:
         """
         Look up an element in the current schema using a stub element as key
 
@@ -225,6 +225,7 @@ class SchemaMaker:
         This time the existing "foo" class from the schema, with its adornments, will be returned
 
         :param elt: proxy for element to look up
+        :param is_attr: if True, then the element is an attribute, not a slot
         :return:
         """
         sc = self.schema
@@ -237,7 +238,7 @@ class SchemaMaker:
             if isinstance(elt, ClassDefinition):
                 ix = sc.classes
             elif isinstance(elt, SlotDefinition):
-                if self.use_attributes:
+                if self.use_attributes or is_attr:
                     ix = copy(sc.slots)
                 else:
                     ix = sc.slots
@@ -314,6 +315,8 @@ class SchemaMaker:
                                 raise ValueError(f'Cardinality of schema col must be 1; got: {vs}')
                             self.schema.name = vs[0]
                             vmap[k] = [self.schema]
+                        elif k == T_ATTRIBUTE:
+                            vmap[k] = [self.get_current_element(elt_cls(v), is_attr=True) for v in vs]
                         else:
                             vmap[k] = [self.get_current_element(elt_cls(v)) for v in vs]
 
@@ -330,11 +333,14 @@ class SchemaMaker:
                 else:
                     cls = self.get_current_element(ClassDefinition(cc.settings.applies_to_class))
                     vmap[T_CLASS] = [cls]
-        if T_SLOT in vmap:
-            check_excess([T_SLOT, T_CLASS])
-            if len(vmap[T_SLOT]) != 1:
-                raise ValueError(f'Cardinality of slot field must be 1; got {vmap[T_SLOT]}')
-            main_elt = vmap[T_SLOT][0]
+        if T_SLOT in vmap or T_ATTRIBUTE in vmap:
+            if T_SLOT in vmap and T_ATTRIBUTE in vmap:
+                raise ValueError(f'Cannot have both slot and attribute in same row')
+            T_SLOT_ATTR = T_SLOT if T_SLOT in vmap else T_ATTRIBUTE
+            check_excess([T_SLOT_ATTR, T_CLASS])
+            if len(vmap[T_SLOT_ATTR]) != 1:
+                raise ValueError(f'Cardinality of slot field must be 1; got {vmap[T_SLOT_ATTR]}')
+            main_elt = vmap[T_SLOT_ATTR][0]
             if T_CLASS in vmap:
                 # The sheet does double duty representing a class and a slot;
                 # Here *both* the "class" and "slot" columns are populated, so
@@ -342,7 +348,7 @@ class SchemaMaker:
                 # TODO: add option to allow to instead represent these as attributes
                 c: ClassDefinition
                 for c in vmap[T_CLASS]:
-                    if self.use_attributes:
+                    if self.use_attributes or T_SLOT_ATTR == T_ATTRIBUTE:
                         # slots always belong to a class;
                         # no separate top level slots
                         a = SlotDefinition(main_elt.name)
