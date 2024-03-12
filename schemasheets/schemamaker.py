@@ -190,7 +190,14 @@ class SchemaMaker:
                                 logging.warning(f'Overwriting value for {k}, was {curr_val}, now {v}')
                                 raise ValueError(f'Cannot reset value for {k}, was {curr_val}, now {v}')
                             if cc.settings.inner_key:
-                                getattr(actual_element, cc.maps_to)[cc.settings.inner_key] = v
+                                if isinstance(getattr(actual_element, cc.maps_to), list):
+                                    if '|' in v:
+                                        vs = v.split('|')
+                                    else:
+                                        vs = [v]
+                                    setattr(actual_element, cc.maps_to, [{cc.settings.inner_key: v} for v in vs])
+                                else:
+                                    getattr(actual_element, cc.maps_to)[cc.settings.inner_key] = v
                             else:
                                 setattr(actual_element, cc.maps_to, v)
                     elif cc.is_element_type:
