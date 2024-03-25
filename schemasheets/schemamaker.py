@@ -46,6 +46,7 @@ class SchemaMaker:
     unique_slots: bool = None
     gsheet_id: str = None
     table_config_path: str = None
+    base_schema_path: str = None
 
     def create_schema(self, csv_files: Union[str, List[str]], **kwargs) -> SchemaDefinition:
         """
@@ -55,8 +56,13 @@ class SchemaMaker:
         :param kwargs:
         :return: generated schema
         """
-        n = self.default_name
-        if n is None:
+        self.base_view = SchemaView(self.base_schema_path) if self.base_schema_path else None
+
+        if self.default_name:
+            n = self.default_name
+        elif self.base_view and self.base_view.schema.name:
+            n = self.base_view.schema.name
+        else:
             n = 'TEMP'
         self.schema = SchemaDefinition(id=n, name=n, default_prefix=n, default_range='string')
         if not isinstance(csv_files, list):
@@ -70,6 +76,9 @@ class SchemaMaker:
         if prefix not in self.schema.prefixes:
             logging.error(f'Prefix {prefix} not declared: using default')
             self.schema.prefixes[prefix] = Prefix(prefix, f'https://example.org/{prefix}/')
+
+        if self.base_view:
+            SchemaView(self.schema).merge_schema(self.base_view.schema)
         return self.schema
 
     def _tidy_slot_usage(self):
@@ -660,10 +669,12 @@ class SchemaMaker:
               help="Auto-repair schema")
 @click.option("--gsheet-id",
               help="Google sheets ID. If this is specified then the arguments MUST be sheet names")
+@click.option("--base-schema-path",
+              help="Base schema yaml file, the base-schema will be merged with the generated schema")
 @click.option("-v", "--verbose", count=True)
 @click.argument('tsv_files', nargs=-1)
 def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_path: str, use_attributes: bool,
-            unique_slots: bool, verbose: int, sort_keys: bool):
+            unique_slots: bool, verbose: int, sort_keys: bool, base_schema_path: str):
     """
     Convert schemasheets to a LinkML schema
 
@@ -688,7 +699,8 @@ def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_pat
                      unique_slots=unique_slots,
                      gsheet_id=gsheet_id,
                      default_name=name,
-                     table_config_path=table_config_path)
+                     table_config_path=table_config_path,
+                     base_schema_path=base_schema_path)
     schema = sm.create_schema(list(tsv_files))
     if repair:
         schema = sm.repair_schema(schema)
