@@ -1,10 +1,9 @@
+"""Converts a schema sheet into a LinkML schema"""
 import codecs
 import contextlib
-import os
 import sys
 import csv
 import logging
-import tempfile
 from pathlib import Path
 from urllib.request import urlopen
 from copy import copy
@@ -98,25 +97,42 @@ class SchemaSheetRowException(Exception):
 @dataclass
 class SchemaMaker:
     """
-    Engine for making LinkML schemas from Schema Sheets
+    Engine for making LinkML schemas from Schema Sheets.
     """
     schema: SchemaDefinition = None
+    """Generated schema."""
+
     element_map: Dict[Tuple[str, str], Element] = None
+
     metamodel: SchemaView = None
+    """Schema describing LinkML elements."""
+
     cardinality_vocabulary: str = None
+
     use_attributes: bool = None
+    """If True, use attributes instead of slots."""
+
     default_name: str = None
+    """Default name for the schema."""
+
     unique_slots: bool = None
+    """If True, slots are unique across classes."""
+
     gsheet_id: str = None
+    """Google sheet ID."""
+    
     gsheet_cache_dir: str = None
+
     table_config_path: str = None
+    """Path to table configuration file."""
+
     base_schema_path: str = None
 
     def create_schema(self, csv_files: Union[str, List[str]], **kwargs) -> SchemaDefinition:
         """
-        Create a LinkML schema from a collection of Schema Sheets
+        Create a LinkML schema from one or more Schema Sheets.
 
-        :param csv_files: schema sheets
+        :param csv_files: schema sheets paths
         :param kwargs:
         :return: generated schema
         """
@@ -132,8 +148,8 @@ class SchemaMaker:
         if not isinstance(csv_files, list):
             csv_files = [csv_files]
         for f in csv_files:
-            self.merge_sheet(f, **kwargs)
-        # reconstitute schema
+            # reconstitute schema
+            self.load_and_merge_sheet(f, **kwargs)
         self.schema = SchemaDefinition(**json_dumper.to_dict(self.schema))
         self.schema.imports.append('linkml:types')
         self.schema.prefixes['linkml'] = Prefix('linkml', 'https://w3id.org/linkml/')
@@ -149,7 +165,7 @@ class SchemaMaker:
 
     def _tidy_slot_usage(self):
         """
-        removes all slot usages marked inapplicable
+        removes all slot usages marked inapplicable.
 
         :return:
         """
@@ -160,9 +176,9 @@ class SchemaMaker:
                 c.slots.remove(sn)
                 del c.slot_usage[sn]
 
-    def merge_sheet(self, file_name: str, delimiter='\t') -> None:
+    def load_and_merge_sheet(self, file_name: str, delimiter='\t') -> None:
         """
-        Merge information from the given schema sheet into the current schema
+        Merge information from the given schema sheet into the current schema.
 
         :param file_name: schema sheet
         :param delimiter: default is tab
