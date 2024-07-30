@@ -155,7 +155,6 @@ class TableConfig:
         """
         if col not in self.columns:
             self.columns[col] = ColumnConfig(col)
-        #print(f'ADDING: {col}')
         self.columns[col].add_info(info)
         if self.columns[col].maps_to == 'metatype':
             if self.metatype_column and self.metatype_column != col:
@@ -204,6 +203,7 @@ class SchemaSheet:
         rows = []
         line_num = 1
         table_config_rows = []
+        descriptor_line_count = 0
         for row in reader:
             logging.debug(f"ROW: {row}")
             # google sheets
@@ -213,6 +213,7 @@ class SchemaSheet:
             if row[k0].startswith('>'):
                 table_config_rows.append(row)
                 line_num += 1
+                descriptor_line_count += 1
                 for k, v in row.items():
                     if v is not None and v.startswith('>'):
                         v = v.replace('>', '')
@@ -226,6 +227,8 @@ class SchemaSheet:
                         logging.debug(f'Empty val for {k} in line {line_num}')
             else:
                 rows.append(row)
+        if descriptor_line_count == 0:
+            logging.warning(f"No descriptor line found in {line_num} lines. Start line_num = {line_num}")
         return SchemaSheet(table_config=table_config,
                            table_config_rows=table_config_rows,
                            rows=rows,

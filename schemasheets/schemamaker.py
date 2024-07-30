@@ -4,6 +4,7 @@ import contextlib
 import sys
 import csv
 import logging
+from pathlib import Path
 from urllib.request import urlopen
 from copy import copy
 
@@ -12,11 +13,13 @@ import yaml
 from dataclasses import dataclass
 from typing import List, Union, Any, Dict, Tuple, Generator, TextIO
 
+from linkml_runtime.dumpers import yaml_dumper, json_dumper
 from linkml_runtime.linkml_model import Annotation, Example
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, Prefix, \
     SlotDefinition, EnumDefinition, PermissibleValue, SubsetDefinition, TypeDefinition, Element, Setting
 from linkml_runtime.utils.schema_as_dict import schema_as_dict
 from linkml_runtime.utils.schemaview import SchemaView, re
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from schemasheets.schemasheet_datamodel import ColumnConfig, TableConfig, get_configmodel, get_metamodel, COL_NAME, \
     DESCRIPTOR, \
@@ -24,6 +27,67 @@ from schemasheets.schemasheet_datamodel import ColumnConfig, TableConfig, get_co
 from schemasheets.conf.configschema import Cardinality
 from schemasheets.utils.google_sheets import gsheets_download_url
 from schemasheets.utils.prefixtool import guess_prefix_expansion
+
+
+def ensure_path_tokens(path: Union[str, List[str]]) -> List[str]:
+    if isinstance(path, list):
+        return path
+    if "." in path:
+        return path.split(".")
+    return [path]
+
+
+def get_attr_via_path_accessor(obj: Union[dict, YAMLRoot], path: Union[str, List[str]]) -> Any:
+    """
+    Given an object and a path, return the value at the end of the path
+
+    :param obj: object
+    :param path: path
+    :return: value
+    """
+    toks = ensure_path_tokens(path)
+    tok = toks[0]
+    toks = toks[1:]
+    if isinstance(obj, dict):
+        v = obj.get(tok, None)
+    else:
+        # https://github.com/linkml/linkml/issues/971
+        v = getattr(obj, tok, None)
+    if v and toks:
+        return get_attr_via_path_accessor(v, toks)
+    else:
+        return v
+
+
+def set_attr_via_path_accessor(obj: Union[dict, YAMLRoot], path: Union[str, List[str]], value: Any, depth=0) -> None:
+    """
+    Given an object, a path, and a value, set the value at the end of the path
+
+    :param obj: object
+    :param path: path
+    :param value: value
+    :param depth: recursion depth
+    :return: None
+    """
+    toks = ensure_path_tokens(path)
+    tok = toks[0]
+    toks = toks[1:]
+    logging.debug(f"[{depth}] Setting attr {tok} / {toks} in {obj} to {value}")
+    if isinstance(obj, dict):
+        if not toks:
+            obj[tok] = value
+        else:
+            if tok not in obj:
+                obj[tok] = {}
+                logging.info(f"Creating empty dict for: {tok}")
+            set_attr_via_path_accessor(obj[tok], toks, value, depth+1)
+    else:
+        if not toks:
+            setattr(obj, tok, value)
+        else:
+            if not hasattr(obj, tok):
+                setattr(obj, tok, {})
+            set_attr_via_path_accessor(getattr(obj, tok), toks, value, depth+1)
 
 
 class SchemaSheetRowException(Exception):
@@ -56,6 +120,8 @@ class SchemaMaker:
 
     gsheet_id: str = None
     """Google sheet ID."""
+    
+    gsheet_cache_dir: str = None
 
     table_config_path: str = None
     """Path to table configuration file."""
@@ -82,7 +148,9 @@ class SchemaMaker:
         if not isinstance(csv_files, list):
             csv_files = [csv_files]
         for f in csv_files:
+            # reconstitute schema
             self.load_and_merge_sheet(f, **kwargs)
+        self.schema = SchemaDefinition(**json_dumper.to_dict(self.schema))
         self.schema.imports.append('linkml:types')
         self.schema.prefixes['linkml'] = Prefix('linkml', 'https://w3id.org/linkml/')
         self._tidy_slot_usage()
@@ -102,6 +170,7 @@ class SchemaMaker:
         :return:
         """
         for cn, c in self.schema.classes.items():
+            logging.debug(f"Tidying {cn}")
             inapplicable_slots = [sn for sn, s in c.slot_usage.items() if 'inapplicable' in s.annotations]
             for sn in inapplicable_slots:
                 c.slots.remove(sn)
@@ -132,39 +201,47 @@ class SchemaMaker:
                 try:
                     self.add_row(row, schemasheet.table_config)
                     line_num += 1
-                except ValueError as e:
-                    raise SchemaSheetRowException(f'Error in line {line_num}, row={row}') from e
+                except (ValueError, AttributeError) as e:
+                    raise SchemaSheetRowException(f"Error in line {line_num}, row={row}\n"
+                                                  f"Exception:\n{e}") from e
 
     def add_row(self, row: Dict[str, Any], table_config: TableConfig):
+        """
+        Add and translate a row from a schema sheet to the current schema.
+
+        A row may represent an instance of a LinkML element, such as a class, slot, type,
+        or enum. The row may also represent a setting, prefix, or schema-level annotation.
+
+        This is known as the "focal element"(s) of the row.
+
+        :param row:
+        :param table_config:
+        :return:
+        """
         for element in self.row_focal_element(row, table_config):
             if isinstance(element, Prefix):
                 name = element.prefix_prefix
             elif isinstance(element, PermissibleValue):
                 name = element.text
             elif isinstance(element, Setting):
-                # print(f"\n{element = }")
                 name = element.setting_key
             else:
                 logging.debug(f'EL={element} in {row}')
                 name = element.name
             logging.debug(f'ADDING: {row} // {name}')
             for k, v in row.items():
-                # print(f"\n{k = }")
+                # iterate through all column values in the row
                 if k not in table_config.columns:
                     raise ValueError(f'Expected to find {k} in {table_config.columns.keys()}')
                 cc = table_config.columns[k]
-                # print(f"{cc = }")
                 v = self.normalize_value(v, cc)
                 if v:
-                    # print(f"{v = }")
                     # special case: class-context provided by settings
                     if cc.settings.applies_to_class:
                         actual_element = list(self.row_focal_element(row, table_config, column=k))[0]
                     else:
                         actual_element = element
-                    # print(f"{cc.maps_to = }")
-                    # print(f"{cc = }")
-                    logging.debug(f'SETTING {name} {cc.maps_to} = {v}')
+                    logging.debug(f'SETTING {name}.{cc.maps_to} = {v} // IK={cc.settings.inner_key}')
                     if cc.maps_to == 'cardinality':
                         self.set_cardinality(actual_element, v)
                     elif cc.metaslot:
@@ -179,9 +256,10 @@ class SchemaMaker:
                                 anns = yaml.safe_load(v[0])
                                 for ann_key, ann_val in anns.items():
                                     actual_element.annotations[ann_key] = ann_val
-                        elif isinstance(v, list):
+                        elif isinstance(v, list) and not cc.settings.inner_key:
+                            # append to existing list
                             setattr(actual_element, cc.maps_to, getattr(actual_element, cc.maps_to, []) + v)
-                        elif isinstance(v, dict):
+                        elif isinstance(v, dict) and not cc.settings.inner_key:
                             for v_k, v_v in v.items():
                                 curr_dict = getattr(actual_element, cc.maps_to)
                                 curr_dict[v_k] = v_v
@@ -196,15 +274,9 @@ class SchemaMaker:
                                     # will later be converted to a metamodel object
                                     curr_obj = {}
                                     setattr(actual_element, cc.maps_to, curr_obj)
-                                if isinstance(curr_obj, dict):
-                                    curr_val = curr_obj.get(cc.settings.inner_key, None)
-                                else:
-                                    # https://github.com/linkml/linkml/issues/971
-                                    curr_val = getattr(curr_obj, cc.settings.inner_key, None)
+                                curr_val = get_attr_via_path_accessor(curr_obj, cc.settings.inner_key)
                             else:
                                 curr_val = getattr(actual_element, cc.maps_to)
-                            # print(f"{curr_val = }")
-                            # print(f"{v = }")
 
                             if curr_val and curr_val != 'TEMP' and curr_val != v and \
                                     not isinstance(actual_element, SchemaDefinition) and \
@@ -213,14 +285,18 @@ class SchemaMaker:
                                 logging.warning(f'Overwriting value for {k}, was {curr_val}, now {v}')
                                 raise ValueError(f'Cannot reset value for {k}, was {curr_val}, now {v}')
                             if cc.settings.inner_key:
+                                obj_to_set = getattr(actual_element, cc.maps_to)
                                 if isinstance(getattr(actual_element, cc.maps_to), list):
                                     if '|' in v:
                                         vs = v.split('|')
                                     else:
                                         vs = [v]
-                                    setattr(actual_element, cc.maps_to, [{cc.settings.inner_key: v} for v in vs])
+                                    for v1 in vs:
+                                        set_attr_via_path_accessor(obj_to_set, cc.settings.inner_key, v1)
+                                    # setattr(actual_element, cc.maps_to, [{cc.settings.inner_key: v} for v in vs])
                                 else:
-                                    getattr(actual_element, cc.maps_to)[cc.settings.inner_key] = v
+                                    set_attr_via_path_accessor(obj_to_set, cc.settings.inner_key, v)
+                                    # getattr(actual_element, cc.maps_to)[cc.settings.inner_key] = v
                             else:
                                 setattr(actual_element, cc.maps_to, v)
                     elif cc.is_element_type:
@@ -317,7 +393,7 @@ class SchemaMaker:
                 else:
                     raise ValueError(f'Unknown metatype: {typ}')
         if table_config.column_by_element_type is None:
-            raise ValueError(f'No table_config.column_by_element_type')
+            raise ValueError(f"""No table_config.column_by_element_type in {row}""")
         for k, elt_cls in tmap.items():
             if k in table_config.column_by_element_type:
                 col = table_config.column_by_element_type[k]
@@ -512,7 +588,13 @@ class SchemaMaker:
                     v = bmap[v.lower()]
                 else:
                     v = bool(v)
-        if metaslot and metaslot.multivalued and not column_config.settings.inner_key:
+        # TODO: use inner_key to look up the actual slot
+        metaslot_is_multivalued = metaslot and metaslot.multivalued and not column_config.settings.inner_key
+        if metaslot and column_config.settings.inner_key:
+            if column_config.settings.internal_separator:
+                # print(f"ASSUMING MV FOR {column_config.name}")
+                metaslot_is_multivalued = True
+        if metaslot_is_multivalued:
             if not isinstance(v, list):
                 if v is None:
                     v = []
@@ -646,10 +728,21 @@ class SchemaMaker:
     def ensure_csvreader(self, file_name: str, delimiter=None) -> str:
         if self.gsheet_id:
             url = gsheets_download_url(self.gsheet_id, file_name)
+            if self.gsheet_cache_dir:
+                # cache a copy of the file
+                dir_path = Path(self.gsheet_cache_dir)
+                dir_path.mkdir(parents=True, exist_ok=True)
+                path = dir_path / (file_name + '.csv')
+                stream = urlopen(url)
+                lines = [line for line in codecs.iterdecode(stream, 'utf-8')]
+                with open(path, 'w') as f:
+                    f.write("".join(lines))
+                stream.close()
             stream = urlopen(url)
             text_stream = codecs.iterdecode(stream, 'utf-8')
             reader = csv.DictReader(text_stream, delimiter=",")
             yield reader
+
         else:
             with open(file_name) as file:
                 reader = csv.DictReader(file, delimiter=delimiter)
@@ -683,11 +776,13 @@ class SchemaMaker:
               help="Auto-repair schema")
 @click.option("--gsheet-id",
               help="Google sheets ID. If this is specified then the arguments MUST be sheet names")
+@click.option("--gsheet-cache-dir",
+                help="Directory to cache google sheets")
 @click.option("--base-schema-path",
               help="Base schema yaml file, the base-schema will be merged with the generated schema")
 @click.option("-v", "--verbose", count=True)
 @click.argument('tsv_files', nargs=-1)
-def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_path: str, use_attributes: bool,
+def convert(tsv_files, gsheet_id, gsheet_cache_dir, output: TextIO, name, repair, table_config_path: str, use_attributes: bool,
             unique_slots: bool, verbose: int, sort_keys: bool, base_schema_path: str):
     """
     Convert schemasheets to a LinkML schema
@@ -712,6 +807,7 @@ def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_pat
     sm = SchemaMaker(use_attributes=use_attributes,
                      unique_slots=unique_slots,
                      gsheet_id=gsheet_id,
+                     gsheet_cache_dir=gsheet_cache_dir,
                      default_name=name,
                      table_config_path=table_config_path,
                      base_schema_path=base_schema_path)
@@ -720,7 +816,6 @@ def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_pat
         schema = sm.repair_schema(schema)
     schema_dict = schema_as_dict(schema)
     output.write(yaml.dump(schema_dict, sort_keys=sort_keys))
-    # output.write(yaml_dumper.dumps(schema))
 
 
 if __name__ == '__main__':

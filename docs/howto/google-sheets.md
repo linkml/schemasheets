@@ -38,7 +38,7 @@ E.g.
 sheets2linkml --gsheet-id 1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ personinfo types prefixes -o personinfo.yaml
 ```
 
-__Note__: due to a bug with google sheets API (see [this Stack Overflow question](https://stackoverflow.com/questions/61578295/google-spreadsheet-gviz-query-is-concatenating-first-two-rows-into-header)), this will not work if your sheet has floats/decimals in them. It's not clear if google will ever fix this. If you need decimals, then you should either manually download the sheet to TSV, or use COGS.
+__Note__: due to a bug with google sheets API (see [this Stack Overflow question](https://stackoverflow.com/questions/61578295/google-spreadsheet-gviz-query-is-concatenating-first-two-rows-into-header)), this will not work if your sheet has floats/decimals/booleans in them. It's not clear if google will ever fix this. If you need decimals, then you should either manually download the sheet to TSV, or use COGS.
 
 ## COGS
 
