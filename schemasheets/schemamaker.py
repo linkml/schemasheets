@@ -5,6 +5,7 @@ import sys
 import csv
 import logging
 from urllib.request import urlopen
+from copy import copy
 
 import click
 import yaml
@@ -19,7 +20,7 @@ from linkml_runtime.utils.schemaview import SchemaView, re
 
 from schemasheets.schemasheet_datamodel import ColumnConfig, TableConfig, get_configmodel, get_metamodel, COL_NAME, \
     DESCRIPTOR, \
-    tmap, T_CLASS, T_PV, T_SLOT, T_SUBSET, T_SCHEMA, T_ENUM, T_PREFIX, T_TYPE, SchemaSheet, T_SETTING
+    tmap, T_CLASS, T_PV, T_SLOT, T_ATTRIBUTE, T_SUBSET, T_SCHEMA, T_ENUM, T_PREFIX, T_TYPE, SchemaSheet, T_SETTING
 from schemasheets.conf.configschema import Cardinality
 from schemasheets.utils.google_sheets import gsheets_download_url
 from schemasheets.utils.prefixtool import guess_prefix_expansion
@@ -59,6 +60,8 @@ class SchemaMaker:
     table_config_path: str = None
     """Path to table configuration file."""
 
+    base_schema_path: str = None
+
     def create_schema(self, csv_files: Union[str, List[str]], **kwargs) -> SchemaDefinition:
         """
         Create a LinkML schema from one or more Schema Sheets.
@@ -67,8 +70,13 @@ class SchemaMaker:
         :param kwargs:
         :return: generated schema
         """
-        n = self.default_name
-        if n is None:
+        self.base_view = SchemaView(self.base_schema_path) if self.base_schema_path else None
+
+        if self.default_name:
+            n = self.default_name
+        elif self.base_view and self.base_view.schema.name:
+            n = self.base_view.schema.name
+        else:
             n = 'TEMP'
         self.schema = SchemaDefinition(id=n, name=n, default_prefix=n, default_range='string')
         if not isinstance(csv_files, list):
@@ -82,6 +90,9 @@ class SchemaMaker:
         if prefix not in self.schema.prefixes:
             logging.error(f'Prefix {prefix} not declared: using default')
             self.schema.prefixes[prefix] = Prefix(prefix, f'https://example.org/{prefix}/')
+
+        if self.base_view:
+            SchemaView(self.schema).merge_schema(self.base_view.schema)
         return self.schema
 
     def _tidy_slot_usage(self):
@@ -202,7 +213,14 @@ class SchemaMaker:
                                 logging.warning(f'Overwriting value for {k}, was {curr_val}, now {v}')
                                 raise ValueError(f'Cannot reset value for {k}, was {curr_val}, now {v}')
                             if cc.settings.inner_key:
-                                getattr(actual_element, cc.maps_to)[cc.settings.inner_key] = v
+                                if isinstance(getattr(actual_element, cc.maps_to), list):
+                                    if '|' in v:
+                                        vs = v.split('|')
+                                    else:
+                                        vs = [v]
+                                    setattr(actual_element, cc.maps_to, [{cc.settings.inner_key: v} for v in vs])
+                                else:
+                                    getattr(actual_element, cc.maps_to)[cc.settings.inner_key] = v
                             else:
                                 setattr(actual_element, cc.maps_to, v)
                     elif cc.is_element_type:
@@ -214,7 +232,7 @@ class SchemaMaker:
                     else:
                         raise ValueError(f'No mapping for {k}; cc={cc}')
 
-    def get_current_element(self, elt: Element) -> Union[Element, PermissibleValue]:
+    def get_current_element(self, elt: Element, is_attr=False) -> Union[Element, PermissibleValue]:
         """
         Look up an element in the current schema using a stub element as key
 
@@ -237,6 +255,7 @@ class SchemaMaker:
         This time the existing "foo" class from the schema, with its adornments, will be returned
 
         :param elt: proxy for element to look up
+        :param is_attr: if True, then the element is an attribute, not a slot
         :return:
         """
         sc = self.schema
@@ -249,7 +268,10 @@ class SchemaMaker:
             if isinstance(elt, ClassDefinition):
                 ix = sc.classes
             elif isinstance(elt, SlotDefinition):
-                ix = sc.slots
+                if self.use_attributes or is_attr:
+                    ix = copy(sc.slots)
+                else:
+                    ix = sc.slots
             elif isinstance(elt, EnumDefinition):
                 ix = sc.enums
             elif isinstance(elt, TypeDefinition):
@@ -323,6 +345,8 @@ class SchemaMaker:
                                 raise ValueError(f'Cardinality of schema col must be 1; got: {vs}')
                             self.schema.name = vs[0]
                             vmap[k] = [self.schema]
+                        elif k == T_ATTRIBUTE:
+                            vmap[k] = [self.get_current_element(elt_cls(v), is_attr=True) for v in vs]
                         else:
                             vmap[k] = [self.get_current_element(elt_cls(v)) for v in vs]
 
@@ -339,11 +363,14 @@ class SchemaMaker:
                 else:
                     cls = self.get_current_element(ClassDefinition(cc.settings.applies_to_class))
                     vmap[T_CLASS] = [cls]
-        if T_SLOT in vmap:
-            check_excess([T_SLOT, T_CLASS])
-            if len(vmap[T_SLOT]) != 1:
-                raise ValueError(f'Cardinality of slot field must be 1; got {vmap[T_SLOT]}')
-            main_elt = vmap[T_SLOT][0]
+        if T_SLOT in vmap or T_ATTRIBUTE in vmap:
+            if T_SLOT in vmap and T_ATTRIBUTE in vmap:
+                raise ValueError(f'Cannot have both slot and attribute in same row')
+            T_SLOT_ATTR = T_SLOT if T_SLOT in vmap else T_ATTRIBUTE
+            check_excess([T_SLOT_ATTR, T_CLASS])
+            if len(vmap[T_SLOT_ATTR]) != 1:
+                raise ValueError(f'Cardinality of slot field must be 1; got {vmap[T_SLOT_ATTR]}')
+            main_elt = vmap[T_SLOT_ATTR][0]
             if T_CLASS in vmap:
                 # The sheet does double duty representing a class and a slot;
                 # Here *both* the "class" and "slot" columns are populated, so
@@ -351,7 +378,7 @@ class SchemaMaker:
                 # TODO: add option to allow to instead represent these as attributes
                 c: ClassDefinition
                 for c in vmap[T_CLASS]:
-                    if self.use_attributes:
+                    if self.use_attributes or T_SLOT_ATTR == T_ATTRIBUTE:
                         # slots always belong to a class;
                         # no separate top level slots
                         a = SlotDefinition(main_elt.name)
@@ -656,10 +683,12 @@ class SchemaMaker:
               help="Auto-repair schema")
 @click.option("--gsheet-id",
               help="Google sheets ID. If this is specified then the arguments MUST be sheet names")
+@click.option("--base-schema-path",
+              help="Base schema yaml file, the base-schema will be merged with the generated schema")
 @click.option("-v", "--verbose", count=True)
 @click.argument('tsv_files', nargs=-1)
 def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_path: str, use_attributes: bool,
-            unique_slots: bool, verbose: int, sort_keys: bool):
+            unique_slots: bool, verbose: int, sort_keys: bool, base_schema_path: str):
     """
     Convert schemasheets to a LinkML schema
 
@@ -684,7 +713,8 @@ def convert(tsv_files, gsheet_id, output: TextIO, name, repair, table_config_pat
                      unique_slots=unique_slots,
                      gsheet_id=gsheet_id,
                      default_name=name,
-                     table_config_path=table_config_path)
+                     table_config_path=table_config_path,
+                     base_schema_path=base_schema_path)
     schema = sm.create_schema(list(tsv_files))
     if repair:
         schema = sm.repair_schema(schema)
