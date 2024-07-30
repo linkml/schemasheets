@@ -89,6 +89,11 @@ sheets2linkml personinfo.tsv  -o personinfo.yaml
 
 We recommend using [COGS](https://linkml.io/schemasheets/howto/google-sheets/) to synchronize your google sheets with local files using a git-like mechanism
 
+## Examples
+
+- [Person Info Schema](https://docs.google.com/spreadsheets/d/1wVoaiFg47aT9YWNeRfTZ8tYHN8s8PAuDx5i2HUcDpvQ/edit#gid=55566104)
+- [Movies Property Graph Schema](https://docs.google.com/spreadsheets/d/1oMrzA41tg_nisdWInnqKJrcvv30dOXuwAhznJYYPSB8/edit?gid=1499822522#gid=1499822522)
+
 ## Finding out more
 
 * [Schema Sheets Manual](https://linkml.io/schemasheets)
