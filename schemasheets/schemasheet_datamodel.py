@@ -103,7 +103,7 @@ class ColumnConfig:
             snmap = mm.slot_name_mappings()
             for k, v in snmap.items():
                 if k != v.name:
-                    print(k,v.name)
+                    logging.info(f"Mismatch between slot_name_mapping key {k} slot name {v.name}")
             # TODO: use alias
             snmap['uri'] = snmap['type_uri']
             if self.maps_to.startswith("metaslot."):
