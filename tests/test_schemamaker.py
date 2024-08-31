@@ -282,3 +282,17 @@ def test_load_table_config():
     assert 'wikidata:Q215627' in person_cls.exact_mappings
     assert 'sdo:Person' in person_cls.exact_mappings
 
+
+def test_classes_slots_anyof():
+    """testing any_of in the slots"""
+    sm = SchemaMaker()
+    schema = sm.create_schema(os.path.join(INPUT_DIR, 'personinfo_anyof.tsv'))
+    logging.info(f'SCHEMA={schema}')
+    logging.info(f'SCHEMA.cl={schema.classes}')
+    logging.info(f'SCHEMA.sl={schema.slots}')
+    yaml_dumper.dump(schema, to_file=os.path.join(OUTPUT_DIR, 'personinfo.yaml'))
+    yaml = yaml_dumper.dumps(schema)
+    logging.info(yaml)
+    person_cls = schema.classes['Person']
+    assert person_cls.slot_usage["age"].any_of[0].range == "decimal"
+    assert person_cls.slot_usage["age"].any_of[1].range == "integer"
