@@ -1,0 +1,9 @@
+record	field	key	range	any_of_range	desc
+> class	slot	identifier	range	any_of	description
+>				inner_key: range
+	id	yes	string		any identifier
+	description	no	string		a textual description
+Person		n/a	n/a		a person,living or dead
+Person	id	yes	string		identifier for a person
+Person|Organization	name	no	string		full name
+Person	age	no		decimal|integer	age in years

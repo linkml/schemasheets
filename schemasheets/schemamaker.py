@@ -73,7 +73,11 @@ def set_attr_via_path_accessor(obj: Union[dict, YAMLRoot], path: Union[str, List
     tok = toks[0]
     toks = toks[1:]
     logging.debug(f"[{depth}] Setting attr {tok} / {toks} in {obj} to {value}")
-    if isinstance(obj, dict):
+    if isinstance(obj, list):
+        new_dict = {}
+        set_attr_via_path_accessor(new_dict, path, value, depth=depth)
+        obj.append(new_dict)
+    elif isinstance(obj, dict):
         if not toks:
             obj[tok] = value
         else:
@@ -286,14 +290,16 @@ class SchemaMaker:
                                 raise ValueError(f'Cannot reset value for {k}, was {curr_val}, now {v}')
                             if cc.settings.inner_key:
                                 obj_to_set = getattr(actual_element, cc.maps_to)
-                                if isinstance(getattr(actual_element, cc.maps_to), list):
+                                if isinstance(obj_to_set, list):
                                     if '|' in v:
                                         vs = v.split('|')
                                     else:
                                         vs = [v]
+                                    # not sure if this is a valid scenario, but raising error in case it is
+                                    if obj_to_set:
+                                        raise Exception(f'The case when list has multiple element set by inner_key is not implemented yet')
                                     for v1 in vs:
                                         set_attr_via_path_accessor(obj_to_set, cc.settings.inner_key, v1)
-                                    # setattr(actual_element, cc.maps_to, [{cc.settings.inner_key: v} for v in vs])
                                 else:
                                     set_attr_via_path_accessor(obj_to_set, cc.settings.inner_key, v)
                                     # getattr(actual_element, cc.maps_to)[cc.settings.inner_key] = v
