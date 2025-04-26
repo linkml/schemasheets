@@ -7,6 +7,7 @@ import logging
 from pathlib import Path
 from urllib.request import urlopen
 from copy import copy
+import re
 
 import click
 import yaml
@@ -18,7 +19,7 @@ from linkml_runtime.linkml_model import Annotation, Example
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, Prefix, \
     SlotDefinition, EnumDefinition, PermissibleValue, SubsetDefinition, TypeDefinition, Element, Setting
 from linkml_runtime.utils.schema_as_dict import schema_as_dict
-from linkml_runtime.utils.schemaview import SchemaView, re
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from schemasheets.schemasheet_datamodel import ColumnConfig, TableConfig, get_configmodel, get_metamodel, COL_NAME, \
