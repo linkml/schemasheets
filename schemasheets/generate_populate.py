@@ -1,7 +1,8 @@
 import logging
 from typing import List
+from importlib import resources
+import os
 
-import pkg_resources
 import yaml
 from click import command, option, Choice
 from jsonasobj2 import as_dict
@@ -323,9 +324,10 @@ def cli(source_path, output_path, debug_report_path, verbose, log_file, report_s
 
     logger = logging.getLogger(__name__)
 
-    meta_yaml_path = pkg_resources.resource_filename(
-        'linkml_runtime',
-        'linkml_model/model/schema/meta.yaml'
+    # Use importlib.resources instead of pkg_resources
+    meta_yaml_path = os.path.join(
+        os.path.dirname(resources.files('linkml_runtime')),
+        'linkml_runtime/linkml_model/model/schema/meta.yaml'
     )  # todo proper platform agnostic path
 
     meta_view = SchemaView(meta_yaml_path, merge_imports=True)
