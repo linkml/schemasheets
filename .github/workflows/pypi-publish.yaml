@@ -13,18 +13,18 @@ jobs:
     #       check-out repo and set-up python     
     #----------------------------------------------
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v2.2.2
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: 3.13
 
       #----------------------------------------------
       #          install & configure poetry
       #----------------------------------------------
       - name: Install Poetry
-        uses: snok/install-poetry@v1.3
+        uses: snok/install-poetry@v1.4
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
@@ -47,7 +47,7 @@ jobs:
       #          publish package to PyPI
       #----------------------------------------------
       - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.2.2
+        uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           user: __token__
           password: ${{ secrets.PYPI_PASSWORD }}
